@@ -38,7 +38,7 @@
     },
     {  
       "name":"conv_id",
-      "description":"选择对话 ID，可选，只在查询实时通信某个对话相关的统计信息时使用。"
+      "description":"选择对话 ID，可选，只在查询即时通讯某个对话相关的统计信息时使用。"
     }
   ] -%}
 参数名|说明
@@ -210,7 +210,7 @@
 {{ alert("Relation 类型已被弃用。请使用 [中间表](relation-guide.html#使用中间表实现多对多关系_推荐_) 来完成对关联数据的查询、排序等复杂操作。") }}
 {%- endmacro %}
 
-{% macro preservedWords(delimeter="、") -%}
+{% macro preservedWords(delimeter=", ") -%}
   {% set preservedWordList = [
       "className",
       "objectId",
@@ -226,12 +226,12 @@
   ^((?!ticket).)*&dollar;{% if useSingleQuotes == true %}&apos;{% else %}&quot;{% endif %}
 {%- endmacro %}
 
-{% macro classNameConvention(className="Class 类名称（ClassName）") -%}
-{{className | trim | replace(r/([\x00-\xff])$/gi,"$1 ") }}必须以字母开头，只能包含字母、数字和下划线。
+{% macro classNameConvention(className="A Class name (ClassName)") -%}
+{{className | trim | replace(r/([\x00-\xff])$/gi,"$1 ") }} starts with a letter and can only contain letters, numbers, and underscores.
 {%- endmacro %}
 
 {% macro localizedDates() -%}
-注：应用控制台对 `createdAt` 和 `updatedAt` 做了在展示优化，它们会依据用户操作系统时区而显示为本地时间；客户端 SDK 获取到这些时间后也会将其转换为本地时间；而通过 REST API 获取到的则是原始的 UTC 时间，开发者可能需要根据情况做相应的时区转换。
+Note: The console displays {{createdAtName}} and {{updatedAtName}} in the time zone of your operating system and the client-side SDK converts them to local times as well, but the times retrieved through REST API will remain in UTC which need to be converted manually.
 {%- endmacro %}
 
 {% macro innerQueryLimitation(heading="", description="使用子查询可能会遇到查不到记录或查到的记录不全的情况。例如：", skip="skip") -%}
@@ -244,7 +244,7 @@
 
 {% endif -%}
 ```sql
--- 找出积分高于 80、region 为 cn 的玩家记录
+-- Look for all the players with scores higher than 80 and regions to be 'cn'
 SELECT * 
 FROM   player 
 WHERE  NAME IN (SELECT NAME 
@@ -253,19 +253,19 @@ WHERE  NAME IN (SELECT NAME
        AND region = 'cn' 
 ```
 
-LeanCloud 云端使用的并非关系型数据库，无法做到真正的联表查询，所以实际的处理方式是：先执行内嵌/子查询（和普通查询一样，limit 默认为 100，最大  1000），然后将子查询的结果填入主查询的对应位置，再执行主查询。
+The backend of LeanCloud is not built on relational databases, which makes it impossible to join tables while querying. For the query above, what LeanCloud would do is to first perform an inner query (with 100 as default `limit` and 1,000 as maximum) and then insert the result from this query into the outer query.
 
-如果子查询匹配到了 100 条以上的记录（性别等区分度低的字段重复值往往较多），且主查询有其他查询条件（`region = 'cn'`），那么可能会出现没有结果或结果不全的情况，其本质上是子查询查出的 100 条记录没有满足主查询的其他条件。
+If more than 100 records are returned as the result of the inner query and the outer query contains other constraints (`region = 'cn'`), the amount of the records returned in the end could be zero or less than your expectation since only 100 records would be inserted into the outer query.
 
-我们建议采用以下方案进行改进：
+The following actions can be taken to solve the problem:
 
-- 确保子查询的结果在 100 条以下，如果在 100 - 1000 条的话请在子查询末尾添加 limit 1000。
-- 将需要查询的字段冗余到主查询所在的表上；例如将 score 冗余到 Player 表上，或者将 region 添加到 GameScore 上然后只查 GameScore 表。
-- 进行多次查询，每次在子查询上添加 {{ skip }} 来遍历所有记录（注意 skip 的值较大时可能会引发性能问题，因此不是很推荐）。
+- Make sure the number of records in the result of the inner query is no more than 100. If it is between 100 and 1,000, add `limit 1000` for the inner query.
+- Create redundancy for the fields being queried by the inner query on the table for the outer query. For the example above, we can add `score` into the `Player` table, or add `region` into the `GameScore` table, then query the `GameScore` table only.
+- Repeat the same query with different {{ skip }} values until all the records are gone through (performance issue could occur if the value of `skip` gets too big).
 {%- endmacro %}
 
 {% set libVersion = {
-    leancloud:  "v4.6.4",
+    leancloud:  "4.7.8",
     fastjson:   "1.2.37",
     okhttp:     "3.8.0",
     okio:       "1.13.0"

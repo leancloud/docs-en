@@ -19,15 +19,15 @@
 {% endmacro %}
 
 {% macro fixedVerificationCode(headingLevel="###") -%}
-{{headingLevel}} 测试用的手机号和固定验证码
+{{headingLevel}} Test Phone Numbers and Verification Codes
 
-对于使用「手机号 + 验证码」登录的应用来说，在上架前提交至 Apple Store 进行审核的过程中，可能会面临 Apple 人员因没有有效的手机号码而无法登录来进行评估审核，或者开发者也无法提供固定手机号和验证码的尴尬情况。
+When submitting your app to App Store, the reviewers of your app who do not have a phone number may be unable to test your app if the only way they can log in is to use a phone number and a verification code.
 
-另外，开发者在开发测试过程中也会面临在短时间内需要多次登录或注销的操作，由于验证码有时间间隔与总次数限制，这样就会带来种种不便。
+It could also happen that developers of your app need to frequently log in and log out, but only limited number of verification codes can be sent out within a certain amount of time.
 
-为解决这些问题，我们允许为每个应用设置一个用于测试目的的手机号码，LeanCloud 平台会为它生成一个**固定的验证码**，每次使用这一对号码组合进行验证都会得到成功的结果。
+Therefore, we allow each app to have a **fixed phone number and verification code** for testing.
 
-进入 [应用控制台](/applist.html#/apps) > **消息** > **短信** > **设置** > **其他** 来设置 **测试手机号**。
+To set up your **test phone number**, go to [Dashboard](/applist.html#/apps) > **Messages** > **SMS** > **Settings** > **Misc**.
 {%- endmacro %}
 
 

@@ -4,49 +4,37 @@
 {% import "views/_parts.html" as include %}
 {% set middot = '·' %}
 {% set app_permission_link = "[Dashboard > Data > Settings > User Account](/dashboard/storage.html?appid={{appid}}#/storage/conf)" %}
-{% set query_result_limit = "A query returns 100 records by default. You can change the number of  results by setting limit. See [Limiting Query Results](#limiting-query-results) for more info." %}
+{% set query_result_limit = "The number of records returned by each query is limited to 100 by default. To change the limit, please refer to [Limiting Query Results](#limiting)." %}
 
-# LeanStorage JavaScript Guide
+# LeanStorage {{platform_name}} Guide
 
-The LeanStorage JavaScript SDK can be used to persist and query data in LeanCloud.
+{{productName}} is a core feature offered by LeanCloud that allows your app to persist and query data in the cloud. Here we will walk you through the basic usage of it with a quick example.
 
-If you already have experience with relational databases such as MySQL and Postgres, you will notice that programming with LeanStorage SDK is quite different from writing SQL statements. For example, a SQL statement that adds a new record to the database may look like this (assuming the database and the table have already been created with the proper schema):
+The code below creates an object with Class `Todo` and stores it into the cloud:
 
-```sql
-INSERT INTO Todo (title, content) 
-VALUES ('R&D Weekly Meeting', 'All team members, Tues 2pm')
-```
+{% block code_quick_save_a_todo %}{% endblock %}
 
-With our JavaScript SDK, you would write something like this:
+If you already have experience with relational database, you will notice that {{productName}} is quite different from it. {{productName}} adopts a schema-free data structure, which means that the schema of the database doesn't have to be set up in advance, and new properties can be added into an existing object at any time. If you need to add `location` into the same Todo object as a new property, simply make the following change:
 
-```js
-// Declare Class
-var Todo = AV.Object.extend('Todo');
+{% block code_quick_save_a_todo_with_location %}{% endblock %}
 
-// Create an object
-var todo = new Todo();
+- The SDK designed for each language interacts with the same [REST API](rest-api.html) via HTTPS, offering fully functional interfaces for you to manipulate the data in the cloud.
 
-// Set values of fields
-todo.set('title',   'R&D Weekly Meeting');
-todo.set('content', 'All team members, Tue 2pm');
+The main differences between {{productName}} and traditional databases (like MySQL, Postgres, and MongoDB) are:
 
-// Save data to the cloud
-todo.save().then(function (todo) {
-  // Execute any logic that should take place after the object is saved
-  console.log('New object created with objectId: ' + todo.id);
-}, function (error) {
-  // Execute any logic that should take place if the save fails
-  console.error('Failed to create new object, with error message: ' + error.message);
-});
-```
+1. Traditional databases are server-oriented which require developers to build their own server-side programs and authenticate with usernames and passwords. App developers need to implement security features by themselves and write interfaces for clients to interact with databases. {{productName}} is client-oriented instead, which offers fully functional API-level permission management with ACL. Developers could embed {{productName}} SDK directly in their clients for accessing data and don't have to implement server-side programs anymore.
+2. Comparing to relational databases (like MySQL and Postgres), {{productName}} provides weaker support for joining tables or transactions, which means that certain amount of redundancy would be required for some types of apps. However, the extensibility of the database would be highly improved, which allows applications to handle more requests.
 
-The JavaScript code might seem a lot more verbose, but it is much more conforming to the language used to build applications and is free of many SQL-specific vulnerabilities. Many developers who use relational databases usually use ORM (object-relational mapping) frameworks instead of embedding SQL directly in their code. If you've used one of the ORM tools, the JavaScript code above may seem familiar to you.
+Below we will introduce the two data types supported by {{productName}}:
 
-## Getting Started
+* Objects
+* Files
+
+## SDK Installation
 
 The JavaScript SDK supports Chrome 45+, recent versions of Firefox, IE 10+, Edge, iOS 9.3+, Android 4.4+, WeApp DevTools, Node.js 4.0+, React Native 0.26+, and Electron.
 
-### Using JavaScript SDK on Different Platforms
+### npm
 
 The easiest way to integrate our JavaScript SDK in your project is to use npm:
 
@@ -54,17 +42,17 @@ The easiest way to integrate our JavaScript SDK in your project is to use npm:
 $ npm install leancloud-storage --save
 ```
 
-To use npm for a browser based application or in a Node.js environment, include it as you normally would:
+Then include it with require:
 
 ```js
+// Include SDK
 var AV = require('leancloud-storage');
-
-// Create references to the global AV
 var { Query, User } = AV;
-
 // Initialize SDK
 AV.init('APP_ID', 'APP_KEY');
 ```
+
+### CDN
 
 You may also use a pre-compiled SDK file in your webpage with the following `<script>` tag:
 
@@ -75,18 +63,19 @@ You may also use a pre-compiled SDK file in your webpage with the following `<sc
 And then create references to the SDK:
 
 ```js
-// Create references to the global AV
+// Include SDK
 var { Query, User } = AV;
-
 // Initialize SDK
 AV.init('APP_ID', 'APP_KEY');
 ```
 
+### Additional SDK Setup
+
 Check out our Github repo https://github.com/leancloud/javascript-sdk/releases for more releases and file formats.
 
-If you plan to use our JavaScript SDK inside Android WebView, please check out [WebView](#webview) section of this guide.
+If you plan to use our JavaScript SDK in Android WebView, please check out [WebView](#webview) section of this guide.
 
-<a id="setup-livequery" name="setup-livequery"></a>If you rely on features of [Live Queries](#live-queries), include the following npm module instead: 
+If you plan to use [LiveQuery](#livequery), include the following npm module instead:
 
 ```js
 // No need to require 'leancloud-storage' if the following line is present
@@ -100,7 +89,7 @@ Or load it with the following `<script>` tag:
 <script src="//cdn.jsdelivr.net/npm/leancloud-storage@{{jssdkversion}}/dist/av-live-query-min.js"></script>
 ```
 
-You also need to go to your app's [LeanCloud Dashboard > Storage > Settings page](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Misc** section before you can expect it to work.
+You also need to go to your app's [LeanCloud Dashboard > Storage > Settings page](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check on the **Enable LiveQuery** option under the **Misc** section before you can expect it to work.
 
 ### Initializing Your Application
 
@@ -118,518 +107,271 @@ AV.init({
 });
 ```
 
-Apps running on LeanCloud are region-specific. It means that no data will be communicated across regions. Therefore, incorrect region settings will lead to the failure of initialization.
+Apps running on LeanCloud are region-specific, which means that no data will be communicated across regions. Therefore, incorrect region settings will cause the initialization to fail.
 
-Each region serves their own REST APIs. Please consult documentation for the correct URL schemes of APIs to be used. Docs for US region can be found at https://us.leancloud.cn/docs/rest_api.html; docs for China region can be found at https://leancloud.cn/docs/rest_api.html. 
+Each region has its own REST APIs. Please refer to the following documentations for the correct URL schemes of APIs to be used:
 
-### Debugging
+- Docs for US region: https://us.leancloud.cn/docs/rest_api.html.
+- Docs for China region: https://leancloud.cn/docs/rest_api.html. 
 
-Our SDK supports debug logging. You can turn it on during the development phase of your application. Once enabled, details of every request made by our SDK along with errors will be output to the browser's console, or to the terminal window in a Node.js environment.
+{% block text_web_security %}{% endblock %}
 
-For browser based applications, open the browser's console and run the following command:
+## Debug Logs
+
+You can easily trace the problems in your application by turning debug logs on during the development phase. Once enabled, details of every request made by the SDK along with errors will be output to IDE, browser console, or [LeanEngine logs](/dashboard/cloud.html?appid={{appid}}#/log) in LeanCloud Dashboard.
 
 ```js
-localStorage.setItem('debug', 'leancloud*,LC*');
+// In Node.js, set environment variable DEBUG=leancloud*
+// Debug logs will be enabled when running app with npm
+DEBUG=leancloud* npm start
+
+// If using Node.js with LeanEngine, go to LeanCloud Dashboard > LeanEngine > Settings > Custom Environment Variables
+// Put DEBUG in the first field and leancloud:* in the second field (make sure to include the colon between leancloud and *)
+DEBUG=leancloud:* lean up
+
+// Set localStorage in browser console
+localStorage.setItem('debug', 'leancloud*');
+
+// Enable debug logs for LiveQuery
+localStorage.setItem('debug', 'LC*');
 ```
 
-If your app runs in a Node.js environment, set the environment variable `DEBUG` to be `leancloud*,LC*`.
-
-### Web Security
-
-If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [LeanCloud Dashboard settings page](/dashboard/app.html?appid={{appid}}#/security) before you deploy it to a production environment.
-
-Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
-
-However, due to the fact that your app is exposed to the internet, simply setting up whitelist domains is not enough to guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you necessary information you need regarding app security. <a id="security-articles"></a>
-
-- [Data and Security](data-security.html)
-- [ACL Guide](acl-guide.html)
+{% call docs.alertWrap() %}
+Make sure debug logs are turned off before your app is published. Failure to do so may lead to the exposure of sensitive data.
+{% endcall %}
 
 ## Objects
 
-### AV.Object
-
-Storing data on LeanCloud is built around `AV.Object`. Each `AV.Object` contains key-value pairs of JSON-compatible data. This data is schemaless, which means that you don't need to specify ahead of time what keys exist on each `AV.Object`. You simply set whatever key-value pairs you want, and our backend will store it.
-
-For example, let's say you're adding a todo item. A single `AV.Object` could contain:
-
-```json
-title:       'Email Linda to confirm appointment',
-isComplete:  false,
-priority:    2,
-tags:        ['work', 'sales']
-```
-
-{# Keys must be alphanumeric strings. Values can be strings, numbers, booleans, or even arrays, objects, and anything that can be JSON-encoded. #}
+`{{baseObjectName}}` is {{productName}}'s encapsulation of high-level objects, with each of them containing a number of property-value pairs (or key-value pairs). The value of properties are JSON-compatible. When storing data through REST API, the data is encoded with JSON. The data is schema free, meaning that you don't need to specify the keys of an object in advance. Simply set whatever key-value pairs you need for an object, and our backend will handle the rest for you.
 
 ### Data Types
 
-`AV.Object` supports a wide range of data types to be used for each field, including common ones like String, Number, Boolean, Object, Array, Date, JSON, and null. You can nest JSON Objects and JSON Arrays to store more structured data within a single object.
+`{{baseObjectName}}` supports the following data types:
 
-Special data types supported by `AV.Object` include Pointer and File, which are used to store references to other AV.Objects and binary data respectively.
+{% block code_data_type %}{% endblock %}
 
-`AV.Object` also supports GeoPoint, a special data type you can use to store location-based data. Refer to the [GeoPoints](#geopoints) portion of this guide for more details.
+Keep in mind that our backend stores dates in UTC and the SDK will convert them to local times upon retrieval.
 
-Some examples:
+### Creating Objects
 
-```js
-// Declare Class
-var TestObject = AV.Object.extend('DataTypeTest');
+The code below creates a new instance of `{{baseObjectName}}`:
 
-// Basic objects
-var number  = 2018;
-var string  = 'famous film name is ' + number;
-var date    = new Date();
-var array   = [string, number];
-var object  = { 
-  number: number, 
-  string: string 
-};
+{% block code_create_todo_object %}{% endblock %}
 
-// An AV.Object with another Class
-var pointer = AV.Object.createWithoutData('Todo', '5745557f71cfe40068c6abe0');
+Each {{objectIdName}} must have a Class name so that the cloud knows which table it belongs to.
 
-// Create an object
-var testObject = new TestObject();
-testObject.set('testNumber', number);
-testObject.set('testString', string);
-testObject.set('testDate', date);
-testObject.set('testArray', array);
-testObject.set('testObject', object);
-testObject.set('testNull', null);
-testObject.set('testPointer', pointer);
-testObject.save().then(function(testObject) {
-  // Success
-}, function(error) {
-  // Failure
-});
-```
-
-We do not recommend storing large pieces of binary data like images or documents with `AV.Object`. The size of each AV.Object should not exceed **128 kilobytes**. We recommend using AV.Files for storing images, documents, and other types of files. To do so, create an `AV.File` object and assign it to a field of an AV.Object. See [Files](#files) for details.
-
-{% call docs.noteWrap() %}
-Keep in mind that our backend stores dates in UTC format and the SDK will convert them to local times upon retrieval.
-
-The date values displayed in the Data Browser in your [LeanCloud Dashboard data page](/dashboard/data.html?appid={{appid}}#/) are also converted to match your operating system's timezone. The only exception is that when you retrieve these date values through our [REST API](rest-api.html), they will remain in UTC format. You can manually convert them using appropriate timezones when necessary.
-{% endcall %}
-
-{# For more information about how LeanCloud handles data and security, check out our documentation on [Data and Security](data-security.html). #}
-
-### Creating Object
-
-The code below creates a new instance of `AV.Object`:
-
-```js
-// Create a new subclass of AV.Object
-var Todo = AV.Object.extend('Todo');
-
-// Create a new instance of that Class
-var todo = new Todo();
-```
-
-`AV.Object.extend()` takes ClassName as a parameter so that the cloud knows the Class you are using to create the object. A Class in LeanCloud is comparable to a table in a relational database.
-
-A ClassName starts with a letter and can only contain numbers, letters, and underscores.
-
-{% call docs.noteWrap() -%}
-If you keep seeing "**Maximum call stack size exceeded**" exception in your log, chances are `AV.Object.extend()` had been called using the same ClassName more than once within a loop or a callback. To resolve such issue, either move it out of the loop or the callback to make sure it won't be over-instantiated, or switch to JavaScript SDK 1.4 or higher which handles the problem automatically.
-{%- endcall %}
-
-From version 1.4.0 onwards, the JavaScript SDK is compatible with ES6 classes. If you're using ES6 in your codebase, you can subclass `AV.Object` with the **extends** keyword. However, when using extends, the SDK is not automatically aware of your subclasses. You will need to register the subclasses with the SDK:
-
-```js
-class Todo extends `AV.Object` {
-  // More properties and methods
-}
-
-// Register the subclass
-AV.Object.register(Todo);
-```
-
-After doing this, you will be able to add additional methods and properties to your subclasses of `AV.Object`.
-
-{# You can also use the `AV.Object` constructor directly. `new AV.Object(ClassName)` will create a single LeanCloud Object with that Class name. #}
+{{ docs.alert(data.classNameConvention()) }}
 
 ### Saving Objects
 
-The following code saves a new Class named "**Todo**" to the cloud:
+Now we are going to save a `TodoFolder` containing multiple Todos. We don't need to create a Class named **TodoFolder** in advance. The cloud will automatically create the Class when the following code is executed:
 
-```js
-var Todo = AV.Object.extend('Todo');
-var todo = new Todo();
+{% block code_save_todo_folder %}{% endblock %}
 
-// Set values of fields
-todo.set('title', 'Sign up for Marathon');
-todo.set('priority', 2);
+After running the code, you should be able to see the data you just created within Class **TodoFolder** at [Dashboard > Data](/data.html?appid={{appid}}#/). Beside the name and priority we just specified, you will see some other built-in properties as well:
 
-// Save data to the cloud
-todo.save().then(function (todo) {
-  // Execute any logic that should take place after the object is saved
-  console.log('New object created with objectId: ' + todo.id);
-}, function (error) {
-  // Execute any logic that should take place if the save fails
-  console.error('Failed to create new object, with error message: ' + error.message);
-});
-```
+Built-in Property | Type | Description
+--- | --- | ---
+`objectId` | {{ "str" if segment_code == "python" else "String"}} | A unique identifier for each saved object.
+`ACL` | {{ "leancloud.ACL" if segment_code == "python" else "ACL"}} | Access Control List, a JSON-compatible data defining the read and write permissions of other people.
+`{{createdAtName}}` | {{dateType}} | The time the object was created.
+`{{updatedAtName}}` | {{dateType}} | The time the object was last modified.
 
-To make sure the data was actually saved, you can look at [Dashboard > Data > Todo](/data.html?appid={{appid}}#/) in your app. You should see something like this:
+<dl>
+  <dt>Property Name</dt>
+  <dd>Also called key, which contains only alphanumeric strings and underscores.</br>Custom property names {{ docs.alertInline("cannot begin with double underscores `__` or be any of the following system reserved property names") }}.</dd>
+    <div class="callout callout-danger monospace" style="margin-top:1em;color:#999;">{{ data.preservedWords() }}</div>
+  </dd>
+  <dt>Property Value</dt>
+  <dd>Can be string, number, boolean, array, or dictionary.</dd>
+</dl>
 
-```json
-{
-  "title":      "Sign up for Marathon", 
-  "priority":   2, 
-  "ACL": {
-    "*": {
-      "read":   true,
-      "write":  true
-    }
-  },
-  "objectId":   "582570f38ac247004f39c24b", 
-  "createdAt":  "2017-11-11T07:19:15.549Z",
-  "updatedAt":  "2017-11-11T07:19:15.549Z"
-}
-```
+We recommend that you adopt CamelCase naming convention to `NameYourClassesLikeThis` and `nameYourKeysLikeThis`, which keeps your code more readable.
 
-You don't have to create or set up a new Class called "Todo" before running this code. Your LeanCloud app automatically creates this Class for you when it first encounters it.
+#### Saving Objects with CQL
 
-There are several built-in fields that are provided by default which you don't need to specify in your code:
+{{productName}} offers a method that allows you to save an object with the syntax similar to using INSERT in SQL. The following code saves a TodoFolder object into the cloud:
 
-Built-in Fields | Type   | Description
---------------- | ------ | -----------
-`objectId`      | String | A unique identifier for each saved object.
-`ACL`           | ACL    | Access Control List, which holds a JSON-compatible data defining who can access this object with read or write permissions.
-`createdAt`     | Date   | The time that an object was created in the cloud (accurate to milliseconds).
-`updatedAt`     | Date   | The time that an object was last modified in the cloud (accurate to milliseconds).
+{% block code_save_object_by_cql %}{% endblock %}
 
-Each of these fields is filled in by LeanCloud and doesn't exist on an `AV.Object` until a save operation has been completed.
+#### Saving Options
 
-Field names, or **keys**, must be alphanumeric strings. A user-defined key can neither start with double underscores `__`, nor be identical to any system reserved words or built-in field names regardless of letter cases.
+The following options can be appended when saving `{{baseObjectName}}`:
 
-Here are the words you should avoid using as names of your keys: **{{ data.preservedWords(", ") }}**.
-
-**Values** can be strings, numbers, booleans, or even arrays and dictionaries — anything that can be JSON-encoded. See [Data Types](#data-types) for more information.
-
-We recommend that you adopt CamelCase naming convention to NameYourClassesLikeThis and nameYourKeysLikeThis, which keeps your code more readable.
-
-We have also created a SQL-flavored syntax called Cloud Query Language (CQL), which can be used for saving and querying data with the cloud. The code above can be rewritten using the following CQL:
-
-```js
-// create a Todo object
-AV.Query.doCloudQuery('insert into Todo (title, priority) values ("Sign up for Marathon", 2)').then(function (data) {
-  // Results are kept in data.results
-  var results = data.results;
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
-
-You can read [Cloud Query Language Guide](cql-guide.html) in detail if you prefer this approach for data manipulation.
+Option | Type | Available for | Description
+--- | --- | --- | ---
+{{ docs.nowrap(saveOptions_fetchWhenSave) }} | Boolean | create<br/>update | Return the latest value of the object after saving it. `create` returns all the properties of the object; `update` returns the updated properties only. See [Updating Counters](#updating-counters) for more details.
+`{{saveOptions_query}}` | {{baseQueryClassName}}  | update | Only when the conditions in `query` are satisfied will the object be updated, otherwise the object will not be updated and error code 305 will be returned.<br/><br/>Conditions specified in `query` work only for existing objects. It will not work if you are saving a new object.<br/><br/>You could have used `{{baseQueryClassName}}` and `{{baseObjectName}}` to perform such operation, but the operation would not be done atomically. Using such option eliminates the potential conflicts that could occur when multiple users are trying to update the same object at the same time. See [Updating Data Conditionally](#updating-data-conditionally) for more details.
 
 ### Retrieving Objects
 
-If an `AV.Object` is already in the cloud, you can retrieve it using its `objectId` with the following code:
+Each object stored in the cloud is assigned with a unique `{{objectIdName}}` which can be used to retrieve it:
 
-```js
-var query = new AV.Query('Todo');
-query.get('57328ca079bc44005c2472d0').then(function (todo) {
-  // todo is successfully retrieved
-  var priority   = todo.get('priority');
-  var location   = todo.get('location');
-  var title      = todo.get('title');
-  var content    = todo.get('content');
+{{ code_get_todo_by_objectId() }}
 
-  // Acquire special properties
-  var objectId   = todo.id;
-  var updatedAt  = todo.updatedAt;
-  var createdAt  = todo.createdAt;
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+Beside using `{{baseQueryClassName}}`, you may also construct a new `{{baseObjectName}}` and fetch data with it using objectId:
 
-After retrieving an object, use the `get` method to acqurie the data stored in its fields.
+{% block code_fetch_todo_by_objectId %}{% endblock %}
 
-Be aware that **objectId**, **updatedAt**, and **createdAt** are 3 special properties that cannot be retrieved using the `get` method or modified with the `set` method. Each of these fields is filled in by the cloud only, so they don't exist on an `AV.Object` until a save operation has been completed.
+#### Retrieving Object IDs
 
-If you try to access a field or propertie that doesn't exist, the SDK will return a **null** instead of raising an error.
+Each time when an object is saved to the cloud, its `{{objectIdName}}` will be returned which is a unique global identifier of the object.
 
-Sometimes you may want to get all the fields back at one time (which usually happens when performing data binding) without calling `get` on each field of the object. If your SDK version is 3.0.0+, you may call `toJSON` on an `AV.Object` to get a plain JSON object containing all the fields of the object.
+{% block code_save_callback_get_objectId %}{% endblock %}
 
-```js
-var query = new AV.Query('Todo');
-query.get('558e20cbe4b060308e3eb36c').then(function (todo) {
-  console.log(todo.toJSON());
-  // ==== Results in console ====
-  
-  // title:      "R&D Weekly Meeting"
-  // content:    "All team members, Tues 2pm"
-  // location:   "Meeting Room B"
-  // priority:   2
-  // objectId:   "558e20cbe4b060308e3eb36c"
-  // createdAt:  "2017-03-08T11:25:07.804Z"
-  // updatedAt:  "2017-03-08T11:25:07.804Z"
-  // ...
+#### Retrieving Properties
 
-}).catch(function(error) {
-  // Error handling
-  console.error(error);
-});
-```
+The following code shows how you can get the properties of a Todo object:
+
+{% block code_access_todo_folder_properties %}{% endblock %}
+
+Notice how special properties `{{objectIdName}}`, `{{createdAtName}}`, and `{{updatedAtName}}` are fetched in a different way.
+
+If you attempt to access a property that does not exist, the SDK will not throw an error but will return a null instead.
+
+#### Default Properties
+
+Each object stored in the cloud has three default properties: `{{objectIdName}}`, `{{createdAtName}}`, and `{{updatedAtName}}`.
+
+<dl>
+  <dt>`{{createdAtName}}`</dt>
+  <dd>The time when the object is first saved to the cloud. Once the time is generated, it will not be changed anymore.</dd>
+  <dt>`{{updatedAtName}}`</dt>
+  <dd>The last time when the object is updated.</dd>
+</dl>
+
+{{ data.localizedDates() }}
 
 #### Refreshing Objects
 
-If you need to refresh a local object with the latest version of it in the cloud, call the `fetch` method on it:
+When the same object is shared across multiple clients, you may refresh the version stored in any one of them to make sure that it is synchronized with the version in the cloud:
 
-```js
-var todo = AV.Object.createWithoutData('Todo', '5745557f71cfe40068c6abe0');
-todo.fetch().then(function (todo) {
-  // todo is refreshed
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+{% block code_object_fetch %}{% endblock %}
 
-Keep in mind that *any unsaved changes made to the object prior to calling `fetch` will be discarded*. To avoid this, you have the option to provide **a list of keys** to the `fetch` method so that only the fields being specified are retrieved and refreshed (including special built-in fields such as objectId, createdAt, and updatedAt). Changes made to other fields will remain intact.
+After the object is refreshed, its local `{{updatedAtName}}` property will be refreshed as well. The cloud wouldn't have the latest value of `{{updatedAtName}}` until the next save operation is done, thus some network bandwidth can be saved.
 
-```js
-todo.fetch({
-  keys: 'priority, location'
-}).then(function (todo) {
-  // Only priority and location will be retrieved and refreshed
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+#### Refreshing Specific Properties
 
-{# After the object is refreshed successfully, its `updatedAt` value will be updated on the client. The cloud won't have this new value until the next save or fetch happens, thus some network bandwidth can be saved out of it. #}
+Todo has 4 custom properties: `priority`, `content`, `location`, and `title`. The following code will refresh `priority` and `location` only:
 
-{# With that in mind, let's make it more fun. Let's build a new `AV.Object` locally from scratch with an objectId, and retrieve more field values associated with this object from the cloud without using `AV.Query`. #}
+{% block code_object_fetch_with_keys %}{% endblock %}
+
+Keep in mind that **refreshing will overwrite the local properties with those in the cloud**. Any unsaved changes made to the object prior to the operation will be discarded.
 
 ### Updating Objects
 
-To update an existing object, assign the new data to each field and call the `save` method. For example:
+{{productName}} determines whether an object should be created or updated based on <u>the existence of objectId</u>. If the objectId exists, the object associated with it will be updated, otherwise a new object will be created.
 
-```js
-var todo = AV.Object.createWithoutData('Todo', '5745557f71cfe40068c6abe0');
-todo.set('content', 'Weekly meeting has been rescheduled to Wed 3pm for this week.');
-todo.save();
-```
+If the `{{objectIdName}}` of an object is already known, you can construct `{{baseObjectName}}` locally for updating the object:
 
-LeanCloud automatically figures out which data has changed and only fields with changes will be sent to the cloud. The fields you didn't update will remain intact.
+{% block code_update_todo_content_with_objectId %}{% endblock %}
 
-You can also update objects with [CQL](cql-guide.html):
-
-```js
-AV.Query.doCloudQuery(
-  'update Todo set content="Weekly meeting has been rescheduled to Wed 3pm for this week." where objectId="5745557f71cfe40068c6abe0"'
-).then(function (data) {
-  var results = data.results;
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+The data in the cloud will be updated based on the last request sent to the cloud. Only fields with updates will be changed and those without updates will remain intact.
 
 #### Updating Data Conditionally
 
-By passing in a `query` option into the `save` method, you can specify conditions on the save operation so that the object can be updated atomically only when those conditions are met. Otherwise, the cloud will return error code **305** to indicate that there was no update taking place.
+Using `query` in [Saving Options](#saving-options) allows you to update an object based on certain conditions. Only when conditions are met will the object be updated.
 
-<a id="saveoption-query-example"></a>For example, in the Class "Account" there is a field called **balance**, and there are multiple incoming requests that will modify the balance. An account cannot have negative balance, so we can only allow a request to update the balance when the amount requested is lower than or equal to the balance.
+For example, the Class `Account` has a field named `balance` which multiple requests are updating at the same time. Since an account cannot have a negative balance, only when **balance >= the requested value** will the request take effect, otherwise "Insufficient balance. Operation failed!" will be printed.
 
-```js
-var Account = AV.Object.extend('Account');
-new AV.Query(Account).first().then(function(account) {
-  // Atomically decrease balance by 100
-  var amount = -100;
-  account.increment('balance', amount);
-  return account.save(null, {
-    // Add the condition
-    query: new AV.Query(Account).greaterThanOrEqualTo('balance', -amount),
+{% block code_saveoption_query_example %}{% endblock %}
 
-    // Return the latest data in the cloud upon completion.
-    // All the fields will be returned if the object is new,
-    // otherwise only fields with changes will be returned.
-    fetchWhenSave: true
-  });
-}).then(function(account) {
-  // Object updated
-  console.log('Balance: ', account.get('balance'));
-}).catch(function(error) {
-  if (error.code === 305) {
-    console.log('Insufficient balance. Operation failed!');
-  }
-});
-```
+#### Updating Objects with CQL
 
-*`query` option only works for existing objects.* In other words, it has no effect on objects that haven't been saved to the cloud yet.
+{{productName}} offers a method that allows you to update an object with the syntax similar to using UPDATE in SQL. The following code updates a TodoFolder object in the cloud:
 
-The benefit of using `query` option instead of `AV.Query` and `AV.Object` shows up when you have multiple clients trying to update the same value at the same time. The latter way could be cumbersome and may lead to potential problems.
+{% block code_update_object_by_cql %}{% endblock %}
 
-#### Counters
+#### Updating Counters
 
-Take Twitter as an example, we need to keep track of how many Likes and Retweets a tweet has gained so far. While a Like or Retweet action can be triggered simultaneously by multiple clients, using `save` can lead to inaccurate results. To make sure that the total number is stored correctly, LeanCloud allows you to **atomically** increase (or decrease) the value of a number field.
+This is one of the atomic operations supported by {{productName}}. It allows you to increase or decrease a field with number atomically. Take Twitter as an example, we need to keep track of how many Likes and Retweets a tweet has gained so far, but multiple Likes or Retweets can happen simultaneously since there are multiple clients. If each client reads the data it fetched from the cloud and then writes the updated data into the cloud, potential conflicts could occur which leads to inaccurate data. To solve the problem, atomic operations should be used for updating counters.
 
-```js
-var post = AV.Object.createWithoutData('Post', '57328ca079bc44005c2472d0');
-post.set('likes', 0);
-post.save().then(function (todo) {
-  post.increment('likes');
-  post.fetchWhenSave(true);
-  return post.save();
-}).then(function (post) {
-  // fetchWhenSave is enabled, so the latest value of 'likes' will be returned 
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+To keep track of the times a shared Todo is viewed, use the following code:
 
-You can also increase (or decrease) the value of a field by any amount by passing in a second argument to `increment`. When no amount is specified, 1 is used by default.
+{% block code_atomic_operation_increment %}{% endblock %}
 
-#### Arrays
+#### Updating Arrays
 
-There are three operations that can be used to atomically update an array associated with a given key:
+Updating array is also an atomic operation. The following operations allow you to update a field with array:
 
-- `add('arrayKey', value)`<br/>appends the given object to the end of an array field.
-- `addUnique('arrayKey', value)`<br/>adds the given object into an array field only if it isn't already contained in an it. The position of the insert is not guaranteed.
-- `remove('arrayKey', value)`<br/>removes all instances of the given object from an array field.
+- `{{baseObjectName}}.add('arrayKey', value)`<br/>appends the given object to the end of an array.
+- `{{baseObjectName}}.addUnique('arrayKey', value)`<br/>adds the given object into an array only if it is not in it. The position inserted is not guaranteed.
+- `{{baseObjectName}}.remove('arrayKey', value)`<br/>removes all instances of the given object from an array.
 
-For example, Todo has a field named **alarms** for keeping track of times at which a user wants to be alerted. The following code adds the times to the alarms field:
+For example, Todo has a field named `reminders` which is an array containing all the times when a user wants to be alerted. The following code adds 7:10, 7:20, and 7:30 into it:
 
-```js
-var alarm1 = new Date('2018-04-30T07:10:00');
-var alarm2 = new Date('2018-04-30T07:20:00');
-var alarm3 = new Date('2018-04-30T07:30:00');
+{% block code_set_array_value %}{% endblock %}
 
-var alarms = [alarm1, alarm2, alarm3];
+### Deleting Objects
 
-var todo = new AV.Object('Todo');
-todo.addUnique('alarms', alarms);
-todo.save().then(function (todo) {
-  console.log(todo.id);
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+The following code deletes a Todo object in the cloud:
 
-{# Note that it is not currently possible to atomically add and remove items from an array in the same save. You will have to call `save` in between every different kind of array operation. #}
-
-### Destroying Objects
-
-The following code deletes a Todo object from the cloud:
-
-```js
-var todo = AV.Object.createWithoutData('Todo', '57328ca079bc44005c2472d0');
-todo.destroy().then(function (success) {
-  // The object is successfully deleted
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
-
-You may also delete an object using [CQL](cql-guide.html):
-
-```js
-AV.Query.doCloudQuery('delete from Todo where objectId="558e20cbe4b060308e3eb36c"').then(function () {
-  // The object is successfully deleted
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
-
-You can delete a given field of an object with the `unset` method:
-
-```js
-var todo = AV.Object.createWithoutData('Todo', '57328ca079bc44005c2472d0');
-
-// The content field will be empty
-todo.unset('content');
-
-// Save the object to the cloud
-// If the object's field is an array, call save after every unset operation.
-todo.save();
-```
-
-{# Please note that use of `object.set(null)` to remove a field from an object is not recommended and will result in unexpected functionality. #}
+{% block code_delete_todo_by_objectId %}{% endblock %}
 
 {% call docs.alertWrap() %}
-Removing data from the cloud should always be dealt with great caution as it may lead to non-recoverable data loss. We strongly advise that you read [security oriented articles](#security-articles) to fully understand the risks. You should also consider implementing Class-level, Object-level, and Field-level permissions for your Classes in the cloud to guard against unauthorized data operations.
+Object deletion is a sensitive operation and the permission for deleting objects is turned off by default. See [ACL Guide](acl-guide.html) for more details.
 {% endcall %}
+
+#### Deleting Objects with CQL
+
+{{productName}} offers a method that allows you to delete an object with the syntax similar to using DELETE in SQL. The following code deletes a Todo object in the cloud:
+
+{% block code_delete_todo_by_cql %}{% endblock %}
 
 ### Batch Processing
 
 You can create, save, delete, or fetch multiple objects within a single request:
 
-```js
-// Create an array for storing AV.Objects
-var objects = [];
+{% block code_batch_operation %}{% endblock %}
 
-// Batch create/save
-AV.Object.saveAll(objects).then(function (objects) {
-  // Success
-}, function (error) {
-  // Error handling
-});
+Set all Todos to be completed:
 
-// Batch delete
-AV.Object.destroyAll(objects).then(function () {
-  // Success
-}, function (error) {
-  // Error handling
-});
-
-// Batch fetch
-AV.Object.fetchAll(objects).then(function (objects) {
-  // Success
-}, function (error) {
-  // Error handling
-});
-
-```
-
-The following code sets `isComplete` of all the todos to be `true`:
-
-```js
-var query = new AV.Query('Todo');
-query.find().then(function (todos) {
-  // Get a collection of todos to work on
-  todos.forEach(function(todo) {
-    // Update value
-    todo.set('isComplete', true);
-  });
-  // Save all at once
-  return AV.Object.saveAll(todos);
-}).then(function(todos) {
-  // Success
-}, function (error) {
-  // Error handling
-  console.error(error);
-});
-```
+{% block code_batch_set_todo_completed %}{% endblock %}
 
 `saveAll` and `fetchAll` send as many requests behind the scene as the number of objects in the collection, while `deleteAll` completes everything in a single network request. {# TODO: Please refer to the [Calculation of API Calls](faq.html#calculation-of-api-calls) for more details. #}
 
 ### Relational Data
 
+#### Pointers
+
+Now we have a public space where users can share their TodoFolders with others and those who see them can leave comments under them. Assuming there is a user who shared the list of games he wants to buy (his TodoFolder contains a list of game names), we can store likes and comments from other users within a Comment object:
+
+{% block code_pointer_comment_one_to_many_todoFolder %}{% endblock %}
+
+##### Retrieving Objects in Pointers
+
+With TodoFolder as a Pointer property of Todo, we can retrieve the TodoFolder together with Todo using the following code:
+
+{% block code_pointer_include_todoFolder %}{% endblock %}
+
+#### GeoPoints
+
+{{productName}} uses `{{geoPointObjectName}}` for storing and querying geographical locations.
+
+The code below creates `{{geoPointObjectName}}` with 39.9 as latitude and 116.4 as longitude (LeanCloud Beijing Office):
+
+{% block code_create_geoPoint %}{% endblock %}
+
+The code below assigns a GeoPoint to a Todo reflecting the location the Todo is created:
+
+{% block code_use_geoPoint %}{% endblock %}
+
+See also [Queries on GeoPoints](#queries-on-geopoints).
+
+### Data Models
+
 Objects may have relationships with other objects. For example, in a blogging application, a Post object may have many Comment objects. LeanCloud supports three kinds of relationships, including one-to-one, one-to-many, and many-to-many.
 
 #### One-to-One and One-to-Many Relationships
 
-One-to-one and one-to-many relationships are modeled by saving an `AV.Object` as a value in the other object. For example, each Comment in a blogging app might correspond to one Post.
+One-to-one and one-to-many relationships are modeled by saving `{{baseObjectName}}` as a value in the other object. For example, each Comment in a blogging app might correspond to one Post.
 
 The following code creates a new Post with a single Comment:
 
 ```js
 // Declare classes
-var Post    = AV.Object.extend('Post');
-var Comment = AV.Object.extend('Comment');
+var Post    = {{baseObjectName}}.extend('Post');
+var Comment = {{baseObjectName}}.extend('Comment');
 
 // Create a post
 var post = new Post();
@@ -656,14 +398,14 @@ post.id = '5aedba542f301e437093bda5';
 comment.set('parent', post);
 ```
 
-When an object is fetched, the related AV.Objects of it will not be fetched unless they are explicitly specified:
+When an object is fetched, the related {{baseObjectName}}s of it will not be fetched unless they are explicitly specified:
 
 ```js
 var commentQuery = new AV.Query('Comment');
-commentQuery.first().then(function(comment) {
+commentQuery.first().then(function (comment) {
   var parentPost = comment.get('parent');
   parentPost.fetch({
-    success: function(post) {
+    success: function (post) {
       var title = post.get('title');
     }
   });
@@ -674,1756 +416,1479 @@ More examples can be found in the [Query](#relational-queries) portion of this g
 
 #### Many-to-Many Relationships
 
-The easiest way to model many-to-many relationships is to use Arrays. In most cases, using Arrays is the easiest way that allows you to reduce the number of queries you need to make and leads to a better performance. However, if additional properties need to be attached to the relationships between two Classes, using Join Tables would be a better choice. Keep in mind that the additional properties are used to describe the relationships between Classes rather than any single Class.
+The easiest way to model many-to-many relationships is to use Arrays. In most cases, using Arrays helps you reduce the number of queries you need to make and leads to a better performance. However, if additional properties need to be attached to the relationships between two Classes, using Join Tables would be a better choice. Keep in mind that the additional properties are used to describe the relationships between Classes rather than any single Class.
 
-It's always advisable to use Join Tables if the total amount of objects of any given Class exceeds 100.
-
-> Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](data-modeling.html) in greater detail, which we highly recommend you reading.
-
-## Queries
-
-We've already seen how an `AV.Query` with `get` can retrieve a single `AV.Object` from the cloud. There are many other ways to retrieve data with `AV.Query` - you can retrieve many objects at once, put conditions on the objects you wish to retrieve, and more.
-
-{# Before you continue, familiarize yourself with the models that are used in this guide. #}
-
-### Basic Queries
-
-In many cases, `get` isn't powerful enough to specify which objects you want to retrieve. `AV.Query` offers different ways to retrieve a list of objects rather than just a single object.
-
-The general pattern is to create an  `AV.Object`, put conditions on it, and then retrieve an array of matching AV.Objects using `find`. For example, to retrieve students who share the same last name, use the `equalTo` method to constrain the value for a key.
-
-```js
-var Student = AV.Object.extend('Student');
-var query = new AV.Query(Student);
-query.equalTo('lastname', 'Smith');
-query.find().then(function(results) {
-  alert('Successfully retrieved ' + results.length + ' records.');
-}).catch(function(error) {
-  alert('Error: ' + error.code + ' ' + error.message);
-});
-```
-
-### Query Constraints
-
-There are several ways to put constraints on the objects found by an `AV.Query`. You can filter out objects with a particular key-value pair with `notEqualTo`:
-
-```js
-query.notEqualTo('firstname', 'Jack');
-```
-
-You can give multiple constraints, and objects will only be in the results if they match all of the constraints. In other words, it's like an **AND** of constraints.
-
-```js
-query.equalTo('firstname', 'Jack');
-query.greaterThan('age', 18);
-```
-
-The code above can be rewritten in [CQL](#queries-using-cql) syntax as follows:
-
-```js
-var cql = 'select * from Student where firstname = "Jack" and age > 18';
-AV.Query.doCloudQuery(cql).then(function (data) {
-  var results = data.results;
-}, function (error) {
-});
-```
-
-You can limit the number of results by setting `limit`. By default, results are limited to 100.
-
-```js
-query.limit(10); // limit to at most 10 results
-```
-{% call docs.noteWrap() %}
-For performance reasons, the maximum limit allowed is 1,000, meaning LeanCloud would return just 1,000 results even if the limit was set to a value greater than 1,000.
-{% endcall %}
-
-If you want exactly one result, a more convenient alternative may be to use `first` rather than the combination of `find` and `limit`.
-
-```js
-var query = new AV.Query('Todo');
-query.equalTo('priority', 2);
-query.first().then(function (results) {
-  // Successfully retrieved the object.
-}, function (error) {
-
-});
-```
-
-You can skip the first results by setting `skip`:
-
-```js
-query.skip(10); // skip the first 10 results
-```
-
-When used together with `limit`, you can gradually load data from the cloud to meet your  pagination requirements.
-
-```
-var query = new AV.Query('Todo');
-var now   = new Date();
-query.lessThanOrEqualTo('updatedAt', now);
-query.limit(10); // return 10 records
-query.skip(20); // skip first 20 records
-```
-
-But in reality, the higher the `skip` goes, the slower the query will run. You may consider using `createdAt` or `updatedAt` to set the range boundaries. They are indexed so they are efficient for large datasets. {# , or using the last value returned from an auto-increment field along with `limit` for the purpose of pagination #} 
-
-For sortable types like numbers and strings, you can control the order in which results are returned:
-
-```js
-// Sorts the results in ascending order by the createdAt property
-query.ascending('createdAt');
-
-// Sorts the results in descending order by the createdAt property
-query.descending('createdAt');
-```
-
-You can use `addAscending` or `addDescending` to add more fields in the order you want the results to be sorted. 
-
-```js
-// sort on priority first, then createdAt
-var query = new AV.Query('Todo');
-query.addAscending('priority');
-query.addDescending('createdAt');
-```
-
-For sortable types, you can also use comparisons in queries:
-
-```js
-// Restricts to age < 18
-query.lessThan('age', 18);
-
-// Restricts to age <= 18
-query.lessThanOrEqualTo('age', 18);
-
-// Restricts to age > 18
-query.greaterThan('age', 18);
-
-// Restricts to age >= 18
-query.greaterThanOrEqualTo('age', 18);
-```
-
-If you want to retrieve objects that have a particular key set, you can use `exists`. Or use `doesNotExist` for the opposite.
-
-```js
-// Finds objects that have the 'image' set
-query.exists('image');
-
-// Finds objects that don't have the 'image' set
-query.doesNotExist('image');
-```
-
-You can use the `matchesKeyInQuery` method to get objects where a key matches the value of a key in a set of objects resulting from another query. For example, if you have a class named Country containing countries and languages and you store a student's nationality in the Student class, you want to find students who are from English-speaking countries.
-
-country | language
----|---
-UK  | English
-US | English
-China | Chinese
-
-fullname | nationality
----|---
-John Doe | US
-Tom Sawyer  | UK
-Ming Li | China
-
-The query would look like:
-
-```js
-var studentQuery = new AV.Query('Student');
-var countryQuery = new AV.Query('Country')
-// get all English-speaking countries
-countryQuery.equalTo('language', 'English')
-// match Student's nationality with Country's country
-studentQuery.matchesKeyInQuery('nationality', 'country', countryQuery)
-studentQuery.find().then(function (results) {
-  console.log(results)
-  // John Doe & Tom Sawyer are returned
-})
-```
-
-You can restrict the fields returned by calling `select` with a list of keys. To retrieve todos that contain only the *title* and *priority* fields (and also special built-in fields such as objectId, createdAt, and updatedAt):
-
-```js
-var query = new AV.Query('Todo');
-query.select(['title', 'priority']);
-query.find().then(function(results) {
-  // each of results will only have the selected fields available.
-});
-```
-
-The remaining fields can be fetched later by calling `fetch` on the returned objects:
-
-```js
-query.first().then(function(results) {
-  // only the selected fields of the object will now be available here.
-  return results.fetch();
-}).then(function(results) {
-  // all fields of the object will now be available here.
-});
-```
-
-### Queries on String Values
-
-Use `startsWith` to restrict to string values that start with a particular string. Similar to a SQL `LIKE` operator, it is indexed so it is efficient for large datasets.
-
-{# {% block code_query_whereHasPrefix %}{% endblock %} #}
-```js
-var query = new AV.Query('Todo');
-// SQL equivalent: title LIKE 'lunch%' 
-query.startsWith('title', 'lunch');
-```
-
-Use `contains` to restrict to string values that contain a particular string.
-
-```js
-// SQL equivalent: title LIKE '%lunch%'
-query.contains('title', 'lunch');
-```
-Unlike `startsWith`, `contains` can't take advantage of indexes, so it's preferable to avoid using it against a large dataset.
+We recommend you to use Join Tables if the total amount of objects of any Class exceeds 100.
 
 {% call docs.noteWrap() %}
-Please note that both `startsWith` and `contains` perform **case-sensitive** matching so the above examples will not match string values that have *"Lunch"* or *"LUNCH"* in them.
+Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](data-modeling.html) in greater detail, which we highly recommend you reading.
 {% endcall %}
 
-If you are looking for string values that do not contain a particular string, you may use `matches` with regular expression.
+### Data Protocol
 
-<pre><code class="lang-js">var query = new AV.Query('Todo');
-// 'title' not containing the word 'ticket' case-insensitive
-var regExp = new RegExp('{{ data.regex(true) | safe }}, 'i');
-query.matches('title', regExp);
-</code></pre>
-{# 2016-12-29 DO NOT USE markdown to rewrite the previous block #}
+You might be wondering how types of data sent from clients are identified by the cloud. Here we are going to introduce the data protocol used by {{productName}}.
 
-However, queries that have regular expression constraints are very expensive, especially for classes with over 100,000 records. {# LeanCloud restricts how many such operations can be run on a particular app at any given time. #} It is because such queries can't take advantage of indexes, they end up with a full scan of the whole dataset to find matches. You may take a look at our [In-App Search](#in-app-search) feature, a full-text search solution we provide to improve your app's searching ability and user experience.   
+Let's take a date as an example. In {{platform_name}}, the default type of date is `{{dateType}}`. The following code sets a property of `{{baseObjectName}}` to be `{{dateType}}` and saves the object to the cloud:
 
-> If you are facing performance issues with queries, please refer to the [Performance](#performance) section in this guide for possible workarounds and best practices.
+{% block code_data_protocol_save_date %}{% endblock %}
 
-### Queries on Array Values
+Before {{sdk_name}} saves the object to the cloud, it automatically serializes the data by converting `{{dateType}}` to the following format:
 
-For keys with an array type, you can find objects where the key's array value contains 2 by:
-
-```js
-query.equalTo('arrayKey', 2);
+```json
+{
+  "__type": "Date",
+  "iso": "2015-11-21T18:02:52.249Z"
+}
 ```
 
-You can also find objects where the key's array value contains each of the elements 2, 3, and 4 with the following:
+After the cloud receives the data, it automatically deserializes it so that the data could be identified as a date. The table below shows the serialized formats of some types of data:
 
-```js
-query.containsAll('arrayKey', [2, 3, 4]);
-```
-
-If you want to retrieve objects matching any of the values in a list of values, you can use `containedIn`, providing an
-array of acceptable values. This is often useful to replace multiple queries with a single query. For example, if you
-want to retrieve todo items of priority 1 or 2:
-
-```js
-// single query
-query.containedIn('priority', [1, 2]);
-// mission completed :)
-
-// ----------------
-// vs. multiple queries
-// ----------------
-var priorityOne = new AV.Query('Todo');
-priorityOne.equalTo('priority', 1);
-
-var priorityTwo = new AV.Query('Todo');
-priorityTwo.equalTo('priority', 2);
-
-var priorityOneOrTwo = AV.Query.or(
-priorityOne,
-priorityTwo
-);
-priorityOneOrTwo.find().then(function(results){
-
-})
-// kind of verbose :(
-```
-
-Conversely, if you want to retrieve objects that do not match any of several values you can use `notContainedIn`,
-providing an array of acceptable values.
-
-### Relational Queries
-
-There are several ways to issue queries for relational data. If you want to retrieve objects where a field matches a particular `AV.Object`, you can use `equalTo` just like for other data types. For example, if each Comment has a Post object in its *post* field, you can fetch comments for a particular Post:
-
-```js
-// Assume AV.Object post was previously created.
-var query = new AV.Query('Comment');
-query.equalTo('post', post);
-query.find({
-  success: function(comments) {
-    // comments now contains the comments for the post
-  }
-});
-```
-
-If you want to retrieve objects where a field contains an `AV.Object` that matches a different query, you can use `matchesQuery`. In order to find comments for posts containing images, you can do:
-
-```
-var Post    = AV.Object.extend('Post');
-var Comment = AV.Object.extend('Comment');
-
-var innerQuery = new AV.Query(Post);
-innerQuery.exists('image');
-
-var query = new AV.Query(Comment);
-query.matchesQuery('post', innerQuery);
-query.find({
-  success: function(comments) {
-    // comments now contains the comments for posts with images.
-  }
-});
-```
-
-{# method | SQL equivalent
+Type | Serialized Format
 ---|---
-A.`matchesQuery`(KEY, B) | `A inner join B ON A.KEY.objectId = B.objectId`
-A.`matchesKeyInQuery`(KEY1, KEY2, B) | `A inner join B ON A.KEY1 = B.KEY2` #}
-
-
-**Caveats about inner query:** 
-
-Please bear in mind that the inner query is treated as a normal query, so the default limit of 100 and the maximum limit of 1,000 still apply. Plus the outer query will return nothing if the inner query returns no matches, resembling the behavior of SQL's INNER JOIN. Thus, there's a catch you need to pay attention to. 
-
-Let's say you didn't specify `limit` on your inner query, and the inner query matched 200 records but only returned 100 of them by default to the outer query. Of those 100, none of them are contained in the outer query. So you could end up with nothing when you were supposed to get something.
-
-To avoid such side effect of using inner query, we suggest you take one of the following remedies:
-
-- Apply constraints to the inner query to keep the number of matches under 100. If it is not possible, always specify the `limit 1000` constraint.
-- Create redundant fields that were previously used as constraints on the inner query for the objects that the outer query touches, which eliminates the need for using the inner query. 
-- Run the query multiple times by using `skip` on the inner query. Technically you can iterate through all the matches the inner query returns. However, as the `skip` value gets bigger, performance issue may arise. Therefore we don't vote for taking this approach for large dataset.
-
-If you want to retrieve objects where a field contains an `AV.Object` that does not match a different query, you can use `doesNotMatchQuery`.
-
-You can also do relational queries by `objectId`:
-
-```
-var post = AV.Object.createWithoutData('Post', '57328ca079bc44005c2472d0');
-var query = new AV.Query('Comment')
-query.equalTo('post', post);
-```
-
-In some situations, you want to return multiple types of related objects in one query. You can do this with the `include` method. For example, let's say you are retrieving the last ten comments, and you want to retrieve their related posts at the same time:
-
-```js
-var query = new AV.Query('Comment');
-
-// retrieve the most recent ones
-query.descending('createdAt');
-
-// only retrieve the last ten
-query.limit(10);
-
-// include the post data with each comment
-query.include('post');
-
-query.find({
-  success: function(comments) {
-    // comments now contains the last ten comments, and the "post" field
-    // has been populated. For example:
-    for (var i = 0; i < comments.length; i++) {
-      // This does not require a network access.
-      var post = comments[i].get('post');
-    }
-  }
-});
-```
-
-You can also do multi-level includes using dot notation. If you wanted to include the post for a comment and the post's author as well you can do:
-
-```
-query.include(["post.author"]);
-```
-
-You can issue a query with multiple fields included by calling `include` multiple times. This functionality also works with `AV.Query` helpers like `first` and `get`.
-
-{{ docs.note("However, multi-level includes won't work with any field that stores **an Array of AV.Objects**. In that case, only the parent level is permitted.") }}
-
-You can also use dot notation with the `select` method to limit the fields returned from the related objects:
-
-```js
-query.select(['post.author.firstname']);
-```
-
-### Counting Objects
-
-If you just need to count how many objects match a query, but you do not need to retrieve all the objects that match, you can use `count` instead of `find`. For example, to count how many todos have been completed:
-
-```js
-var query = new AV.Query('Todo');
-query.equalTo('isComplete', true);
-query.count().then(function (count) {
-  console.log(count);
-}, function (error) {
-});
-```
-
-### Compound Queries
-
-For more complex queries you might need compound queries. A compound query is a logical combination (e. g. "AND" or "OR") of subqueries.
-
-{% call docs.noteWrap() %}
-Note that we do not support GeoPoint or non-filtering constraints (e.g. `near`, `withinGeoBox`, `limit`, `skip`, `ascending`, `descending`, `include`) in the subqueries of the compound query.
-{% endcall %}
-
-#### OR-ed Query Constraints
-
-If you want to find objects that match one of several queries, you can use `AV.Query.or` method to construct a query that is an OR of the queries passed in. For instance if you want to find todos either created today or completed today, you can do:
-
-```js
-var today    = new Date('2018-04-30')
-var tomorrow = new Date('2018-05-01')
-
-var createdTodayQuery = new AV.Query('Todo');
-createdTodayQuery.greaterThanOrEqualTo('createdAt', today);
-createdTodayQuery.lessThan('createdAt', tomorrow);
-
-var completedTodayQuery = new AV.Query('Todo');
-completedTodayQuery.equalTo('isComplete', true);
-completedTodayQuery.greaterThanOrEqualTo('updatedAt', today);
-completedTodayQuery.lessThan('updatedAt', tomorrow);
-
-var query = AV.Query.or(createdTodayQuery, completedTodayQuery)
-query.find().then(function (results) {
-  console.log(results)
-});
-```
-
-Please note that no geo-queries are allowed inside compound OR queries.
-
-#### AND-ed Query Constraints
-
-If you want to find objects that match all conditions, you normally would use just one query. You can add additional constraints to the newly created `AV.Query` that act as an AND operator.
-
-```js
-// get all todos created in April and also completed
-var query = new AV.Query('Todo');
-query.greaterThanOrEqualTo('createdAt', new Date('2018-04-01'));
-query.lessThan('createdAt', new Date('2018-05-01'));
-query.equalTo('isComplete', true)
-query.find().then(function(results){
-  // get results
-})
-```
-Sometimes the world is more complex than this simple example and you may need a compound query of subqueries. You can use `AV.Query.and` method to construct a query that is an AND of the queries passed in. For instance if you want to find todos created today that either have no location set or are of priority 3, you can do:
-
-```js
-var createdTodayQuery = new AV.Query('Todo');
-createdTodayQuery.greaterThanOrEqualTo('createdAt', new Date('2018-04-30'));
-createdTodayQuery.lessThan('createdAt', new Date('2018-05-01'));
-
-var noLocationQuery = new AV.Query('Todo');
-noLocationQuery.doesNotExist('location')
-
-var priority3Query = new AV.Query('Todo');
-priority3Query.equalTo('priority', 3);
-
-var query = AV.Query.and(
-  createdTodayQuery,
-  AV.Query.or(
-    noLocationQuery,
-    priority3Query
-  )
-)
-query.find().then(function(results){
-  // get results
-})
-```
-
-{# 
-### Aggregate
-### Distinct
-#}
-
-{% block text_query_cache_intro %}
-### 缓存查询
-缓存一些查询的结果到磁盘上，这可以让你在离线的时候，或者应用刚启动，网络请求还没有足够时间完成的时候可以展现一些数据给用户。当缓存占用了太多空间的时候，Cloud storage 会自动清空缓存。
-
-默认情况下的查询不会使用缓存，除非你调用接口明确设置启用。例如，尝试从网络请求，如果网络不可用则从缓存数据中获取，可以这样设置：
-
-{% block code_set_cache_policy %}{% endblock %}
-
-#### 缓存策略
-为了满足多变的需求，SDK 默认提供了以下几种缓存策略：
-
-{% block table_cache_policy %}{% endblock %}
-
-#### 缓存相关的操作
-{% block code_cache_operation %}{% endblock %}
-
-{% endblock %}
-
-{# ### Performance
- 
-影响查询性能的因素很多。特别是当查询结果的数量超过 10 万，查询性能可能会显著下降或出现瓶颈。以下列举一些容易降低性能的查询方式，开发者可以据此进行有针对性的调整和优化，或尽量避免使用。
-
-- 不等于和不包含查询（无法使用索引）
-- 通配符在前面的字符串查询（无法使用索引）
-- 有条件的 count（需要扫描所有数据）
-- skip 跳过较多的行数（相当于需要先查出被跳过的那些行）
-- 无索引的排序（另外除非复合索引同时覆盖了查询和排序，否则只有其中一个能使用索引）
-- 无索引的查询（另外除非复合索引同时覆盖了所有条件，否则未覆盖到的条件无法使用索引，如果未覆盖的条件区分度较低将会扫描较多的数据） #}
-
-## Live Queries
-
-A live query is, as its name implies, derived from a normal [`AV.Query`](#queries) but with enhanced capability. It allows you to automatically synchronize data changes from one client to other clients without writing complex code, making it suitable for apps that need real-time support.
-
-Suppose you are building an app that allows multiple users to edit the same file at the same time. `AV.Query` would not be an ideal tool since it is based on a pull model and you can not know when to query from the cloud to get the updates.
-
-To solve this problem, we introduce LiveQuery. This tool allows you to subscribe to an `AV.Query` you are interested in. Once subscribed, the cloud will notify clients by generating the event messages whenever an `AV.Object` that matches the `AV.Query` is created or updated, in real-time.
-
-Behind the scene, we use WebSocket connections to communicate with the cloud and maintain the subscription status of clients. We think in most cases it isn't necessary to deal with the WebSocket connection directly. Thus, we developed a simple API to let you focus on your own business logic.
-
-Starting from Android SDK v4.2.0, JavaScript SDK v3.0.0 and iOS SDK v5.0.0, LiveQuery is supported through [additional SDK setup](#setup-livequery).
-
-LiveQuery has both free and paid plans. Check out [the pricing page](https://leancloud.cn/pricing/) to learn about your free quota and options.
-
-### Initializing LiveQuery
-
-To use LiveQuery, you first need to include its dependencies in your app's project. Please refer to the [SDK Setup](#setup-livequery) section for more instructions.
-
-### Demo
-
-A demo is worth a thousand words. We developed a WeChat mini-program and a web application with the same functionalities, aiming to demonstrate how data gets updated on both ends in real-time. 
-
-{# 2017-06-09 this video is over-sized, put it on qiniu instead of hosting it locally for better performance #}
-<div style="border:2px solid #ccc; margin-bottom:1em;">
-  <video src="https://lc-lhzo7z96.cn-n1.lcfile.com/1496988080458" controls autoplay muted preload="auto" width="100%" height="100%" >
-HTML5 Video is required for this demo, which your browser doesn't support.
-  </video>
-</div>
-
-Please follow the steps in the exact order listed below. *Otherwise you may not be able to log in to the web version of LeanTodo for testing*.
-
-1. Open WeChat, scan the QR code below to install the "LeanTodo" mini-program.<br/>
-  <img src="images/leantodo-weapp-qr.png" width="150" height="150"> 
-1. Open LeanTodo mini-program, click on **Settings** > **Account Settings** on the bottom left corner of the screen, then update your username and password and remember it.
-1. In your web browser, go to <https://leancloud.github.io/leantodo-vue/> and sign in with the account you just set in the previous step.
-1. Enter some data and observe how changes get reflected in the mini-program.
-
-> You may also be interested in watching the LeanCloud Open Course video - *[LiveQuery (Chinese)](http://www.bilibili.com/video/av11291992/)* to make yourself familiar with the basics of the tool.
-
-### Creating a Subscription
-
-To make a query *live*, you just create a normal `AV.Query` object, put conditions on it if there are, and then subscribe to it.
-
-```js
-var query = new AV.Query('Employee');
-query.subscribe().then(function(liveQuery){
-  // query has got a subscription and now becomes live
-});
-```
-
-After that, you can use it to receive the updates of the related `AV.Object`. For example, if someone creates an `Employee` object whose `first_name` field is *Kelly*, then you can get the new `Employee` object like this:
-
-```js
-var query = new AV.Query('Employee');
-query.subscribe().then(function(liveQuery){
-  liveQuery.on('create', function(newEmployee){
-    console.log(newEmployee.get('first_name')); // This should output Kelly
-  });
-});
-```
-
-If someone updates this `Employee` object like changing its `team` to *Finance*, then you can get the `Employee` object like this:
-
-```js
-liveQuery.on('update', function(updatedEmployee, updatedKeys){
-  console.log(updatedEmployee.get('team')); // This should output Finance
-});
-```
-
-### Event Handling
-
-We define several types of events you'll get through a live query object:
-
-- `create`
-- `update`
-- `enter`
-- `leave`
-- `delete`
-- `login`
-
-#### `create` Event
-
-```js
-liveQuery.on('create', function(obj){
-  console.log('object created');
-});
-```
-
-When a new `AV.Object` is created and it fulfills the `AV.Query` you subscribe, you'll get this event. The obj is the `AV.Object` which was created.
-
-#### `update` Event
-
-```js
-liveQuery.on('create', function(obj, updatedKeys){
-  console.log('object updated');
-});
-```
-When an existing `AV.Object` which fulfills the `AV.Query` you subscribe is updated (The `AV.Object` fulfills the `AV.Query` before and after changes), you'll get this event. The obj is the `AV.Object` which was updated. Its content is the latest value of the `AV.Object`.
-
-#### `enter` Event
-
-```js
-liveQuery.on('enter', function(obj, updatedKeys){
-  console.log('object entered');
-});
-```
-
-When an existing AV.Object's old value does not fulfill the `AV.Query` but its new value fulfills the `AV.Query`, you'll get this event. The obj is the `AV.Object` which enters the `AV.Query`. Its content is the latest value of the `AV.Object`.
-
-{{ docs.note("There is a clear distinction between a `create` event and an `enter` event. If the object already exists and now matches the query's conditions, the system emits an `enter` event. If not, it's a `create` event.") }}
-
-#### `leave` Event
-
-```js
-liveQuery.on('leave', function(obj, updatedKeys){
-  console.log('object left');
-});
-```
-
-When an existing AV.Object's old value fulfills the `AV.Query` but its new value doesn't fulfill the `AV.Query`, you'll get this event. The obj is the `AV.Object` which leaves the `AV.Query`. Its content is the latest value of the `AV.Object`.
-
-#### `delete` Event
-
-```js
-// delete an object from another client
-// var todo = new AV.Object.createWithoutData('Todo','591d9b302f301e006be22c83');
-// todo.destroy();
-
-liveQuery.on('delete', function(obj, updatedKeys){
-  console.log('object deleted');
-});
-```
-
-When an existing `AV.Object` which fulfills the `AV.Query` is deleted, you'll get this event. The obj is the `AV.Object` which is deleted.
-
-#### `login` Event
-
-```js
-liveQuery.on('login', function(obj){
-  console.log('user logged in');
-});
-```
-
-When an `AV.User` successfully logs in to your app, you'll get this event. The obj is the `AV.User` which is logged in.
-
-
-### Unsubscribe
-
-If you would like to stop receiving events from a `AV.Query`, you can just unsubscribe the subscription. After that, you won't get any events from the subscription object.
-
-```js
-liveQuery.unsubscribe();
-```
-
-### Caveats
-
-Given the real-time feature of LiveQuery, developers may find it tempting to use it for instant messaging. As LiveQuery is neither designed nor optimized for completing such tasks, we discourage such use of this tool, let alone there will be additional cost for saving message history and rising challenges of code maintenance. We recommend using [our real-time messaging solution](https://leancloud.cn/rtm/) for this scenario.
+`{{dateType}}` | `{"__type": "Date", "iso": "2015-11-21T18:02:52.249Z"}`
+`{{byteType}}` | `{"__type": "Bytes", "base64": "utf-8-encoded-string"}`
+`Pointer` | `{"__type": "Pointer", "className": "Todo", "objectId": "55a39634e4b0ed48f0c1845c"}`
+`{{relationObjectName}}` | `{"__type": "Relation", "className": "Todo"}`
 
 ## Files
 
-`AV.File` lets you store application files in the cloud that would otherwise be too large or cumbersome to fit into a regular `AV.Object`. The most common use case is storing images, but you can also use it for documents, videos, music, and any other binary data.
+Beside objects mentioned above, files like images, music, and videos can be stored as well. Some developers also choose to serialize complicated objects into JSON or XML and store them as files. File storage in {{productName}} is encapsulated into `{{fileObjectName}}` which offers operations including file upload and file download.
 
-### Creating an AV.File
+### Uploading Files
 
-There are a couple of ways to create a file. The first is with a base64-encoded String.
+By uploading a file, you store it into the cloud and get a URL pointing to it.
 
-```js
-var base64Data = 'Q3VyaW9zaXR5IGtpbGxlZCB0aGUgY2F0IQ==';
-var file = new AV.File('resume.txt', {
-  base64: base64Data
-});
-```
+A new entry will be generated in the `_File` table after a file is uploaded. **You cannot modify the entry after it has been generated**, including data in [metaData field](#file-metadata). If you need to change the file, you have to upload the modified file again and a new id and URL will be generated.
 
-Alternatively, you can create a file from an array of byte values:
+The entry can be deleted only if the [delete permission](#deleting-files) of `_File` is enabled.
 
-```js
-var bytes = [0x6f, 0x2c, 0x20, 0x77];
-var file = new AV.File('file.txt', bytes);
-```
+#### Creating Files from Data Streams
 
-It is also possible to create a file from a URL:
+`{{fileObjectName}}` supports files with common types like images, videos, and music, including any binary data. The following code constructs a file by taking in a data stream:
 
-```js
-var file = AV.File.withURL(
-  'avatar.jpg',
-  'http://ww3.sinaimg.cn/bmiddle/596b0666gw1ed70eavm5tg20bq06m7wi.jpg'
-);
-```
+{% block code_create_avfile_by_stream_data %}{% endblock %}
 
-With the `withURL` method, the SDK will not retrieve the file data from the URL but simply save the URL string to the cloud. So there won't be any upload traffic going on as opposed to a file being created otherwise, a copy of which will actually be kept in the cloud.
+The file is named `resume.txt`. Keep in mind that:
 
-LeanCloud will auto-detect the type of file you are uploading based on the file extension, but you can specify the **Content-Type** (commonly referred to as MIME type) with a third parameter:
+- Each file being uploaded will get its unique ID, so it is allowed for multiple files to share the same name.
+- A correct extension needs to be assigned to each file which the cloud will use to infer the type of a file. For example, if you are storing a PNG picture with `{{fileObjectName}}`, use `.png` as its extension.
 
-```js
-var file = new AV.File(
-  'newFile.zzz', 
-  fileData,
-  // Content-Type
-  'image/png'
-);
-```
+#### Creating Files from Local Paths
 
-But most commonly for HTML5 apps, you'll want to use an HTML form with a file upload control. Create a file `input` tag which allows the user to pick a file from their local drive to upload:
+Many apps interact with file systems of devices and the most common interaction is to read local files. The following code creates `{{fileObjectName}}` from a local file:
 
-```html
-<input type="file" id="photoFileUpload" />
-```
+{% block code_create_avfile_from_local_path %}{% endblock %}
 
-Then, in a click handler or other function, get a reference to that file:
+#### Creating Files from URLs
 
-```js
-var fileUploadControl = $('#photoFileUpload')[0];
-if (fileUploadControl.files.length > 0) {
-  var localFile = fileUploadControl.files[0];
-  var fileName = 'avatar.jpg';
+Many apps need to create files from URLs as well. The following code stores a image from the internet to the cloud:
 
-  var file = new AV.File(
-    fileName,
-    localFile
-  );
-}
-```
+{% block code_create_avfile_from_url %}{% endblock %}
 
-Notice in this example that we give the file a name of *avatar.jpg*. There are a couple of things to note here:
+[Creating Files from Local Paths](#creating-files-from-local-paths) will <u>lead to actual traffic for uploading files</u> and the files will be stored into the cloud. [Creating Files from URLs](#creating-files-from-urls) will not upload the actual files into the cloud but will store the addresses of the files as strings.
 
-- You don't need to worry about filename collisions. Each upload gets a unique identifier so there's no problem with uploading multiple files named *avatar.jpg*.
-- It's important that you give a name to the file that has a file extension. This lets LeanCloud figure out the file type and handle it accordingly. So, if you're storing PNG images, make sure your filename ends with *.png*.
-- If the file doesn't have a file extension and  no ContentType parameter is specified either, LeanCloud defaults to the type *application/octet-stream*.
+{% block text_upload_file %}{% endblock %}
 
-### Saving an AV.File
+#### Progress Listener
 
-Next you'll want to save the file up to the cloud. This can be done with the help of the `save` method. The SDK will upload the file to the cloud and return a dedicated URL for it.
+You can improve the user experience of uploading process by showing the progress of it:
 
-```js
-file.save().then(function(file) {
-  // The file has been saved to LeanCloud.
-  console.log(file);
-  // mime_type: "application/octet-stream"
-  // objectId:  "5aed9c7b7f6fd300387b480d"
-  // url:       "https://lc-tvO56WBF.cn-n1.lcfile.com/edfc48a5bd44ba441f9e"
-  // ... 
-  var originalFileName = file.get('name');
-}, function(error) {
-  // The file either could not be read, or could not be saved to LeanCloud.
-});
-```
+{% block code_upload_file_with_progress %}{% endblock %}
 
-{% call docs.noteWrap() %}
-When a file is successfully saved to the cloud, it can be found in the `_File` class, but cannot be modified thereafter by any means. If something about it must be changed, you need to upload the file again with correct data, and use the new id and the new URL returned from the cloud.
-{% endcall %}
+### Image Thumbnails
 
-Finally, after the save completes, you can associate an `AV.File` with an `AV.Object` just like any other piece of data:
+You can get the thumbnail of an image without downloading the entire file:
 
-```js
-var file = AV.File.withURL(
-  'cake-a.jpg',
-  'http://www.bakery.com/cake-a.jpg'
-);
-file.save().then(function(file){
-  var Todo = AV.Object.extend('Todo');
-  var todo = new Todo();
-  todo.set('title', 'get cakes');
-  // attachments is an Array field
-  todo.add('attachments', file);
-  todo.save();
-})
-```
-{# 2017-11-09 doesn't apply to swift, php, python #}
-{% if segment_code === 'objc' or segment_code === 'java' or segment_code === 'js' or segment_code === 'android' %}
+{% block code_file_image_thumbnail %}{% endblock %}
 
-On a related note, if the files are stored as an array of objects and you want to get them in one query, you need to use the `include` method with `AV.Query`. For example, let's say you are retrieving all the todos with the same title "get cakes", and you want to retrieve their related attachments at the same time:
+<div class="callout callout-info">Thumbnails cannot be generated for files larger than **20 MB**.</div>
 
-```js
-var query = new AV.Query('Todo');
-// get all todos with the same title
-query.equalTo('title', 'get cakes');
-query.exists('attachments');
-// include attachments data with each todo
-query.include('attachments');
-
-query.find().then(function (todos) {
-  todos.forEach(function (todo) {
-    // get attachments array for each todo
-    var attachments = todo.get('attachments');
-    attachments.forEach(function (attachment) {
-      // each attachment is an AV.File instance
-      if (attachment) {
-        console.log('attachment.url', attachment.get('url'));
-      }
-    })
-  })
-});
-```
-{% endif %}
-
-### Upload Progress
-
-While uploading, you can leverage the `onprogress` hook on the `save` method to do whatever you want with the upload progress event:
-
-```js
-file.save({
-  onprogress: function (event)  {
-    console.log(event)
-    // {
-    //   loaded:  1234,
-    //   total:   2468,
-    //   percent: 50
-    // }
-  }
-}).then(/* ... */);
-
-// Prior to SDK 2.0, the second parameter
-// of the save method cannot be omitted
-file.save({
-  onprogress: function(event) { 
-    console.log(event);
-  }
-}, {}).then(/* ... */);
-```
+<div class="callout callout-danger">Thumbnails are currently only available for apps in the North China region.</div>
 
 ### File Metadata
 
-When uploading a file, you can specify or retrieve metadata for that file using the `metaData` method. This metadata can contain additional properties you want to put on the file. However, once the upload completes, you cannot update the file any more including its metadata content.
+The `metaData` of `{{fileObjectName}}` can be used to store the metadata of this file object. metaData **cannot be modified** once stored to the cloud.
 
-```js
-// set metadata
-file.metaData('author', 'LeanCloud');
+{% block code_file_metadata %}{% endblock %}
 
-file.save().then(function(file){
-  // get all metadata 
-  var metadata = file.metaData();
-  // size won't be available for files created from base64 data or from URLs
-  var size     = file.size();
-  var fileName = file.get('name');
-  // get author
-  var author   = file.metaData('author');
-})
-```
+{# 2017-11-09 the following block doesn't apply to swift, php, python #}
+{% if segment_code === 'objc' or segment_code === 'java' or segment_code === 'js' or segment_code === 'android' %}
+### Referencing Files
 
-{% block text_download_file_with_progress %}
-### Retrieving File Contents/Download
+The following code creates a reference from AVObject's field to `AVFile` with `Pointer`:
 
-How to best retrieve the file contents back depends on the context of your application. Because of cross-domain request issues, it's best if you can make the browser do the work for you. Typically, that means rendering the file's URL into the DOM. Here we render an uploaded profile photo on a page with jQuery:
+{% block file_as_avatar %}{% endblock %}
 
-客户端 SDK 接口可以下载文件并把它缓存起来，只要文件的 URL 不变，那么一次下载成功之后，就不会再重复下载，目的是为了减少客户端的流量。
+Make sure to `include` the field when querying:
 
-{% block code_download_file %}{% endblock %}
-{% block text_download_progress %}请注意代码中**下载进度**数据的读取。{% endblock %}
+{% block query_file_as_avatar %}{% endblock %}
+{% endif %}
 
-{% endblock %}
+{% block text_file_query %}{% endblock %}
 
-### Image Thumbnail
+### Deleting Files
 
-You can get the thumbnail of an image file stored in the cloud using the `thumbnailURL` method.
+To delete a file in the cloud:
 
-```js
-// get thumbnail of 100px by 200px (width by height)
-var url = file.thumbnailURL(100, 200);
-```
+<div class="callout callout-danger">By default, a file is not allowed to be deleted. You can change the setting by going to [Dashboard > Data > **`_File`**](/data.html?appid={{appid}}#/_File) and select **Misc** > **Permission Settings** > **delete**.</div>
 
-Caveats:
-
-- Thumbnail cannot be generated for files exceeding **20 MB** in size. 
-- The Thumbnail feature is only available for apps created in the **North China** region.
-
-### Deleting an AV.File
-
-By default, you are not allowed to delete a file from the class `_File`. You need to turn on the *delete* permission in your app's [Dashboard > Data > `_File`](/data.html?appid={{appid}}#/_File) page, then you can use `destroy` method to remove a file from the cloud for good.
-
-```js
-// given that file's objectId is known
-var file = AV.File.createWithoutData('552e0a27e4b0643b709e891e');
-file.destroy().then(function (success) {
-  // destroyed
-}, function (error) {
-});
-```
-
-### Enabling HTTPS 
-
-If you demand that the files saved to the cloud should be accessed over HTTPS, there is a setting option named "Enable HTTPS domain" in [your LeanCloud Dashboard storage settings page](/dashboard/storage.html?appid={{appid}}#/storage/conf) that can, once enabled, instruct LeanCloud APIs to return HTTPS URLs where applicable. Subsequently, the cloud will automatically convert all the URLs in your app's `_File` Class to use HTTPS pattern.
-
-As use of HTTPS is not free, you will be prompted by the confirmation window stating how much it costs per GB downloaded upon checking this option.
-
-{% call docs.alertWrap() %}
-However, when you turn off the "Enable HTTPS domain" option, the cloud will NOT attempt to convert HTTPS URLs in the `_File` Class back to their HTTP equivalents. Your files can be accessed over both HTTP and HTTPS. So please be aware that you may still be charged for any HTTPS traffic incurred between your app and LeanCloud thereafter.
-{% endcall %}
-
-<a href="rtm-http-policy"></a>LeanCloud RTM (Real-time Messaging) Service also leverages AV.Files to store images and audio files that are sent through messages. The URLs referencing those files are kept in the message history, and will NOT be automatically converted to HTTPS ones after HTTPS domain is enabled. Only files in the new messages will take HTTPS.
-
-{# #### HTTP Support for iOS 9 and Up
-
-Starting iOS 9, Apple requires HTTPS connections for iOS apps and denies HTTP connections by default. All LeanCloud APIs supports HTTPS except for the `getData` method of `AV.File`.
-
-If your app still needs to make HTTP requests, such as when [accessing files in LeanCloud RTM that still reference to insecure domains](#rtm-http-policy), you should add those insecure domains to your project's `Info.plist`:   
-
-Right-click on `Info.plist`, choose **Opened As** > **Source Code**, append the following text to the nodes **plist** > **dict**:
-
-```xml
-<key>NSAppTransportSecurity</key>
-<dict>
-  <key>NSExceptionDomains</key>
-  <dict>
-    <!-- for US node, replace clouddn.com with amazonaws.com -->
-    <key>clouddn.com</key>
-    <dict>
-      <key>NSIncludesSubdomains</key>
-      <true/>
-      <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-      <true/>
-    </dict>
-  </dict>
-</dict>
-```
-Or go to your project's **Target** panel, open the **Info** tab and modify settings there as illustrated below:
-
-![](../images/ios_qiniu_http.png)
-
-#}
-
-### Setting Up Custom Domain
-
-By default AV.Files use a public domain for all the apps on LeanCloud so that files can be conveniently accessed by everyone.
-
-Yet under the regulation of the country's Cyber-security Law we cannot guarantee that the public domain can be at your service all the time without interruption. To minimize the risk and impact such service interruption may cause, we strongly advise you transition to using your own domain for file accessing as soon as possible. The domain configuration can be found in your app's [LeanCloud Dashboard > Storage > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) page.
-
-### CDN Support
-
-{{ data.cdn() }}
-
+{% block code_file_delete %}{% endblock %}
 
 {% block code_cache_operations_file %}{% endblock %}
 
-{% block text_https_access_for_ios9 %}{% endblock %}
+### Enabling HTTPS
 
-## Promises
+If you demand that the files in the cloud should be accessed through HTTPS, check on **Enable HTTPS domain** in [Dashboard > Data > Settings > Files](/dashboard/storage.html?appid={{appid}}#/storage/conf). There is no free quota on using HTTPS for files and you will see the pricing once the function is enabled.
 
-In addition to callbacks, every asynchronous method in the LeanCloud JavaScript SDK returns a [`Promise`](http://wiki.commonjs.org/wiki/Promises/A). With promises, your code can be much cleaner than the nested code you get with callbacks.
+{{ docs.alert("By enabling HTTPS, whether the URLs of the files returned by API use HTTPS or HTTP will be affected. Keep in mind that even the function is not enabled, the clients can still access files with HTTPS URLs which will lead to additional expenditure.") }}
 
-For example, consider saving an `AV.Object`, which is an asynchronous operation. In the old callback paradigm, your code would look like this:
+After enabling HTTPS, the URLs of the files previously stored in the `_File` table will be converted to HTTPS. If you disable the function, the URLs being converted will not change back.
+
+LeanCloud RTM stores files sent through messages with `AVFile` and the URLs of the files will be included in the messages. After HTTPS is enabled, the URLs of the files sent in the past messages will not be automatically converted.
+
+{% block text_http_access_for_ios9andup %}{% endblock %}
+
+### Custom Domains
+
+LeanCloud offers a shared domain for all the apps to access the files stored in the cloud. However, due to the Cyber Security Law of the countries where we offer our services, the shared domain might not be available all the time. We highly recommend that you **set up your custom domains for accessing files** so that your apps will not be affected when the shared domain becomes unavailable. You can set up custom domains at [Storage > Settings > Files](/dashboard/storage.html?appid={{appid}}#/storage/conf).
+
+### CDN Support
+
+{{ data.cdn(true) }}
+
+## Queries
+
+`{{baseQueryClassName}}` is the basic Class for constructing queries on `{{baseObjectName}}`. {{query_result_limit}}
+
+### Sample Data Structure
+
+Familiarizing yourself with the data structure mentioned here will help you better understand the material we will be covering later.
+
+![](images/todo-schema.svg)
+
+#### Todo (Todo Item)
+
+| Field | Type | Description |
+| :-- | :-- | :-- |
+| `content` | String | The content of the todo. |
+| `images` | AVFile | Images related to the todo. |
+| `location` | String | The location where the todo takes place. |
+| `priority` | Number | 0 indicates the highest priority. |
+| `reminders` | Array | Dates and times of reminders. |
+| `status` | Number | 0 is incomplete; 1 is completed. |
+| `title` | String | The title of the todo. |
+| `views` | Number | The times the todo has been viewed. |
+| `whereCreated` | AVGeoPoint | The location where the todo is created. |
+
+#### TodoFolder (Folder of Todo Items)
+
+| Field | Type | Description |
+| :-- | :-- | :-- |
+| `containedTodos` | Relation | Todo items contained in the folder which has relationship with `Todo` table. |
+| `name` | String | The name of the folder, like "Family" or "Meeting". |
+| `owner` | Pointer | The owner of the folder which points to a `_User`. |
+| `priority` | Number | 0 indicates the highest priority. |
+| `tags` | Relation | Has relationship with `Tag` table. |
+
+#### Comment (Comment to a Folder)
+
+| Field | Type | Description |
+| :-- | :-- | :-- |
+| `content` | String | The content of the comment. |
+| `likes` | Number | 1 is like; -1 is dislike; 0 by default. |
+| `targetTodoFolder` | Pointer | Points to a `TodoFolder`. |
+
+#### Tag (Tag for a Folder)
+
+| Field | Type | Description |
+| :-- | :-- | :-- |
+| `name` | String | The name of the tag, like "Today", "Urgent", "Important", etc. |
+| `targetTodoFolder` | Pointer | Points to a `TodoFolder`. |
+
+### Creating Queries
+
+{% block code_create_query_by_className %}{% endblock %}
+
+A basic usage of query is to look up an object with its objectId:
+
+{{ code_get_todo_by_objectId() }}
+
+### Query Constraints
+
+{% block table_logic_comparison_in_query %}{% endblock %}
+
+With the logical operations mentioned above, a query with constraints can be easily created.
+
+For example, if you are looking for all the Todo items with priority less than 2:
+
+{% block code_query_lessThan %}{% endblock %}
+
+<div class="callout callout-info">{{query_result_limit}}</div>
+
+The logic above can be rewritten in SQL to be `select * from Todo where priority < 2`, and {{productName}} allows you to use such syntax for querying as well. For more details, refer to [Querying with CQL](#querying-with-cql).
+
+To look for all the Todo items with priority greater than or equal to 2:
+
+{% block code_query_greaterThanOrEqualTo %}{% endblock %}
+
+#### Multiple Constraints
+
+Query constraints are AND'd by default, which means that the results of a query will satisfy all the constraints specified. [Compound Queries](#compound-queries) should be used if you expect them to be OR'd.
+
+In a **basic query**, if multiple conditions are assigned to the **same property** of an object, only the last assignment will take effect. For example, if you are looking for Todo items with priority to be either 0 or 1, the code below will not work:
+
+{% block code_priority_equalTo_zero_and_one_wrong_example %}{% endblock %}
+
+The correct way to implement such function is to use [Compound Queries > OR'd Queries](#or-d-queries).
+
+### Queries on Strings
+
+**Prefix query** works similarly as `LIKE 'keyword%'` in SQL. We have enabled indexing to make it efficient for large datasets as well.
+
+{% block code_query_whereHasPrefix %}{% endblock %}
+
+**Include query** works similarly as `LIKE '%keyword%'` in SQL. The following code looks for all the Todos containing "Tony":
+
+{% block code_query_with_contains_keyword %}{% endblock %}
+
+To query all the Todos that **do not include** "ticket" in their titles, you can use **regular expressions**:
+
+{% block code_query_with_not_contains_keyword_using_regex %}{% endblock %}
+
+<div class="callout callout-info">Queries with regular expressions **only work for** strings.</div>
+
+There are two drawbacks of querying with regular expressions:
+
+- The efficiency of querying will reduce with more data being entered into the dataset.
+- The results will not be sorted based on text correlation.
+
+Therefore, we don't recommend you relying on regular expressions to implement searching functions for your app. Instead, you should use [In-App Searching](#in-app-searching) which is based on search engine technology and offers a better performance.
+
+### Queries on Arrays
+
+There are various of ways for you to query a piece of data stored in an array as a property of an object. When we were talking about [Arrays](#updating-arrays), we have set `reminders` for each Todo which contains a number of dates. To look for all the Todos with 8:30 in their `reminders`:
+
+{% block code_query_array_contains_using_equalsTo %}{% endblock %}
+
+To look for those with 8:30 and 9:30 in their `reminders`:
+
+{% block code_query_array_contains_all %}{% endblock %}
+
+So far we have been writing queries to find the objects with arrays containing certain objects. If we have a Todo with 8:30, 9:30, and 10:30 in its `reminders`, it will be found out by the query above as well.
+
+To look for those who do not contain certain objects:
+
+{% block code_query_with_not_contains_keyword %}{% endblock %}
+
+### Queries on Existences
+
+Assuming that users are allowed to attach a picture to each Todo, the following code looks for all the Todos with pictures:
+
+{% block code_query_where_keys_exist %}{% endblock %}
+
+### Relational Queries
+
+Similar to traditional databases, we offer interfaces for you to perform relational queries as well.
+
+There are multiple ways for you to store relational data with {{productName}}. Below we will introduce the query methods that could be used for each of them.
+
+#### Queries on Pointers
+
+From what we discussed in [Pointers](#pointers), each Comment is associated with a TodoFolder indicating which TodoFolder it belongs to. The following code looks for all the Comments associated with a given TodoFolder:
+
+{% block code_query_comment_by_todoFolder %}{% endblock %}
+
+#### Queries on Relational Properties
+
+When querying Comments, if you wish to fetch the TodoFolder associated with each Comment together without extra queries, you may call the `include` method on the query constructed for Comments. You can even write something like `include(b.c)` so that the AVUser associated with each TodoFolder can be fetched within the same query as well:
+
+{% block code_query_comment_include_todoFolder %}{% endblock %}
+
+If an object has an Array field `todoArray` containing a number of Pointers:
 
 ```
-todo.save({ key: value }, {
-  success: function (todo) {
-    // the object was saved.
-  },
-  error: function (object, error) {
-    // saving the object failed.
+[pointer1, pointer2, pointer3]
+```
+
+It is possible to fetch these pointers themselves using `include`:
+
+```objc
+[query includeKey:@"todoArray"];
+```
+```java
+query.include("todoArray");
+```
+```js
+query.include('todoArray');
+```
+
+However, further queries with `include(b.c)` will not be supported.
+
+Relational operations with dot `.` can be used with `select` as well:
+
+```objc
+[query selectKeys:@"targetTodoFolder.targetAVUser.username"];
+```
+```java
+query.selectKeys(Arrays.asList("targetTodoFolder.targetAVUser.username"));
+```
+```js
+query.select(['targetTodoFolder.targetAVUser.username']);
+```
+
+#### Inner Queries
+
+With inner queries, it is possible to write a single query to look for all the Comments associated with TodoFolders who gained more than 20 likes. To do so, construct a query for [Comment](#comment-comment-to-a-folder-) like this:
+
+{% block code_query_comment_match_query_todoFolder %}{% endblock %}
+
+Keep in mind that each inner query returns at most 100 records by default (same as basic queries). To change the limit, please refer to [Limiting Query Results](#limiting).
+
+**If the outer queries are not returning any records, the entire query will return zero records as well.** For example:
+
+{{ data.innerQueryLimitation(description="", skip="[skip](#skipping)") }}
+
+### Queries on GeoPoints
+
+A common usage of querying GeoPoints is to find out the spots within a certain distance from a given point (like the phone itself). {{productName}} offers various of ways for querying GeoPoints.
+
+#### Queries on GeoPoints Nearby
+
+The `whereCreated` property of a Todo is `{{geoPointObjectName}}` object containing the location the Todo is created. The following code looks for all the Todos with `whereCreated` near a given location:
+
+{% block code_query_geoPoint_near %}{% endblock %}
+
+#### Queries on GeoPoints within a Scope
+
+`whereWithinKilometers`, `whereWithinMiles`, or `whereWithinRadians` can be used for querying object within a scope.
+
+The following code looks for all the Todos created within 2 kilometers:
+
+{% block code_query_geoPoint_within %}{% endblock %}
+
+#### Restrictions on GeoPoints
+
+- Each `{{baseObjectName}}` can only hold a single `{{geoPointObjectName}}` property.
+- The latitude of a GeoPoint should be within `-90.0` to `90.0` and the longitude should be within `-180.0` to `180.0`. An error will be raised if the data entered is out of scope.
+
+### Compound Queries
+
+A compound query is a single query consisting of multiple query conditions being connected with certain logical operations. The query conditions can be either OR'd or AND'd.
+
+#### OR'd Queries
+
+An object will be returned as long as it fulfills any one of the sub queries. The following code looks for all Todos with priority larger than or equal to 3, or status equal to 1 (completed):
+
+{% block code_query_with_or %}{% endblock %}
+
+**Queries regarding GeoPoints cannot be present among OR'd queries.**
+
+#### AND'd Queries
+
+An object will be returned only if it fulfills all the sub queries. The following code looks for all Todos created between `2016-11-13` and `2016-12-02`:
+
+{% block code_query_with_and %}{% endblock %}
+
+Constraints can be added to a new `{{baseQueryClassName}}` and such constraints will be AND'd.
+
+### Counting and Sorting
+
+#### Retrieving the First Object
+
+Sometimes you may only need the first object from the results of a query. The following code retrieves the first Todo fulfilling the query:
+
+{% block code_query_find_first_object %}{% endblock %}
+
+#### Limiting
+
+There is a `limit` to the amount of results being returned which is 100 by default. This means that even if there are 10,000 objects fulfilling the query, only 100 of them will be returned. The `limit` of a query could be any integer between 1 and 1,000. The code below returns at most 10 results for a query:
+
+{% block code_set_query_limit %}{% endblock %}
+
+#### Skipping
+
+`skip` can be used on a query to skip certain number of results. You can implement pagination on your app by using `skip` together with `limit`. The code below returns the objects on the 3rd page, with 10 objects per page:
+
+{% block code_set_skip_for_pager %}{% endblock %}
+
+The method used here would demonstrate a relatively lower efficiency if you use it on large datasets. **We highly recommend you using `{{createdAtName}}` or `{{updatedAtName}}` to avoid potential performance issues.**
+
+#### Retrieving Specific Properties
+
+When retrieving an object, you can specify the properties you need for it if you are not using all of them, which reduces the data being transferred and improves the speed of query. The code below retrieves only the title and content of each Todo:
+
+{% block code_query_select_keys %}{% endblock %}
+
+You can even specify a property within a Pointer. The code below retrieves only the username of each Todo's owner (which is a Pointer):
+
+{% block code_query_select_pointer_keys %}{% endblock %}
+
+#### Counting
+
+Sometimes you may wish to display a summary for a query like "1,020 results found". The code below prints out the number of Todos that are completed:
+
+{% block code_query_count %}{% endblock %}
+
+#### Sorting
+
+You can sort numbers, strings, or dates in ascending or descending order:
+
+{% block code_query_orderby %}{% endblock %}
+
+You can even attach multiple sorting rules to a single query. The code below sorts Todos in ascending order by priority and descending order by createdAt:
+
+{% block code_query_orderby_on_multiple_keys %}{% endblock %}
+
+### Querying with CQL
+
+If you have experience with SQL, you may write queries in CQL which is a syntax that allows you to write SQL-like commands for querying with {{productName}}.
+
+The following code looks for all the Todos with status = 1 and the amount of Todos with priority = 0:
+
+{% block code_query_by_cql %}{% endblock %}
+
+You also have the option to pass variables as parameters into queries, just like how you can use a PreparedStatement in Java JDBC.
+
+The following code looks for all the Todos with status = 0 and priority = 1:
+
+{% block code_query_by_cql_with_placeholder %}{% endblock %}
+
+### Optimizing Performance
+
+There are several factors that could lead to potential performance issues when you conduct a query, especially when more than 100,000 records are returned at a time. We are listing some common ones here so you can design your apps accordingly to avoid them:
+
+- Querying with "not equal to" or "not include" (index will not work)
+- Querying on strings with a wildcard at the beginning of the pattern (index will not work)
+- Using `count` with conditions (all the entries will be gone through)
+- Using `skip` for a great number of entries (all the entries that need to be skipped will be gone through)
+- Sorting without index (querying and sorting cannot share a composite index unless the conditions used on them are both covered by the same one)
+- Querying without index (the conditions used on the query cannot share a composite index unless all of them are covered by the same one; additional time will be consumed if excessive data falls under the uncovered conditions)
+
+## LiveQuery
+
+Below are the scenarios in which you might consider using LiveQuery:
+
+- Synchronizing data across multiple clients.
+- Displaying data in real time.
+- Two-way binding of data between cloud and client.
+
+The video here shows the effect of using LiveQuery on the web client and the mobile client of the same app:
+
+<div style="border:2px solid #ccc; margin-bottom:1em;">
+  <video src="https://lc-lhzo7z96.cn-n1.lcfile.com/1496988080458" controls autoplay muted preload="auto" width="100%" height="100%">
+    HTML5 Video is required for this demo.
+  </video>
+</div>
+
+Feel free to try it by yourself with the following steps:
+
+1. Scan the QR code below with WeChat to open the "LeanTodo" mini program:<br/>
+   <img src="images/leantodo-weapp-qr.png" width="150" height="150"> 
+2. Click on **Settings** > **Account Settings** on the bottom left of the screen, then create an account with a username and a password. You will need the same username and password later.
+3. Visit <https://leancloud.github.io/leantodo-vue/> in your browser and enter the same credentials, then click on **Login**.
+4. Enter some random data on one client and observe how changes are synchronized to other clients.
+
+{{ docs.note("Make sure to create your account in the mini program first. If you create your account in the web app, you cannot log in to the same account in the mini program.") }}
+
+### Setting up LiveQuery
+
+Before you start setting up LiveQuery with SDK, go to [Dashboard > Data > Settings > Misc](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check on "Enable LiveQuery". The SDK will throw an error if the function is not enabled in your dashboard.
+
+```objc
+// LiveQuery depends on the RTM module which you can find more information here:
+// https://leancloud.cn/docs/sdk_setup-objc.html
+// Add pod 'AVOSCloudLiveQuery' in Podfile and run `pod install`
+[AVOSCloud setApplicationId:@"{{appid}}"
+                  clientKey:@"{{appkey}}"];
+```
+```swift
+AVOSCloud.setApplicationId("{{appid}}", clientKey: "{{appkey}}")
+```
+```java
+// LiveQuery depends on the RTM module and the following content needs to be included in AndroidManifest.xml:
+<!-- For the RTM module, Push Notifications, and LiveQuery START -->
+<!-- The RTM module and Push Notifications depend on PushService -->
+<service android:name="com.avos.avoscloud.PushService"/>
+<receiver android:name="com.avos.avoscloud.AVBroadcastReceiver">
+  <intent-filter>
+    <action android:name="android.intent.action.BOOT_COMPLETED"/>
+    <action android:name="android.intent.action.USER_PRESENT"/>
+    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+  </intent-filter>
+</receiver>
+<!-- For the RTM module, Push Notifications, and LiveQuery END -->
+
+// Initialization
+AVOSCloud.initialize(this,"{{appid}}","{{appkey}}");
+```
+```js
+// If used in CommonJS (like Node.js or Webpack):
+var AV = require('leancloud-storage/live-query');
+
+// If used in a webpage with a <script> tag, use av-live-query-min.js:
+// You may use our CDN:
+// <script src="//cdn.jsdelivr.net/npm/leancloud-storage@{{jssdkversion}}/dist/av-live-query-min.js"></script>
+```
+```cs
+// LiveQuery depends on the RTM module which you can find more information here:
+// C# SDK Installation Guide: https://leancloud.cn/docs/sdk_setup-dotnet.html#_NET_Framework
+// Unity SDK Installation Guide: https://leancloud.cn/docs/sdk_setup-dotnet.html#Mono_for_Unity
+ 
+string appId = "{{appid}}";
+string appKey = "{{appkey}}";
+Websockets.Net.WebsocketConnection.Link();
+var realtime = new AVRealtime(appId, appKey);
+AVRealtime.WebSocketLog(Console.WriteLine);
+AVClient.HttpLog(Console.WriteLine);
+```
+
+### Creating Basic Queries
+
+Data is synchronized with LiveQuery based on the conditions specified for AVQuery. The instruction below shows how you can build a Todo app that allows data to be synchronized to the mobile app when a Todo is marked as completed.
+
+The first thing you need to do is to create two queries on Todo, one for uncompleted items and one for completed ones:
+
+```objc
+AVQuery *doingQuery = [AVQuery queryWithClassName:@"Todo"];
+AVQuery *doneQuery  = [AVQuery queryWithClassName:@"Todo"];
+[doingQuery whereKey:@"state" equalTo:@"doing"];
+[doneQuery  whereKey:@"state" equalTo:@"done"];
+```
+```swift
+let doingQuery = AVQuery(className: "Todo")
+let doneQuery = AVQuery(className: "Todo")
+
+doingQuery.whereKey("state", equalTo: "doing")
+doneQuery.whereKey("state", equalTo: "done")
+```
+```java
+// Uncompleted Todos
+AVQuery<AVObject> doingQuery = new AVQuery<>("Todo");
+doingQuery.whereEqualTo("state", "doing");
+
+// Completed Todos
+AVQuery<AVObject> doneQuery = new AVQuery<>("Todo");
+doneQuery.whereEqualTo("state", "done");
+```
+```js
+// Uncompleted Todos
+var doingQuery = new AV.Query('Todo').equalTo('state', 'doing');
+// Completed Todos
+var doneQuery = new AV.Query('Todo').equalTo('state', 'done');
+```
+```cs
+// Uncompleted Todos
+var doingQuery = new AVQuery<AVObject>("Todo").WhereEqualTo("state", "doing");
+// Completed Todos
+var doneQuery = new AVQuery<AVObject>("Todo").WhereEqualTo("state", "done");
+```
+
+### Retrieving Initial Data
+
+The client needs to retrieve the data proactively when the page is first opened:
+
+```objc
+[doingQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
+  /* Uncompleted list did fetch. */
+}];
+```
+```swift
+let doingQuery = AVQuery(className: "Todo")
+
+doingQuery.whereKey("state", equalTo: "doing")
+
+doingQuery.findObjectsInBackground { objects, error in
+  /* Uncompleted list did fetch. */
+}
+```
+```java
+AVQuery<AVObject> doingQuery = new AVQuery<>("Todo");
+doingQuery.whereEqualTo("state", "doing");
+doingQuery.findInBackground(new FindCallback<AVObject>() {
+  @Override
+  public void done(List<AVObject> parseObjects, AVException parseException) {
+    // Todos fulfilling the query
   }
 });
 ```
-
-In the new `Promise` paradigm, that same code would look like this:
-
 ```js
-todo.save({ key: value }).then(function (todo) {
-  // the object was saved.
-}, function (error) {
-  // saving the object failed.
+doingQuery.find().then(function (doingList) {
+  // Display `doingList`
 });
 ```
-
-Not much different, right? So what's the big deal? Well, the real power of promises comes from chaining multiple of them together. We'll cover it in a bit.
-
-### The then Method
-
-Every Promise has a method named `then` which takes a pair of callbacks. The first callback is called if the promise is resolved (meaning everything went well), while the second is called if the promise is rejected (errors occurred).
-
+```cs
+// Assuming `doingList` to be the data a list object is binded to
+var doingList = new List<AVObject>();
+var doing = await doingQuery.FindAsync();
+doingList = doing.ToList();
 ```
-todo.save().then(function(todo) {
-  // the object was saved successfully.
-}, function(error) {
-  // the save failed.
+
+### Subscribing to Changes
+
+When using LiveQuery, what you basically do is to define a query and subscribe to all the changes happening to the objects that fulfill the query. In the previous example, if we need to change a Todo named "Buy power bank" from uncompleted to completed, we need to:
+
+1. Remove "Buy power bank" from "Uncompleted".
+2. Add "Buy power bank" into "Completed".
+
+If we implement such function without LiveQuery, we need to have the client fetch data from the cloud periodically or have the user refresh the page on their own. With LiveQuery, data can be synchronized automatically when changes happen in the cloud.
+
+```objc
+/* Import LiveQuery module */
+#import <AVOSCloudLiveQuery/AVOSCloudLiveQuery.h>
+
+self.doingLiveQuery = [[AVLiveQuery alloc] initWithQuery:doingQuery];
+self.doingLiveQuery.delegate = self;
+[self.doingLiveQuery subscribeWithCallback:^(BOOL succeeded, NSError * _Nonnull error) {
+  /* Subscribed. */
+}];
+#pragma mark - LiveQuery delegate methods
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidCreate:(id)object {
+  if (liveQuery == self.doingLiveQuery) {
+    /* A new doing task did create. */
+  }
+}
+```
+```swift
+func subscribe() {
+  let doingQuery = AVQuery(className: "Todo")
+  doingQuery.whereKey("state", equalTo: "doing")
+
+  let doingLiveQuery = AVLiveQuery(query: doingQuery)
+
+  doingLiveQuery.delegate = self
+  doingLiveQuery.subscribe { (succeeded, error) in
+    /* Subscribed. */
+  }
+}
+
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidCreate object: Any) {
+  /* A new doing task did create. */
+}
+```
+```java
+AVLiveQuery doingLiveQuery = AVLiveQuery.initWithQuery(doingQuery);
+doingLiveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void done(AVLiveQuery.EventType eventType, AVObject avObject, List<String> updateKeyList) {
+    // Callback function for new events
+  }
+});
+doingLiveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Subscribed
+    }
+  }
 });
 ```
-
-### Chaining Promises Together
-
-Promises are a little bit magical, in that they let you chain them without nesting. If a callback for a promise *returns a new promise*, then the first one will not be resolved until the second one is. This lets you perform multiple asynchronous actions **in order**.
-
-For example, let's get a few chapters of a book from the cloud and add them to the web page. Clearly we don't want chapters to appear in the page in a different order than they are in the book.
-
 ```js
-var chapterIds = [
-  '584e1c408e450a006c676162', // first  chapter
-  '584e1c43128fe10058b01cf5', // second chapter
-  '581aff915bbb500059ca8d0b'  // third  chapter
-];
-
-new AV.Query('Chapter').get(chapterIds[0]).then(function (chapter1) {
-  // add chapter content to the page
-  addContentToPage(chapter1.get('content'));
-  // return a new Promise
-  return new AV.Query('Chapter').get(chapterIds[1]);
-}).then(function (chapter2) {
-  addContentToPage(chapter2.get('content'));
-  return new AV.Query('Chapter').get(chapterIds[2]);
-}).then(function (chapter3) {
-  addContentToPage(chapter3.get('content'));
-  // complete
+doingQuery.subscribe().then(function (subscription) {
+  subscription.on('create', function (newDoingItem) {
+    // Add `newDoingItem` into `doingList`
+  });
 });
 ```
+```cs
+var livequery = await doingQuery.SubscribeAsync();
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if(e.Scope == "create")
+  {
+    doingList.Add(e.Payload);
+  }
+};
+```
 
-### Error Handling With Promises
+The main purpose of the code above is to subscribe:
 
-The code sample above left out error handling for simplicity. 
-
-If any `Promise` in a chain returns an error, all of the success callbacks after it will be skipped until an error callback is encountered. The error callback can transform the error, or it can handle it by returning a new Promise that isn't rejected. You can think of rejected promises kind of like throwing an exception. An error callback is like a catch block that can handle the error or rethrow it.
-
+```objc
+[self.doingLiveQuery subscribeWithCallback:^(BOOL succeeded, NSError * _Nonnull error) {
+  /* Subscribed. */
+}];
+```
+```swift
+doingLiveQuery.subscribe { (succeeded, error) in
+  /* Subscribed. */
+}
+```
+```java
+doingLiveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Subscribed
+    }
+  }
+});
+```
 ```js
-new AV.Query('Chapter').get(chapterIds[0]).then(function (chapter1) {
-  addContentToPage(chapter0.get('content'));
-  
-  // let's create some chaos
-  throw new Error('Error in loading Chapter 1');
+doingQuery.subscribe().then(function (subscription) {
+  // `subscription` is the subscription of `doingQuery`
+});
+```
+```cs
+var livequery = await doingQuery.SubscribeAsync();
+```
 
-  return new AV.Query('Chapter').get(chapterIds[1]);
-}).then(function (chapter2) {
-  // the following lines will be SKIPPED
-  addContentToPage(chapter2.get('content'));
-  return new AV.Query('Chapter').get(chapterIds[2]);
-}).then(function (chapter3) {
-  // the following lines will be SKIPPED
-  addContentToPage(chapter3.get('content'));
+The following types of data changes can be listened once subscription is set up:
+
+- `create`: a new object is created and it fulfills the query.
+- `update`: an existing object which fulfills the query is updated.
+- `enter`: an existing object's old value does not fulfill the query but its new value fulfills the query.
+- `leave`: an existing object's old value fulfills the query but its new value does not fulfill the query.
+- `delete`: an existing object which fulfills the query is deleted.
+- `login`: a `_User` is logged in.
+
+The type of data changes need to be identified when a LiveQuery event is received by a client.
+
+#### `create` Events
+
+Assume that there already exist some completed Todos in the app. Now a new uncompleted Todo is added from another client:
+
+```objc
+AVObject *todo = [AVObject objectWithClassName:@"Todo"];
+todo[@"state"] = @"doing";
+[todo saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+  /* Saved. */
+}];
+```
+```swift
+let todo = AVObject(className: "Todo")
+todo["state"] = "doing"
+todo.save()
+```
+```java
+AVObject todo = new AVObject("Todo");
+todo.put("state", "doing");
+todo.saveInBackground(new SaveCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Saved
+    }
+  }
+});
+```
+```js
+var testObj = new AV.Object('Todo');
+testObj.set('state', 'doing');
+testObj.save();
+```
+```cs
+var testObj = new AVObject("Todo");
+testObj["state"] = "doing";
+await testObj.SaveAsync();
+```
+
+The current client will then receive a `create` event:
+
+```objc
+#pragma mark - LiveQuery delegate methods
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidCreate:(id)object {
+  if (liveQuery == self.doingLiveQuery) {
+    /* A new doing task did create. */
+  }
+}
+```
+```swift
+#pragma mark - LiveQuery delegate methods
+
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidCreate object: Any) {
+  /* A new doing task did create. */
+}
+```
+```java
+liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void onObjectCreated(AVObject avObject) {
+    // `avObject` is the AVObject being created
+  }
+});
+```
+```js
+doingQuery.subscribe().then(function (liveQuery) {
+  liveQuery.on('create', function (newDoingItem) {
+    // Add `newDoingItem` into `doingList`
+  });
+});
+```
+```cs
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if(e.Scope == "create")
+  {
+    doingList.Add(e.Payload);
+  }
+};
+```
+
+#### `update` Events
+
+The title of an uncompleted Todo is updated from another client (the Todo still remains uncompleted since `state` is not updated):
+
+```objc
+AVObject *todo = [AVObject objectWithClassName:@"Todo" objectId:@"5915bb92a22b9d005804a4ee"];
+todo[@"title"] = @"New Title";
+[todo saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+  /* Saved. */
+}];
+```
+```swift
+let todo = AVObject(className: "Todo", objectId: "5915bb92a22b9d005804a4ee")
+todo["title"] = "New Title"
+todo.save()
+```
+```java
+AVObject todo = AVObject.createWithoutData("Todo", "5915bb92a22b9d005804a4ee");
+todo.put("title", "New Title");
+todo.saveInBackground(new SaveCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Saved
+    }
+  }
+});
+```
+```js
+var oneDoing = AV.Object.createWithoutData('Todo', '5915bb92a22b9d005804a4ee');
+oneDoing.set('title', 'New Title');
+oneDoing.save();
+```
+```cs
+// Assume there is an uncompleted Todo with objectId 5915bb92a22b9d005804a4ee
+var oneDoing = AVObject.CreateWithoutData("Todo", "5915bb92a22b9d005804a4ee");
+oneDoing["title"] = "New Title";
+await oneDoing.SaveAsync();
+```
+
+The current client will then receive an `update` event:
+
+```objc
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidUpdate:(id)object updatedKeys:(NSArray<NSString *> *)updatedKeys {
+  for (NSString *key in updatedKeys) {
+    NSLog(@"%@: %@", key, object[key]);
+  }
+}
+```
+```swift
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidUpdate object: Any, updatedKeys: [String]) {
+  /* A doing task did update. */
+}
+```
+```java
+liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void onObjectUpdated(AVObject avObject, List<String> updateKeyList) {
+    // `avObject` is the AVObject being updated; updateKeyList contains the keys being updated
+  }
+});
+```
+```js
+liveQuery.on('update', function (updatedDoingItem, updatedKeys) {
+  // Replace `doingItem` in `doingList` with `updatedDoingItem`
+});
+```
+```cs
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if(e.Scope == "update")
+  {
+    foreach(var key in e.Keys)
+    {
+      // The field being updated
+      if(key == "title")
+      {
+        // Retrieve the updated title
+        var title = e.Payload.Get<string>(key);
+      }
+    }
+  }
+};
+```
+
+#### `enter` Events
+
+A **completed** Todo is changed to be **uncompleted** from another client:
+
+```objc
+AVObject *todo = [AVObject objectWithClassName:@"Todo" objectId:@"591672df2f301e006b9b2829"];
+todo[@"state"] = @"doing";
+[todo saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+  /* Saved. */
+}];
+```
+```swift
+let todo = AVObject(className: "Todo", objectId: "591672df2f301e006b9b2829")
+todo["state"] = "doing"
+todo.save()
+```
+```java
+AVObject todo = AVObject.createWithoutData("Todo", "591672df2f301e006b9b2829");
+todo.put("state", "doing");
+todo.saveInBackground(new SaveCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Saved
+    }
+  }
+});
+```
+```js
+var todo = new AV.Object.createWithoutData('Todo', '591672df2f301e006b9b2829');
+todo.set('state', 'doing');
+todo.save();
+```
+```cs
+// Assume there is a completed Todo with objectId 591672df2f301e006b9b2829 
+var anotherDone = AVObject.CreateWithoutData("Todo", "591672df2f301e006b9b2829");
+anotherDone["state"] = "doing";
+await anotherDone.SaveAsync();
+```
+
+The current client will then receive an `enter` event:
+
+```objc
+#pragma mark - LiveQuery delegate methods
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidEnter:(id)object updatedKeys:(nonnull NSArray<NSString *> *)updatedKeys {
+  if (liveQuery == self.doingLiveQuery) {
+    /* A todo did change to doing from other state. */
+  }
+}
+```
+```swift
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidEnter object: Any, updatedKeys: [String]) {
+  /* A todo did change to doing from other state. */
+}
+```
+```java
+liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void onObjectEnter(AVObject avObject, List<String> updateKeyList) {
+    // `avObject` is the AVObject being updated; updateKeyList contains the keys being updated
+  }
+});
+```
+```js
+liveQuery.on('enter', function (updatedDoingItem, updatedKeys) {
+  // Replace `doingItem` in `doingList` with `updatedDoingItem`
+});
+```
+```cs
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if (e.Scope == "enter")
+  {
+    doingList.Add(e.Payload);
+  }
+};
+```
+
+The difference between `create` and `enter` is:
+
+- `create`: a new object is created and it fulfills the query.
+- `enter`: an existing object's old value does not fulfill the query but its new value fulfills the query.
+
+#### `leave` Events
+
+A **uncompleted** Todo is changed to be **completed** from another client:
+
+```objc
+AVObject *todo = [AVObject objectWithClassName:@"Todo" objectId:@"591672df2f301e006b9b2829"];
+todo[@"state"] = @"done";
+[todo saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+  /* Saved. */
+}];
+```
+```swift
+let todo = AVObject(className: "Todo", objectId: "591672df2f301e006b9b2829")
+todo["state"] = "done"
+todo.save()
+```
+```java
+AVObject todo = AVObject.createWithoutData("Todo", "591672df2f301e006b9b2829");
+todo.put("state", "done");
+todo.saveInBackground(new SaveCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Saved
+    }
+  }
+});
+```
+```js
+var todo = new AV.Object.createWithoutData('Todo', '591672df2f301e006b9b2829');
+todo.set('state', 'done');
+todo.save();
+```
+```cs
+var willDone = AVObject.CreateWithoutData("Todo", "591672df2f301e006b9b2829");
+willDone["state"] = "done";
+await willDone.SaveAsync();
+```
+
+The current client will then receive a `leave` event:
+
+```objc
+#pragma mark - LiveQuery delegate methods
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidLeave:(id)object updatedKeys:(nonnull NSArray<NSString *> *)updatedKeys {
+  if (liveQuery == self.doingLiveQuery) {
+    /* A todo did change to other state from doing. */
+  }
+}
+```
+```swift
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidLeave object: Any, updatedKeys: [String]) {
+  /* A todo did change to other state from doing. */
+}
+```
+```java
+liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void onObjectLeave(AVObject avObject, List<String> updateKeyList) {
+    // `avObject` is the AVObject being updated; updateKeyList contains the keys being updated
+  }
+});
+```
+```js
+liveQuery.on('leave', function (leftDoingItem, updatedKeys) {
+  // Remove `leftDoingItem` from `doingList`
+});
+```
+```cs
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if(e.Scope == "leave")
+  {
+    var done = doingList.First(todo => todo.ObjectId == e.Payload.ObjectId);
+    if(done != null)
+    {
+      doingList.Remove(done);
+    }
+  }
+}
+```
+
+#### `delete` Events
+
+An **uncompleted** Todo is deleted from another client:
+
+```objc
+AVObject *todo = [AVObject objectWithClassName:@"Todo" objectId:@"591d9b302f301e006be22c83"];
+[todo deleteInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+  /* Deleted. */
+}];
+```
+```swift
+let todo = AVObject(className: "Todo", objectId: "591d9b302f301e006be22c83")
+todo.delete()
+```
+```java
+AVObject todo = AVObject.createWithoutData("Todo", "591672df2f301e006b9b2829");
+todo.deleteInBackground(new DeleteCallback() {
+  @Override
+  public void done(AVException e) {
+    if (null == e) {
+      // Saved
+    }
+  }
+});
+```
+```js
+var todo = new AV.Object.createWithoutData('Todo', '591d9b302f301e006be22c83');
+todo.destroy();
+```
+```cs
+var willDelete = AVObject.CreateWithoutData("Todo", "591d9b302f301e006be22c83");
+await willDelete.DeleteAsync();
+```
+
+The current client will then receive a `delete` event:
+
+```objc
+#pragma mark - LiveQuery delegate methods
+- (void)liveQuery:(AVLiveQuery *)liveQuery objectDidDelete:(id)object {
+  /* A todo has been deleted. */
+}
+```
+```swift
+func liveQuery(_ liveQuery: AVLiveQuery, objectDidDelete object: Any) {
+  /* A todo has been deleted. */
+}
+```
+```java
+liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
+  @Override
+  public void onObjectDeleted(String objectId) {
+    // `objectId` is the ID of the AVObject being deleted
+  }
+});
+```
+```js
+liveQuery.on('delete', function (deletedDoingItem, updatedKeys) {
+  // Remove `deletedDoingItem` from `doingList`
+});
+```
+```cs
+livequery.OnLiveQueryReceived += (sender, e) => 
+{
+  if(e.Scope == "delete")
+  {
+    var done = doingList.First(todo => todo.ObjectId == e.Payload.ObjectId);
+    if(done != null)
+    {
+      doingList.Remove(done);
+    }
+  }
+}
+```
+
+### Unsubscribing
+
+Different than [Losing Connections](#losing-connections), unsubscribing means to permanently stop receiving updates with LiveQuery.
+
+If [the connection to the server is lost](#losing-connections) before a subscription is unsubscribed, the subscription will resume automatically after the connection is built.
+
+The code below shows how you can fully unsubscribe a subscription:
+
+```objc
+[liveQuery unsubscribeWithCallback:^(BOOL succeeded, NSError * _Nonnull error) {
+  if (succeeded) {
+    // Unsubscribed
+  } else {
+    // Error happened
+  }
+}];
+```
+```swift
+liveQuery.unsubscribe { (succeeded, error) in
+  if succeeded {
+    // Unsubscribed
+  } else {
+    // Error happened
+  }
+}
+```
+```java
+liveQuery.unsubscribeInBackground(new AVLiveQuerySubscribeCallback() {
+  @Override
+  public void done(AVException ex) {
+    if (null != ex) {
+      // Error happened
+    } else {
+     // Unsubscribed
+    }
+  }
+});
+```
+```js
+liveQuery.unsubscribe().then(function () {
+  // Unsubscribed
 }).catch(function (error) {
-  // this is called, the error is 'Error in loading Chapter 1'
-  console.error(error.message);
+  // Error happened
 });
 ```
-
-It's often convenient to have a long chain of success callbacks with only one error handler at the end.
-
-For further reading on Promises: [Promises/A+ proposal](https://github.com/promises-aplus/promises-spec). 
-
-
-## GeoPoints
-
-LeanCloud allows you to associate real-world latitude and longitude coordinates with an object. Adding an `AV.GeoPoint` to an `AV.Object` allows queries to take into account the proximity of an object to a reference point. This allows you to easily do things like find out what user is closest to another user or which places are closest to a user.
-
-To associate a point with an object you first need to create an `AV.GeoPoint`. For example, to create a point with latitude of 39.9 degrees and longitude of 116.4 degrees:
-
-{# {% block code_create_geoPoint %}{% endblock %} #}
-``` js
-var point = new AV.GeoPoint(
-  39.9, // latitude
-  116.4 // longitude
-);
-
-// or provide an array of latitude and longitude
-var point2 = new AV.GeoPoint([39.9, 116.4]);
+```cs
+await liveQuery.UnsubscribeAsync();
 ```
 
-This point is then stored in the object as a regular field.
+### Losing Connections
 
-{# {% block code_use_geoPoint %}{% endblock %} #}
-```js
-todo.set('location', point);
-```
+A client's connection to the server can be lost due to the following reasons:
 
-### Geo Queries
+1. Errors happen to the network, or the user switches the network.
+2. The user leaves the app, turns off the device, or switches to flight mode.
 
-Now that you have a bunch of objects with spatial coordinates, it would be nice to find out which objects are closest to a point, or are contained within a particular area. There are a few handy methods available to help you sort out the distance calculation.
+For the situations mentioned above, there's no need for you to handle them by yourself. The SDK will automatically resume the subscription once the connection is built.
 
-This can be done by adding another restriction to `AV.Query` using `near`. So getting a list of ten places that are closest to a given point may look something like:
+However, **if the user fully kills the client of the app or closes the webpage running it**, the SDK will not be able to resume the subscription by itself. You can always create a new subscription if you need to.
 
-```js
-// create a query for Todo
-var query = new AV.Query('Todo');
-var point = new AV.GeoPoint(39.9, 116.4);
-query.near('location', point);
-// limit what could be a lot of points to only 10
-query.limit(10);
-// final list of objects
-query.find().then(function (results) {
-    var nearbyTodos = results;
-}, function (error) {
-});
-```
+### FAQ
 
-At this point `results` will be an array of objects ordered by distance (nearest to farthest) from `point`. Note that if an additional `ascending` or `descending` order-by constraint is applied, it will take precedence over the distance ordering.
+- What is a bad practice of using LiveQuery?
 
-{# {% block code_query_geoPoint_within %}{% endblock %} #}
+  Since LiveQuery delivers messages in real time, some developers may try to implement a real-time messaging function with it, which we do not recommend because additional storage will be used by doing so and additional cost may occur. It's also hard to maintain the code written for such function with LiveQuery. LeanCloud offers a fully functional RTM service which you can use to build such feature.
 
-To limit the results using distance, check out  `withinMiles`, `withinKilometers`, and `withinRadians` in our API docs.
-
-It's also possible to query for the set of objects that are contained within a particular area. To find the objects in a rectangular bounding box, add the `withinGeoBox` restriction to your `AV.Query`.
-
-<img width="300" height="200" src="images/geopoint-withingeobox.svg" />
-
-```js
-var query = new AV.Query('Todo');
-var southwest = new AV.GeoPoint(30, 115);
-var northeast = new AV.GeoPoint(40, 118);
-query.withinGeoBox(
-  'location',
-  southwest,
-  northeast
-);
-```
-{# withinPolygon is not supported #}
-
-### Caveats
-
-There are a couple of things to watch out for:
-
-- Each `AV.Object` may only have one key with an `AV.GeoPoint` object.
-- Points should not exceed the extreme ends of the ranges. Latitude should be between -90.0 and 90.0. Longitude should be between -180.0 and 180.0. Attempting to set latitude or longitude out of bounds will cause an error.
-{# - Using the `near` constraint will also limit results to within 100 miles. #}
+{% block text_js_promise %}{% endblock %}
 
 ## Users
 
-At the core of many apps, there is a notion of user accounts that lets users access their information in a secure manner. We provide a specialized user class called `AV.User` that automatically handles much of the functionality required for user account management in your app. All user relevant data is stored in the `_User` class on LeanCloud.
+Almost all the apps require their users to create accounts before they could access certain features. Some mobile apps may also allow their users to log in with phone numbers. {{productName}} offers a total solution for you to quickly implement such features.
 
-`AV.User` is a subclass of `AV.Object`, therefore, all the methods that are on `AV.Object` also exist in `AV.User`. The difference is that `AV.User` has some special additions specific to user accounts.
+Here we use `{{userObjectName}}` as a special object to represent each user. All the instances of it will be stored in `_User` table.
 
-### AV.User Properties
+### User Properties
 
-`AV.User` has several values that set it apart from `AV.Object`:
+#### Default User Properties
 
-- `username`: The username for the user.
-- `password`: The password for the user.
-- `email`: The email address for the user.
-- `emailVerfied`: Whether the owner of the email has confirmed the use of email with LeanCloud or not.
-- `mobilePhoneNumber`: The mobile/cell phone number for the user.
-- `mobilePhoneVerfied`: Whether the owner of the phone has confirmed that the phone number can be used with LeanCloud or not.
+Each user has three default properties: username, password, and email. The following code shows how these properties can be retrieved:
 
-We'll go through each of these in detail as we run through the various use cases for users.
+{% block code_get_user_properties %}{% endblock %}
 
-### Signing Up
+Keep in mind that password can only be set when a user creates an account (see [Signing up with Usernames and Passwords](#signing-up-with-usernames-and-passwords)) and will not be stored locally afterwards. The password field of a logged in user is **empty**.
 
-The first thing your app will do is probably ask the user to sign up. The following code illustrates a typical signup with username and password:
+#### Custom User Properties
 
-```js
-// create an instance
-var user = new AV.User();
+Custom properties can be assigned to a user just like how they can be assigned to a basic object. The following code adds `age` as a custom property of the current user:
 
-user.setUsername('leancloud');
-// same as using user.set('username', 'leancloud')
-user.setPassword('P@ssword!');
+{% block code_set_user_custom_properties %}{% endblock %}
 
-// optional
-user.setEmail('hey@leancloud.rocks');
-user.setMobilePhoneNumber('+123456789');
+#### Updating User Properties
 
-// other fields can be set just like with AV.Object
-user.set('birthday', new Date('2014-06-01'));
-user.set('gender', 'secret')
+"Why can't I update other users' properties?"
 
-user.signUp().then(function (user) {
-    console.log(user);
-    var sessionToken = user.get('sessionToken')
-}, function (error) {
-  // check errors 
-});
-```
+> The users of your app may store a lot of sensitive information in their accounts, including phone numbers, social media accounts, etc. Sometimes even developers of the app themselves are not encouraged to manipulate users' properties on their own. To protect the privacy of users, all the requests regarding `{{userObjectName}}` objects will be authenticated by the cloud before they take effect.
 
-This call will asynchronously create a new user in the `_User` class in your LeanCloud app. Before it does this, it also checks to make sure that both the username and email (and the phone number if present) are unique. Also, it securely hashes the password in the cloud in a way that even [Rainbow Table](https://en.wikipedia.org/wiki/Rainbow_table) attack won't crack. We never store passwords in plaintext, nor will we ever transmit passwords back to the client in plaintext.
+The following code updates the `age` of the current user:
 
-Please take care **not to hash the password on the client** before sending it to the cloud. Doing so will cause the [password resetting functionality](#resetting-passwords) to fail.
+{% block code_update_user_custom_properties %}{% endblock %}
 
-Note that we used the `signUp` method, not the `save` method. New AV.Users should always be created using the `signUp` method. Subsequent updates to a user can be done by calling `save`.
+Custom properties of `{{userObjectName}}` can be used in the same way as those of `{{baseObjectName}}`.
 
-If a signup isn't successful, you should read the error object that is returned. The most likely case is that the username (or email or mobile phone number) has already been taken by another user. You should clearly communicate this to your users, and ask them try a different username.
+### Signing up
 
-You are free to use an email address as the username. Simply ask your users to enter their email, but fill it in the *username* property, and `AV.User` will work as normal. It saves the trouble to ask for the email address when the user wants to reset a password via email later. We'll go over how this is handled in the [reset password](#resetting-passwords) section.
+#### Signing up with Phone Numbers and Passwords
 
-#### Signing Up with Phones
+Sometimes an app would allow a user to access some contents without signing up until certain functions are triggered. When the user needs to sign up, they can simply complete the process by providing a phone number and receiving a verification code.
 
-Allowing users to sign up with their phone is an easy and secure alternative to using their usernames and passwords.
+The following code sends a verification code to a number:
 
-There are two steps to be involved in general. First, ask the user to enter a phone number that can receive text messages. When the user clicks on the "Get Verification Code" button, call the `AV.Cloud.requestSmsCode` function to have the 6-digit verification code sent to the phone number the user just entered.
+{% block code_send_sms_code_for_loginOrSignup %}{% endblock %}
 
-```js
-AV.Cloud.requestSmsCode(
-  'MOBILE_PHONE_NUMBER'
-).then(function (success) {
-  // verification code is obtained successfully
-}, function (error) {
-  // something went wrong 
-});
-```
+The following code logs the user in with the code collected from their input:
 
-Next, pass on the verification code received  to the `signUpOrlogInWithMobilePhone` method.
+{% block code_verify_sms_code_for_loginOrSignup %}{% endblock %}
 
-```js
-AV.User.signUpOrlogInWithMobilePhone(
-  'MOBILE_PHONE_NUMBER', 
-  'VERIFICATION_CODE'
-).then(function (user) {
-  // username and mobilePhoneNumber are the same
-  var username          = user.get('username')
-  var mobilePhoneNumber = user.get('mobilePhoneNumber')
-  var sessionToken      = user.get('sessionToken')
-  // password: temporary password generated by LeanCloud 
-}, function (error) {
-  // verification code is incorrect
-});
-```
+#### Signing up with Usernames and Passwords
 
-#### Phone Number Format
+When creating a user with username and password, the SDK sends the password to the cloud in plaintext through HTTPS and the password will be hashed once it arrives to the cloud. The hashing algorithm used in the cloud ensures that the original password cannot be retrieved by rainbow table attack and even app developers themselves will not be able to see the password. Keep in mind that <u>the password should not be encrypted by the client, or the password reset function will not work</u>.
 
-A phone number that `AV.User` accepts takes the following format: a leading plus sign (+), immediately followed by the country code and the phone number.
+The following code creates a user with `Tom` as username and `cat!@#123` as password:
 
-Besides, you should leave out all the dashes, spaces and other non-numeric characters. For instance, `+8618200008888` for China (86 is the country code), and `+15555551234` for US and Canada (1 is the country code, and 555 is the area code).
+{% block code_user_signUp_with_username_and_password %}{% endblock %}
 
-For a list of countries and regions that LeanCloud can reach through phones, please refer to the [International SMS](sms-guide.html#international-sms) section in the SMS guide.
+If the code returns the error 202, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column, otherwise error 203 or 214 will occur.
 
-### Logging In
+You may also ask a user to sign up with their email address without an additional username so that the user can directly [reset their password with email](#resetting-passwords).
 
-Of course, after you allow users to sign up, you need to let them log in to their account in the future. To do this, you can use the class method `logIn`.
+#### Setting Phone Numbers
 
-```js
-AV.User.logIn(
-  'USERNAME',
-  'PASSWORD'
-).then(function (loggedInUser) {
-  // login succeeded
-  console.log(loggedInUser);
-}, function (error) {
-  // login failed, check error to see why.
-});
-```
+Many apps require their users to link their accounts with phone numbers for account verification and password reset. If you need the same functionality in your app, see {{ sms_guide_url }} for more details.
 
-#### Logging In With Phones
+#### Verifying Email Addresses
 
-If you allow users to use their phone numbers for the signup, now you can let them log in with either a password or a verification code  via text message. Let's look at the password approach first.
+You can request that your users have their email addresses verified before they can access certain functions in your app. By doing so it gets harder for spam users to abuse your app. If you check on **Send verification emails to users after signing up** in {{app_permission_link}}, an email containing verification link will be sent to each `AVUser` created with an email address. The user is considered to be verified if the link is clicked on.
 
-```js
-AV.User.logInWithMobilePhone(
-  'MOBILE_PHONE_NUMBER', 
-  'PASSWORD'
-).then(function (loggedInUser) {
-  console.log(loggedInUser);
-}, function (error) {
-  // cannot log the user in
-});
-```
+If a user forgets to click on the link and needs to have their account verified later, the following code can be used to send a new email to them:
 
-By your app's default settings, LeanCloud will let the user log in to their account as long as the phone number and the password are correct even when the ownership of the phone hasn't been verified. But if you are trying to make your app more secure, you definitely can let users in only when their phones have been verified. The setting that changes such behavior can be found in your app's [Data Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) page. Please also take a look at [Verifying Phone Numbers](#verifying-phone-numbers) to learn how to handle it programmatically.
+{% block code_send_verify_email %}{% endblock %}
 
-Sometimes users may forget their passwords. Rather than making them go through the trouble to reset their password, you can offer a simpler alternative by using verification codes that will be sent to their phones to help them get in.
+Keep in mind that a verification email will be sent out automatically if the email of `AVUser` is updated with `setEmail()`. `requestEmailVerify` **does not** need to be called in this scenario.
 
-Here is how: Create a link or a button that says "Use SMS verification code to log in" or something to that effect. When user clicks on it, call the `requestLoginSmsCode` method to send the verification code for the login request.
+### Logging in
 
-```js
-AV.User.requestLoginSmsCode(
-  'MOBILE_PHONE_NUMBER'
-).then(function () {
-  // display a message to tell the user that 
-  // the verification code is sent
-}, function (error) {
-  // check errors
-});
-```
+Below are the ways you can use to log a user in.
 
-When the verification code is provided, call the `logInWithMobilePhoneSmsCode` method to proceed:
+#### Logging in with Usernames and Passwords
 
-```js
-AV.User.logInWithMobilePhoneSmsCode(
-  'MOBILE_PHONE_NUMBER', 
-  'VERIFICATION_CODE'
-).then(function (user) {
-  // user logged in successfully
-}, function (error) {
-});
-```
+{% block code_user_logIn_with_username_and_password %}{% endblock %}
 
-#### Sandbox Phone Number
+#### Logging in with Phone Numbers and Passwords
 
-During the development of your application, you may need to test the signup or login API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be greatly affected by such limitations.
+More information can be found at {{ sms_guide_url }}.
 
-To work around it, you can set up a sandbox phone number in your [LeanCloud Dashboard SMS  Settings page](/dashboard/messaging.html?appid={{apppid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. So whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connection to the carrier networks being made.
+{% block code_user_logIn_with_mobilephonenumber_and_password %}{% endblock %}
 
-On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a phone number and a verification code in order for them to review the app as a normal user. Failing to do so may result in their app being rejected by Apple Store.
+Keep in mind that users with unverified numbers are able to log in with the method above. If you need to prevent them from logging in, check on **Prevent users with unverified numbers from logging in** in {{app_permission_link}}.
 
-For the sending and receiving limitations on SMS messages, please read our [SMS Guide](sms-guide.html) to learn more.
+#### Logging in with Phone Numbers and Verification Codes
+
+The code below sends a verification code to a number:
+
+{% block code_user_logIn_requestLoginSmsCode %}{% endblock %}
+
+The following code logs the user in with the code collected from their input:
+
+{% block code_user_logIn_with_smsCode %}{% endblock %}
+
+{{ sms.fixedVerificationCode("####") }}
 
 #### Single Device Sign-on
 
-In some scenarios you may want to restrict a user's account to be logged on by no more than one device at a time. For example, when a user logs in to the app on device A, any previous logins on other devices become invalid. Here's a flow of how you can implement this feature with LeanCloud:
+By following the steps below, a user will get all the other sessions expired once they log in on a device:
 
-1. Create a new class (*Device* for example) in your app's LeanCloud account to keep track of data of user logins and their current device.
-1. When a user logs in to your app successfully on device A, update the Device class to reflect that that user's current device is A.
-1. When the same user is trying to launch your app on device B, your code will check against the Device class to identify what the current device is. So in this case it finds A, not B, then you should call the `AV.User.logout` method to invalidate any existing session on device B and notify the user about the login collision.
+1. Create a table in the cloud that keeps track of each user's credentials and their device information.
+2. Once a user logs in on a device, update the device information of this user to be the current device.
+3. When the app running on another device is opened, check if the device matches the one stored in the cloud. If it does not, call `logout` on AVUser to log out.
 
-#### User Account Lockout
+#### Current User
 
-Of course, when a user entered a wrong password or verification code, LeanCloud won't log them in to their account.
+After a user is logged in, LeanCloud SDK automatically stores the session information of this user in the client so that the user does not need to log in each time they open the client. The following code checks if there is a user logged in:
 
-If there are more than 6 failed logon attempts made by the same user in a 15 minute window, LeanCloud will temporarily lock out that user account and return an error saying `{"code": 1, "error": "You have exceeded the maximum number of login attempts, please try again later, or consider resetting your password."}` to the client.
+{% block code_current_user %}{% endblock %}
 
-A locked account cannot be used until it is unlocked *by the backend* in 15 minutes since the last bad logon attempt. During the lockout period, there is no way to unlock the account through the SDK or REST API, nor can a successful logon attempt, unless the user resets the password before the lockout expires.
+The session information of a user will remain in the client until the user is [logged out](#logging-out).
 
-### Verifying Emails
+#### Session Tokens
 
-When a user's email is set or modified, `emailVerified` is set to *false* in the cloud. If you turn on the auto-emailing feature for these events in your app's [Data Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), LeanCloud then emails the user a link which will set `emailVerified` to true.
+A SessionToken will be returned to the client after a user is logged in, which will be used for authenticating requests made by the same `{{userObjectName}}` in the future and will be included in the Header of each HTTP request made from the client with {{sdk_name}}.
 
-This kind of email can be resent later by calling the `requestEmailVerify` method, especially when the above-mentioned auto-emailing feature is disabled.
+If **Require users to re-log in after changing password** is checked on in {{app_permission_link}}, the SessionToken of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [403 (Forbidden)](error_code.html#_403) will be returned as an error.
 
-```js
-AV.User.requestEmailVerify(
-  'EMAIL_ADDRESS'
-).then(function (result) {
-  // verification email is sent successfully
-}, function (error) {
-});
-```
+##### Validating `SessionToken`
 
-When the user confirmed his or her email address by clicking on the link LeanCloud emailed them, `emailVerified` will be set to true. AV.Users can never have a "true" value when the user account is first created or when the email is missing. There's also a switch in your app's settings to determine whether to stop users from logging in when their emails are not verified.
+{% block code_user_isAuthenticated %}{% endblock %}
 
-### Verifying Phone Numbers
+##### Logging in with `SessionToken`
 
-When a user's mobile phone number is set or modified, `mobilePhoneVerified` is set to *false* in the cloud. If you enable phone number verification, LeanCloud then sends the verification code to the user via text message.
+Below are the situations when you may need to log a user in with SessionToken:
 
-You can also manually initiate a verify request anytime with the following code:
+- A SessionToken is already available in a previous cache.
+- A WebView within the app needs to know the current user.
+- The user is logged in on the server side and the server provides the SessionToken to the client.
 
-```js
-AV.User.requestMobilePhoneVerify(
-  'MOBILE_PHONE_NUMBER'
-).then(function(){
-  // verification code is sent
-}, function(error){
-  // handle errors
-});
-```
+{% block code_authenticate_via_sessiontoken %}{% endblock %}
 
-When the user entered the verification code, LeanCloud will set their `emailVerified` to true.
+{{ docs.alert("For security reasons, please avoid passing SessionToken as a part of URL to a third-party browser.") }}
 
-```js
-AV.User.verifyMobilePhone(
-  'VERIFICATION_CODE'
-).then(function(){
-  // mobilePhoneVerified will be set to true
-}, function(error){
-  // handle errors
-});
-```
+#### Account Lockout
 
-In your app's [Data settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), you have options to enable phone number verification at signup, and keep users who haven't confirmed their phone numbers from logging in to their accounts or from resetting their passwords via SMS.
+If the wrong password or verification code is entered for an account for more than 6 times within 15 minutes, the account will be disabled temporarily and the error code 1 will be returned.
 
-{# Enabling phone number verification in an application's settings allows the application to reserve part of its experience for users with confirmed phone numbers. 
-
-Enabling phone number verification can testify that a real person is leveraging the phone in their hand. It stops accounts from being created by bots, and can reduce fraud and associated costs by blocking premium and toll-free numbers.#}
-
-{# ### CAPTCHA Code
-
-Using [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) is a common and effective practice to protest your application from spam and abuse. CAPTCHA offers more than just spam protection. It also helps  reduce fraud and associated costs by blocking bots that could trigger bulk SMS sending.   
-
-LeanCloud CAPTCHA aims to keep bots or other automated software from engaging in abusive activities while letting your valid users pass through with ease.
-
-LeanCloud offers CAPTCHA as a free service to make your app's more bot-proof. #}
-
-
-### Current User 
-
-It would be bothersome if the user had to log in every time they open your app. You can avoid this by using the cached current `AV.User` object.
-
-Whenever you use any signup or login methods, the user is cached on the client. You can automatically assume the user is logged in:
-
-```js
-var currentUser = AV.User.current();
-if (currentUser) {
-  // redirect to the home page of your app
-}
-else {
-  // show the signup or login page
-}
-```
-
-You can clear the current user by logging them out:
-
-```js
-AV.User.logOut();
-// now the currentUser will be null
-var currentUser = AV.User.current();
-```
-
-The current user will be cached on the client until you explicitly call the `logout` method to clear it.
-
-### Setting The Current User
-
-When the user successfully logged in, LeanCloud will issue a **session token** and return it to the client as an identifier for the user who is currently logged in. Our SDK then caches the token on the client and passes it to the cloud through HTTP Header parameters with every HTTP request it makes. This mechanism helps the cloud identify which `AV.User` sent the request.
-
-Therefore it is sufficient to use a valid session token to log a user in without requiring username and password. Here are some common use cases for session tokens:
-
-- You make use of the cached session token on the client to automatically log in to LeanCloud, or some part of your app depends on WebView to interact with LeanCloud where user authentication may occur, you can use `AV.User.current().getSessionToken()` to get the session token.
-- You've created your own authentication routines, or otherwise logged in a user on the server side, you can now pass the session token to the client.
-
-When the session token is available, you can use the `become` method to set the current user:
-
-```js
-AV.User.become(
-  'SESSION_TOKEN'
-).then(function(user) {
-  // currentUser has been refreshed
-})
-```
-
-The `become` method will ensure the session token is valid before setting the current user.
-
-{{ docs.alert("Placing session tokens into the URL for use in non-private environments increases the risk that they will be captured by attackers, thus we strongly advise you not to do so.") }}
-
-Depending on your app's [Data Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), the current user's session token could become invalid upon password change. When it happens, you should prompt the user to login again so that they can obtain a new session token. Otherwise, all API requests from that client or device will fail with [error 403](error-code.html#_403).
-
-To test if the session token is valid, you can write:
-
-```js
-var currentUser = AV.User.current();
-currentUser.isAuthenticated().then(function(authenticated){
-});
-```
+The account will be automatically recovered 15 minutes after the last attempt and the process cannot be expedited through SDK or REST API. While the account is disabled, the user cannot be logged in even though the correct credentials are provided. The restriction applies to both SDK and LeanEngine.
 
 ### Resetting Passwords
 
-It's a fact that as soon as you introduce passwords into a system, users will forget them. In such cases, LeanCloud provides a couple of ways to let them securely reset their password.
+#### Resetting Passwords with Emails
 
-The flow for password reset with email is as follows:
+The following code sends a password reset email to the user:
 
-1. User requests that their password be reset by typing in their email.
-1. LeanCloud sends an email to their address, with a special password reset link.
-1. User clicks on the reset link, and is directed to a special LeanCloud page that will allow them type in a new password.
-1. User types in a new password. Their password has now been reset to a value they specify.
+{% block code_reset_password_by_email %}{% endblock %}
 
-To kick off the flow, ask the user for their email address, and call:
+Here is the process of resetting password:
 
-```js
-AV.User.requestPasswordReset(
-  'EMAIL_ADDRESS'
-).then(function () {
-  // notify user that password reset request was sent successfully
-}, function (error) {
-});
-```
+1. The user enters the email address used for the account.
+2. {{productName}} sends an email to the address including a link for resetting password.
+3. After the user clicks on the link, a new page will pop up, asking for a new password.
+4. The password will be reset after the user enters a new password.
 
-This will attempt to match the given email with the user's email or username field, and will send them a password reset email. By doing this, you can opt to have users use their email as their username, or you can collect it separately and store it in the email field.
+#### Resetting Passwords with Phone Numbers
 
-> The content of the password reset email is fully customizable. You can go to your app's [Email](/dashboard/app.html?appid={{appid}}#/email) page on LeanCloud and pick the right template to modify.
+The code below sends a verification code to the phone number provided:
 
-Alternatively, you can ask for the mobile phone number instead of the email to reset their password like so:
+{% block code_reset_password_by_mobilephoneNumber %}{% endblock %}
 
-1. User requests that their password be reset by typing in their mobile phone number that has been associated with their user account (at signup or previous login).
-1. LeanCloud sends a short message to that phone number with a verification code.
-1. User types in the verification code and a new password. Their password has now been reset to a value they specify. 
+The code below resets the password for the user:
 
-```js
-AV.User.requestPasswordResetBySmsCode(
-  'MOBILE_PHONE_NUMBER'
-).then(function () {
-  // sms code has been sent
-}, function (error) {
-});
-```
+{% block code_reset_password_by_mobilephoneNumber_verify %}{% endblock %}
 
-LeanCloud will try to match the given phone number with the user's mobilePhoneNumber field, and then send the verification code. Per your app's [Data Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the mobilePhoneVerified field is true.
+### Logging out
 
-When the user enters the verification code and a new password, you call:
+The following code logs the current user out by removing their credentials from the cache:
 
-```js
-AV.User.resetPasswordBySmsCode(
-  'VERIFICATION_CODE',
-  'NEW_PASSWORD'
-).then(function () {
-  // password reset is successful
-}, function (error) {
-  // wrong verification code
-});
-```
+{% block code_current_user_logout %}{% endblock %}
 
-{# > Note that the messaging in either of the above flows will reference your app by the name that you specified when you created this app on LeanCloud. #}
+### Queries on Users
 
-{# take a look at our blog article [Customizing password reset and email verification messages](https://blog.leancloud.cn/607/). #}
+For security reasons, **the `_User` table of each new app has its `find` permission disabled by default**. Each user can only access their own data in `_User` table and cannot access that of others. If you need to allow each user to view other users' data, we recommend that you create a new table to store such data and enable the `find` permission of this table.
 
-### Querying
+You may also encapsulate queries on users within [LeanEngine](leanengine_overview.html) and avoid opening up `find` permissions of `_User` tables.
 
-To query for users, you can simple create a new `AV.Query` for `AV.User`s:
+The following code creates a query on users:
 
-```js
-var query = new AV.Query('_User');
-```
-
-However, the `AV.User` class `_User` is secured by default with the `find` permission being turned off. This ensures that every authenticated user is restricted to read their own data not others'.
-
-If you wish to give users the ability to read others' data, we recommend creating a separate class, with the `find` permission on, for storing such shared data. You may also consider handling queries for users on the server side, such as inside a [LeanCloud Cloud Code](leanengine-guide.html) function where you can safely use the master key to bypass any permission restrictions as needed.
-
-The [Data and Security](data-security.html) section gives more details about how to tweak permissions at the Class level, which you may find useful.
-
-There are some other restrictions applied to the AV.User class. Please read [Security For User Objects](#Security-For-User-Objects) section for more details.
-
-### Associations
-
-Associations involving an `AV.User` work right of the box. For example, let's say you're saving a new book for an author and retrieving all the books written by that author:
-
-```js
-var author = AV.User.current();
-var Book   = AV.Object.extend('Book');
-var book   = new Book();
-book.set('title', 'My Fifth Book');
-book.set('author', author);
-book.save().then(function(book) {
-  // find all books by the same user
-  var query = new AV.Query(Book);
-  query.equalTo('author', author);
-  query.find().then(function(books){
-    // all the books
-  });
-});
-```
-
-### Security For User Objects
-
-The `AV.User` class is secured by default.  Specifically, you are not able to invoke any of the save or delete methods unless the `AV.User` was obtained using an authenticated method, like `logIn` or `signUp`. This ensures that only the user can read or alter their own data. 
-
-The reasoning behind it is that most data stored in the `AV.User` can be very personal and sensitive, such as mobile phone number, social account ID, etc. So even the app's owner should also avoid tampering with these data for the sake of user's privacy.
-
-The following illustrates this security policy:
-
-```js
-var user = AV.User.logIn(
-  'USERNAME', 
-  'PASSWORD'
-).then(function (user) {
-  // attempt to change username
-  user.set('username', 'NEW_USERNAME');
-  // password is protected so is returned as an empty string
-  var password = user.get('password');
-
-  user.save().then(function(user){
-    // this succeeds, since the user was authenticated
-
-    // get the user from a non-authenticated method
-    var query = new AV.Query('_User');
-    query.get(user.objectId).then(function(userAgain){
-      userAgain.set('username', 'ANOTHER_USERNAME');
-      // save changes
-      userAgain.save().then(function(){
-      }).catch(function(error){
-        // this will error, since the AV.User is not authenticated
-      });
-    });
-  });
-});
-```
-
-The `AV.User` obtained from `AV.User.current()` will always be authenticated.
-
-If you need to check if an `AV.User` is authenticated, you can invoke the `isAuthenticated` method. You do not need to check authenticated with `AV.User` objects that are obtained via an authenticated method.
-
-As a reminder, the user's password can be set at signup but cannot be modified and saved to the cloud afterwards unless the user requests it to be [reset](#resetting-passwords). When being retrieved from the cloud after login, it always remains empty. It will not be cached on the client either.
-
-### Security For Other Objects
-
-For any object, you can specify which users are allowed to read the object, and which users are allowed to modify an object. To support this type of security, each object has an [access control list](http://en.wikipedia.org/wiki/Access_control_list), implemented by the `AV.ACL` class. More details are explained in the [ACL Guide](acl-guide.html).
-
-### Linking Users
-
-LeanCloud allows you to link your users with services (commonly known as social networking service, or SNS) like Github, Twitter, Facebook, WeChat, QQ and Weibo, enabling your users to sign up or log into your application using their existing identities. This is accomplished through the `signUpOrlogInWithAuthData` method by providing authentication data for the service you wish to link to a user in the `authData` field. Once your user is associated with a service, the `authData` for the service will be stored with the user{# and is retrievable by logging in#}.
-
-For example, to sign up or log in with a user's Weixin (a.k.a. WeChat) account, your code will look like this:
-
-```js
-AV.User.signUpOrlogInWithAuthData({
-  // required data
-  'openid':       'OPEN_ID',
-  'access_token': 'ACCESS_TOKEN',
-  // optional
-  'expires_in':   '2020-01-06T11:43:11.904Z'
-}, 'weixin').then(function (success) {
-}, function (error) {
-});
-```
-
-LeanCloud then verifies that the provided `authData` is valid and checks to see if a user is already associated with this data. If so, it returns a status code of `200 OK` and the details (including a [`sessionToken`](#setting-the-current-user) for the user).
-
-If the user has never been linked with this account, you will instead receive a status code of `201 Created`, indicating that a new user was created. The body of the response will contain the objectId, createdAt, sessionToken, and an automatically-generated unique username. For example:
-
-```json
-{
-  "username":     "k9mjnl7zq9mjbc7expspsxlls",
-  "objectId":     "5b029266fb4ffe005d6c7c2e",
-  "createdAt":    "2018-05-21T09:33:26.406Z",
-  "updatedAt":    "2018-05-21T09:33:26.575Z",
-  "sessionToken": "...",
-  // by default authData won't show up here
-  // see explanation below
-  "authData": {
-    ...
-  }
-  ...
-}
-```
-
-By default, `authData` cannot be returned to the client by using the `include` or `fetch` method on a query unless the record is owned by the current user. To change this behavior, you can go to your app's [Data page](/dashboard/data.html?appid={{appid}}#/_User), select the `_User` class and click on the arrow icon on the authData column header, check off the **Restrict read and write permission to the owning user** option in the resultant "Column Property" window so that anyone can have access to it.
-
-To ensure that an `AV.User` is linked with one service account only once, a unique index needs to be created for the `authData.<SERVICE_NAME>.uid` key in the `_User` class.
-
-> Please note that out of performance concerns,  you are not permitted to create any new indexes in the Data Browser for a class with more than 10,000 records. However, existing indexes will continue to take effect on records beyond 10K. If your app is on a Business service plan, please [open a support ticket](https://leanticket.cn) with us to have the new index(es) created for you. If using a Developer plan, you must upgrade to a Business plan first.
-
-#### Authentication Data
-
-`authData` is a JSON object with keys for each linked service containing the data below. In each cases, you are responsible for completing the authentication flow (e.g. usually through OAuth 1.0 or 2.0) to obtain the information the service requires for linking.
-
-[Sina Weibo](http://open.weibo.com/) authData:
-
-```json
-{
-  "authData": {
-    "weibo": {
-      "uid":           "...",
-      "access_token":  "...",
-      "expiration_in": "..." //optional
-    }
-  }
-}
-```
-
-[Tencent QQ](http://t.qq.com/) authData:
-
-```json
-{
-  "authData": {
-    "qq": {
-      "openid":       "...",
-      "access_token": "...",
-      "expires_in":   ... //optional
-    }
-  }
-}
-```
-[WeChat/WeiXin](http://open.weixin.qq.com/) authData:
-
-```json
-{
-  "authData": {
-    "weixin": {
-      "openid":       "...",
-      "access_token": "...",
-      "expires_in":   ... //optional
-    }
-  }
-}
-```
-
-LeanCloud automatically validates the integrity of the access token for the above services to prevent data forge attack. When the validation fails, LeanCloud will respond with *"invalid authData"* error and the linking will not be established.
-
-When using other services, such as Github, Twitter and Facebook for linking, you are responsible for validating the access token from the service provider. You also need to turn off the *"Validate the access token for third-party login"* option in your app's [Data Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) to let LeanCloud know how to process the authData and handle the linking accordingly. 
-
-authData for other services:
-
-```json
-{
-  "SERVICE_NAME": {
-    "uid": "UNIQUE_USER ID_ON_THE_SERVICE_PROVIDERS_PLATFORM",
-    "access_token": "ACCESS_TOKEN",
-    ...
-  }
-}
-```
-
-#### Unlinking 
-
-Unlinking an existing user with a service also uses `signUpOrlogInWithAuthData` method to clear `authData` from the user by setting the `authData` for the service to `null`. For example, unlinking a user with a Github account would use a request like this: 
-
-```js
-AV.User.signUpOrlogInWithAuthData(
-  null, 
-  'github'
-).then(function(){
-  // authData is cleared, user has been unlinked
-});
-```
+{% block code_query_user %}{% endblock %}
 
 ### Anonymous Users
 
-LeanCloud also supports the notion of anonymous users for those apps that allow access for unauthenticated users to the experience of the application without requiring explicit signup or login.
+The following code creates a new user without asking for any credentials:
 
-To create an anonymous user, you can do:
+{% block anonymous_user_login %}{% endblock %}
 
-```js
-AV.User.loginAnonymously().then(user => {
-  // successfully logged in as an anonymous user
-}).catch(function(error) {
-  // handle error
-  console.error(error);
-});
-```
+An anonymous user can be converted to a normal user with one of the following operations:
 
-You can add new properties or fields to the anonymous user just like with a normal user, such as username, password, email, etc. You can also convert an anonymous user to a normal user by going through the same signup steps as you will do with a normal user if desired, for instance: 
+- Set a username and password.
+- [Link to a third-party app](#linking-users).
 
-- [sign up with username and password](#signing-up)
-- link with a third-party service or platform, such as Github.
+The following code sets a username and password for an anonymous user:
 
-```js
-const currentUser = AV.User.current();
-  // currentUser is the anonymous user
-  user.setUsername('USERNAME')；
-  user.setPassword('PASSWORD');
+{% block setup_username_and_password_for_anonymous_user %}{% endblock %}
 
-  user.signUp().then(user => {
-  // user has become a normal user
-}).catch(function(error) {
-  // something went wrong
-  console.error(error);
-});
-```
+The following code tells if the current user is anonymous:
 
-You can use the `isAnonymous` method to set an anonymous user apart from a normal user: 
+{% block determine_a_user_is_anonymous %}{% endblock %}
 
-```js
-const currentUser = AV.User.current();
-if (currentUser.isAnonymous()) {
-  // show the Sign-up button
-} else {
-  // show the Log-out button
-}
-```
-
-However, if a user account remains anonymous,  there's no way to log it in with the same identify again once it is logged out, let alone any data that has been previously associated with it.   
+If an anonymous user is not converted to a normal user before they log out, they will not be able to log in to the same account later and the data stored in that account cannot be retrieved anymore.
 
 ## Roles
 
-As your app grows in scope and user-base, you may find yourself needing more coarse-grained control over access to pieces of your data than user-linked ACLs can provide. To address this requirement, LeanCloud supports a form of Role-based Access Control. Check the detailed [ACL Guide](acl-guide.html) to learn how to set it up for your objects.
+We have a dedicated documentation explaining the relationship between users and roles, including the permission managements with them. See [ACL Guide](acl-guide.html).
+
+## Linking Users
+
+It is a common practice that an app allows their users to log in with their existing third-party accounts (like Facebook or Twitter). This makes it possible to reduce the time needed for a user to create their account.
+
+Here is the basic steps for implementing such function:
+
+1. Set up platform account.
+2. Retrieve authData of a user from the platform.
+3. Link authData to AVUser on LeanCloud.
+
+### Basic Steps for Linking Users
+
+#### Setting up Platform Accounts
+
+You can put the **App ID** and **App Secret Key** of the platform into [Dashboard > Components > SNS](/dashboard/devcomponent.html?appid={{appid}}#/component/sns). A **callback URL** and **log in URL** will be generated after they are saved.
+
+After completing the configuration above, LeanCloud will automatically validate each authData with the corresponding platform to make sure that each AVUser is linked to a valid user of the platform. If you do not want authData to be validated, **check off** "Validate AccessToken when linking accounts" in [Dashboard > Components > SNS](/dashboard/devcomponent.html?appid={{appid}}#/component/sns).
+
+#### Retrieving authData and Creating AVUser
+
+After retrieving authData, call `loginWithauthData` or `associateWithauthData` to bind it with an AVUser. The data will be stored in the field `authData` of `_User` table.
+
+Each authData needs to contain at least three properties: `openid or uid`, `access_token`, and `expires_in`. `openid` is for WeChat and QQ. `uid` is for all other platforms.
+
+The code below can be used to have a user sign up or log in with authData. If an AVUser with the authData does not exist, a new one will be created.
+
+{% block login_with_authdata %}{% endblock %}
+
+The new AVUser will be created in the _User table with the following data:
+
+{% block login_with_authdata_result %}{% endblock %}
+
+If an AVUser with the authData already exists, the AVUser will be returned and can be used to log in.
+
+If an existing AVUser is linking a new third-party account, the authData from the platform will be added to the AVUser:
+
+{% block associate_with_authdata %}{% endblock %}
+
+A new field `qq` will be added to the authData of the AVUser:
+
+{% block associate_with_authdata_result %}{% endblock %}
+
+### Advanced Features
+
+#### Collecting Additional Information from New Users
+
+If you need your users to provide additional information (username, phone number, password, etc.) when logging in with third-party accounts, you can set `failOnNotExist` of `loginWithauthData` to be `true` so that the cloud would check if there is already a user with the authData and return error 211 (`Could not find user`) if there is not. With this error code, you can take your user to another page to fill out the additional information. Once they are done, save these information into a new AVUser object and call `loginWithauthData` again **without `failOnNotExist`** for logging in:
+
+{% block login_with_authdata_without_fail %}{% endblock %}
 
 {% block module_in_app_search %}
-## In-App Search
+## In-App Searching
 
-In-App Search offers a better way to search through the information contained within your apps. It's built with search engine capabilities that you can easily tap into your app.
-
-Effective and useful app search is crucial for helping app users find what they need. Maximise the value of your app's search features using these principles.
-
-一个针对应用数据进行全局搜索的接口，它基于搜索引擎构建，提供更强大的搜索功能。要深入了解其用法和阅读示例代码，请阅读 {{inapp_search_guide_url}}。
-You can use full-text for efficient search capabilities. Text indexes are automatically created for you. Your strings are turned into tokens for fast searching.
-
-Note: Full Text Search can be resource intensive. Ensure the cost of using indexes is worth the benefit.
+In-app searching is built with search engine that gives your app the ability to search data among an entire dataset. For more details, see {{inapp_search_guide_url}}.
 {% endblock %}
 
-
-
-{% if node != 'qcloud' %}
 {% block module_in_app_social %}
 ## In-App Socializing
-应用内社交，又称「事件流」，在应用开发中出现的场景非常多，包括用户间关注（好友）、朋友圈（时间线）、状态、互动（点赞）、私信等常用功能，请参考 {{status_system_guide_url}}。
-{% endblock %}
-{% endif %}
 
-{% if node != 'qcloud' %}
-{% block text_sns %}
-## SNS
-社交账号的登录方便了应用开发者在提升用户体验，我们特地开发了一套支持第三方账号登录的组件，请参考 {{sns_guide_url}}。
+In-app socializing offers features like following, timeline, status update, interaction, messaging, etc. For more details, see {{status_system_guide_url}}.
 {% endblock %}
-{% endif %}
 
-{% if node != 'qcloud' %}
-{% block text_feedback %}
-## User Feedback
-用户反馈是一个非常轻量的模块，可以用最少两行的代码来实现一个支持文字和图片的用户反馈系统，并且能够方便的在我们的移动 App 中查看用户的反馈，请参考  {{feedback_guide_url}}。
-{% endblock %}
-{% endif %}
-
-{# {% block js_push_guide %}{% endblock %} #}
+{% block js_push_guide %}{% endblock %}
 
 {% block use_js_in_webview %}{% endblock %}
 
