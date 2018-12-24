@@ -2,23 +2,16 @@
 {% import "views/_data.njk" as data %}
 {% import "views/_sms.njk" as sms %}
 {% import "views/_parts.html" as include %}
-{% set middot = '·' %}
-{% set app_permission_link = "[Dashboard > Data > Settings > User Account](/dashboard/storage.html?appid={{appid}}#/storage/conf)" %}
-{% set query_result_limit = "A query returns 100 records by default. You can change the number of  results by setting limit. See [Limiting Query Results](#limiting-query-results) for more info." %}
 
-# LeanStorage JavaScript Guide
+{# 2018-12-24 考虑生成时指定以下参数以为每种语言生成各自的 HTML 文件 #}
+{% set platform_name = "JavaScript" %}
+{% set baseObjectName = "AV.Object" %}
 
-The LeanStorage JavaScript SDK can be used to persist and query data in LeanCloud.
+# LeanStorage {{platform_name}} Guide
 
-If you already have experience with relational databases such as MySQL and Postgres, you will notice that programming with LeanStorage SDK is quite different from writing SQL statements. For example, a SQL statement that adds a new record to the database may look like this (assuming the database and the table have already been created with the proper schema):
+The LeanStorage {{platform_name}} SDK can be used to persist and query data in LeanCloud. The code below shows how you can create an object and store it into the cloud:
 
-```sql
-INSERT INTO Todo (title, content) 
-VALUES ('R&D Weekly Meeting', 'All team members, Tues 2pm')
-```
-
-With our JavaScript SDK, you would write something like this:
-
+{% if platform_name === "JavaScript" %}
 ```js
 // Declare Class
 var Todo = AV.Object.extend('Todo');
@@ -39,11 +32,57 @@ todo.save().then(function (todo) {
   console.error('Failed to create new object, with error message: ' + error.message);
 });
 ```
+{% endif %}
+{% if platform_name === "Swift" %}
+```swift
+// Create an object
+let todo = LCObject(className: "Todo")
 
-The JavaScript code might seem a lot more verbose, but it is much more conforming to the language used to build applications and is free of many SQL-specific vulnerabilities. Many developers who use relational databases usually use ORM (object-relational mapping) frameworks instead of embedding SQL directly in their code. If you've used one of the ORM tools, the JavaScript code above may seem familiar to you.
+// Set values of fields
+todo.set("title",   value: "R&D Weekly Meeting")
+todo.set("content", value: "All team members, Tue 2pm")
+
+// Save data to the cloud
+todo.save { result in
+    switch result {
+    case .success:
+        break
+    case .failure(let error):
+        print(error)
+    }
+}
+```
+{% endif %}
+{% if platform_name === "Android" %}
+```java
+// Create an object
+AVObject todo = new AVObject("Todo");
+
+// Set values of fields
+todo.put("title",   "R&D Weekly Meeting");
+todo.put("content", "All team members, Tue 2pm");
+
+// Save data to the cloud
+todo.saveInBackground(new SaveCallback() {
+    @Override
+    public void done(AVException e) {
+        if (e == null) {
+            // Execute any logic that should take place after the object is saved
+        } else {
+            // Execute any logic that should take place if the save fails
+        }
+    }
+});
+```
+{% endif %}
+
+{% call docs.noteWrap() %}
+The SDK designed for each language interacts with the same [REST API](rest-api.html) via HTTPS, offering fully functional interfaces for you to manipulate the data in the cloud.
+{% endcall %}
 
 ## Getting Started
 
+{% if platform_name === "JavaScript" %}
 The JavaScript SDK supports Chrome 45+, recent versions of Firefox, IE 10+, Edge, iOS 9.3+, Android 4.4+, WeApp DevTools, Node.js 4.0+, React Native 0.26+, and Electron.
 
 ### Using JavaScript SDK on Different Platforms
@@ -86,7 +125,7 @@ Check out our Github repo https://github.com/leancloud/javascript-sdk/releases f
 
 If you plan to use our JavaScript SDK inside Android WebView, please check out [WebView](#webview) section of this guide.
 
-<a id="setup-livequery" name="setup-livequery"></a>If you rely on features of [Live Queries](#live-queries), include the following npm module instead: 
+If you plan to use [LiveQuery](#live-queries), include the following npm module instead:
 
 ```js
 // No need to require 'leancloud-storage' if the following line is present
@@ -101,11 +140,13 @@ Or load it with the following `<script>` tag:
 ```
 
 You also need to go to your app's [LeanCloud Dashboard > Storage > Settings page](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Misc** section before you can expect it to work.
+{% endif %}
 
 ### Initializing Your Application
 
-Go to your app's [LeanCloud Dashboard setting page](/dashboard/app.html?appid={{appid}}#/key) and look for your App ID and App Key, then copy and paste them into your initialization code:
+Go to your app's [LeanCloud Dashboard > Setting](/dashboard/app.html?appid={{appid}}#/key) and look for your App ID and App Key, then copy and paste them into your initialization code:
 
+{% if platform_name === "JavaScript" %}
 ```js
 var APP_ID  = '{{appId}}';
 var APP_KEY = '{{appKey}}';
@@ -117,47 +158,66 @@ AV.init({
   region: 'us' // Defaults to China if not specified
 });
 ```
+{% endif %}
 
-Apps running on LeanCloud are region-specific. It means that no data will be communicated across regions. Therefore, incorrect region settings will lead to the failure of initialization.
+Apps running on LeanCloud are region-specific, which means that no data will be communicated across regions. Therefore, incorrect region settings will cause the initialization to fail.
 
-Each region serves their own REST APIs. Please consult documentation for the correct URL schemes of APIs to be used. Docs for US region can be found at https://us.leancloud.cn/docs/rest_api.html; docs for China region can be found at https://leancloud.cn/docs/rest_api.html. 
+Each region has its own REST APIs. Please refer to the following documentations for the correct URL schemes of APIs to be used:
+
+- Docs for US: https://us.leancloud.cn/docs/rest_api.html.
+- Docs for China: https://leancloud.cn/docs/rest_api.html.
 
 ### Debugging
 
-Our SDK supports debug logging. You can turn it on during the development phase of your application. Once enabled, details of every request made by our SDK along with errors will be output to the browser's console, or to the terminal window in a Node.js environment.
+You can easily trace the problems in your application by turning debug logs on during the development phase. Once enabled, details of every request made by the SDK along with errors will be output to IDE, browser console, or [LeanEngine > Logs](/dashboard/cloud.html?appid={{appid}}#/log) in LeanCloud Dashboard.
 
-For browser based applications, open the browser's console and run the following command:
-
+{% if platform_name === "JavaScript" %}
 ```js
-localStorage.setItem('debug', 'leancloud*,LC*');
+// In Node.js, set environment variable DEBUG=leancloud*
+// Debug logs will be enabled when running app with npm
+DEBUG=leancloud* npm start
+
+// If using Node.js with LeanEngine, go to LeanCloud Dashboard > LeanEngine > Settings > Custom Environment Variables
+// Put DEBUG in the first field and leancloud:* in the second field (make sure to include the colon between leancloud and *)
+DEBUG=leancloud:* lean up
+
+// Set localStorage in browser console
+localStorage.setItem('debug', 'leancloud*');
+
+// Enable debug logs for LiveQuery
+localStorage.setItem('debug', 'LC*');
 ```
+{% endif %}
 
-If your app runs in a Node.js environment, set the environment variable `DEBUG` to be `leancloud*,LC*`.
+{% call docs.alertWrap() %}
+Make sure debug logs are turned off before your app is published. Failure to do so may lead to the exposure of sensitive data.
+{% endcall %}
 
+{% if platform_name === "JavaScript" %}
 ### Web Security
 
-If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [LeanCloud Dashboard settings page](/dashboard/app.html?appid={{appid}}#/security) before you deploy it to a production environment.
+If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [LeanCloud Dashboard settings page](/dashboard/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
 
-Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
-
-However, due to the fact that your app is exposed to the internet, simply setting up whitelist domains is not enough to guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you necessary information you need regarding app security. <a id="security-articles"></a>
+However, since your app is exposed to the internet, simply setting up whitelist domains can't totally guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
 
 - [Data and Security](data-security.html)
 - [ACL Guide](acl-guide.html)
+{% endif %}
 
 ## Objects
 
-### AV.Object
+{# 2018-12-24 每种语言对 AVObject 的命名不一，动态替换会导致 URL 混乱 #}
+### AVObject
 
-Storing data on LeanCloud is built around `AV.Object`. Each `AV.Object` contains key-value pairs of JSON-compatible data. This data is schemaless, which means that you don't need to specify ahead of time what keys exist on each `AV.Object`. You simply set whatever key-value pairs you want, and our backend will store it.
+Storing data on LeanCloud is built around `{{ baseObjectName }}`. Each `{{ baseObjectName }}` contains key-value pairs of JSON-compatible data. This data is schemaless, which means that you don't need to specify ahead of time what keys exist on each `{{ baseObjectName }}`. Simply set whatever key-value pairs you want, and our backend will store it.
 
-For example, let's say you're adding a todo item. A single `AV.Object` could contain:
+For example, the `{{ baseObjectName }}` storing a simple todo item may contain the following data:
 
 ```json
-title:       'Email Linda to confirm appointment',
+title:       "Email Linda to confirm appointment"
 isComplete:  false,
 priority:    2,
-tags:        ['work', 'sales']
+tags:        ["work", "sales"]
 ```
 
 {# Keys must be alphanumeric strings. Values can be strings, numbers, booleans, or even arrays, objects, and anything that can be JSON-encoded. #}
