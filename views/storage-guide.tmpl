@@ -7,7 +7,7 @@ The LeanStorage {{platform_name}} SDK can be used to persist and query data in L
 
 {% if platform_name === "JavaScript" %}
 ```js
-// Declare Class
+// Declare class
 var Todo = AV.Object.extend('Todo');
 
 // Create an object
@@ -40,8 +40,10 @@ todo.set("content", value: "All team members, Tue 2pm")
 todo.save { result in
     switch result {
     case .success:
+        // Execute any logic that should take place after the object is saved
         break
     case .failure(let error):
+        // Execute any logic that should take place if the save fails
         print(error)
     }
 }
@@ -132,7 +134,7 @@ If you plan to use our JavaScript SDK inside Android WebView, please check out [
 If you plan to use [LiveQuery](#live-queries), include the following npm module instead:
 
 ```js
-// No need to require 'leancloud-storage' if the following line is present
+// No need to require leancloud-storage if the following line is present
 var AV = require('leancloud-storage/live-query');
 ```
 
@@ -188,7 +190,7 @@ LCApplication.default.set(
 ```
 {% endif %}
 {% if platform_name === "Android" %}
-Next, create a Java Class named `MyLeanCloudApp` inheriting `Application`:
+Next, create a Java class named `MyLeanCloudApp` inheriting `Application`:
 
 ```java
 public class MyLeanCloudApp extends Application {
@@ -310,17 +312,17 @@ tags:        ["work", "sales"]
 
 ### Data Types
 
-`{{ baseObjectName }}` supports a wide range of data types to be used for each field, including common ones like String, Number, Boolean, Object, Array, Date, JSON, and null. You can nest JSON Objects and JSON Arrays to store more structured data within a single object.
+`{{ baseObjectName }}` supports a wide range of data types to be used for each field, including common ones like `String`, `Number`, `Boolean`, `Object`, `Array`, `Date`, and `null`. You can nest objects in JSON format to store more structured data within a single `Object` or `Array` field.
 
-Special data types supported by `{{ baseObjectName }}` include Pointer and File, which are used to store a reference to another `{{ baseObjectName }}` and binary data respectively.
+Special data types supported by `{{ baseObjectName }}` include `Pointer` and `File`, which are used to store a reference to another `{{ baseObjectName }}` and binary data respectively.
 
-`{{ baseObjectName }}` also supports GeoPoint, a special data type you can use to store location-based data. See [GeoPoints](#geopoints) for more details.
+`{{ baseObjectName }}` also supports `GeoPoint`, a special data type you can use to store location-based data. See [GeoPoints](#geopoints) for more details.
 
 Some examples:
 
 {% if platform_name === "JavaScript" %}
 ```js
-// Declare Class
+// Declare class
 var TestObject = AV.Object.extend('DataTypeTest');
 
 // Basic objects
@@ -333,7 +335,7 @@ var object = {
   string: string
 };
 
-// An AV.Object with another Class
+// An AV.Object with another class
 var pointer = AV.Object.createWithoutData('Todo', '5745557f71cfe40068c6abe0');
 
 // Create an object
@@ -413,7 +415,7 @@ The code below creates a new instance of `{{ baseObjectName }}`:
 // Create a new subclass of AV.Object
 var Todo = AV.Object.extend('Todo');
 
-// Create a new instance of that Class
+// Create a new instance of that class
 var todo = new Todo();
 ```
 {% endif %}
@@ -428,16 +430,16 @@ AVObject todo = new AVObject("Todo");
 ```
 {% endif %}
 
-`{{ baseObjectName }}{% if platform_name === "JavaScript" %}.extend(){% endif %}` takes ClassName as a parameter so that the cloud knows the Class you are using to create the object. A Class in LeanCloud is comparable to a table in a relational database.
+`{{ baseObjectName }}{% if platform_name === "JavaScript" %}.extend(){% endif %}` takes class name as a parameter so that the cloud knows the class you are using to create the object. A class in LeanCloud is comparable to a table in a relational database.
 
-A ClassName starts with a letter and can only contain numbers, letters, and underscores.
+A class name starts with a letter and can only contain numbers, letters, and underscores.
 
 {% if platform_name === "JavaScript" %}
 {% call docs.noteWrap() %}
-If you keep seeing "**Maximum call stack size exceeded**" exception in your log, chances are `AV.Object.extend()` had been called using the same ClassName more than once within a loop or a callback. To resolve such issue, either move it out of the loop or the callback to make sure it won't be over-instantiated, or switch to JavaScript SDK 1.4 or higher which handles the problem automatically.
+If you keep seeing `Maximum call stack size exceeded` exception in your log, chances are `AV.Object.extend()` had been called using the same class name more than once within a loop or a callback. To resolve such issue, either move it out of the loop or the callback to make sure it won't be over-instantiated, or switch to JavaScript SDK 1.4 or higher which handles the problem automatically.
 {% endcall %}
 
-From version 1.4.0 onwards, the JavaScript SDK is compatible with ES6 classes. If you're using ES6 in your codebase, you can subclass `AV.Object` with the **extends** keyword. However, when using extends, the SDK is not automatically aware of your subclasses. You will need to register the subclasses with the SDK:
+From version 1.4.0 onwards, the JavaScript SDK is compatible with ES6 classes. If you're using ES6 in your codebase, you can subclass `AV.Object` with the `extends` keyword. However, when using `extends`, the SDK is not automatically aware of your subclasses. You will need to register the subclasses with the SDK:
 
 ```js
 class Todo extends `AV.Object` {
@@ -455,7 +457,7 @@ After doing this, you will be able to add additional methods and properties to y
 
 ### Saving Objects
 
-The following code saves a new Class named "**Todo**" to the cloud:
+The following code saves a new class named `Todo` to the cloud:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -508,7 +510,7 @@ todo.saveInBackground();
 ```
 {% endif %}
 
-To make sure the data is successfully saved, take a look at [Dashboard > Data > Todo](/data.html?appid={{appid}}#/) in your app. You should see something like this when you click on the objectId of the object:
+To make sure the data is successfully saved, take a look at [Dashboard > Data > Todo](/data.html?appid={{appid}}#/) in your app. You should see something like this when you click on the `objectId` of the object:
 
 ```json
 {
@@ -527,23 +529,21 @@ To make sure the data is successfully saved, take a look at [Dashboard > Data > 
 ```
 
 {% call docs.noteWrap() %}
-You don't have to create or set up a new Class called "Todo" before running the code above. The Class will be automatically created in your app when it is first encountered.
+You don't have to create or set up a new class called `Todo` before running the code above. The class will be automatically created in your app when it is first encountered.
 {% endcall %}
 
 There are several built-in fields that are provided by default which you don't need to specify in your code:
 
 Built-in Field | Type | Description
 --- | --- | ---
-`objectId` | {{ "str" if platform_name === "Python" else "String" }} | A unique identifier for each saved object.
-`ACL` | {{ "leancloud.ACL" if platform_name === "Python" else "ACL" }} | Access Control List, a JSON-compatible data defining the read and write permissions of other people.
-`createdAt` | {% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Swift" %}NSDate{% endif %}{% if platform_name === "Android" %}Date{% endif %} | The time the object was created.
-`updatedAt` | {% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Swift" %}NSDate{% endif %}{% if platform_name === "Android" %}Date{% endif %} | The time the object was last modified.
+`objectId` | {{ "`str`" if platform_name === "Python" else "`String`" }} | A unique identifier for each saved object.
+`ACL` | {{ "`leancloud.ACL`" if platform_name === "Python" else "`ACL`" }} | Access Control List, a JSON-compatible data defining the read and write permissions of other people.
+`createdAt` | {% if platform_name === "JavaScript" %}`Date`{% endif %}{% if platform_name === "Swift" %}`NSDate`{% endif %}{% if platform_name === "Android" %}`Date`{% endif %} | The time the object was created.
+`updatedAt` | {% if platform_name === "JavaScript" %}`Date`{% endif %}{% if platform_name === "Swift" %}`NSDate`{% endif %}{% if platform_name === "Android" %}`Date`{% endif %} | The time the object was last modified.
 
 Each of these fields is filled in by the cloud automatically and doesn't exist on the local `{{ baseObjectName }}` until a save operation has been completed.
 
-Field names, or **keys**, must be alphanumeric strings. A custom key can neither start with double underscores `__`, nor be identical to any system reserved words or built-in field names regardless of letter cases.
-
-Here are the words you should avoid using as names of your keys: **{{ data.preservedWords(", ") }}**.
+Field names, or **keys**, must be alphanumeric strings. A custom key can neither start with double underscores `__`, nor be identical to any system reserved words or built-in field names (`ACL`, `className`, `createdAt`, `objectId`, and `updatedAt`) regardless of letter cases.
 
 **Values** can be strings, numbers, booleans, or even arrays and dictionaries — anything that can be JSON-encoded. See [Data Types](#data-types) for more information.
 
@@ -622,9 +622,9 @@ avQuery.getInBackground("57328ca079bc44005c2472d0", new GetCallback<AVObject>() 
 
 After retrieving an object, use the `get` method to acquire the data stored in its fields.
 
-Be aware that **objectId**, **updatedAt**, and **createdAt** are 3 special properties that cannot be retrieved using the `get` method or modified with the `set` method. Each of these fields is filled in by the cloud only, so they don't exist on `{{ baseObjectName }}` until a save operation has been completed.
+Be aware that `objectId`, `updatedAt`, and `createdAt` are 3 special properties that cannot be retrieved using the `get` method or modified with the `set` method. Each of these fields is filled in by the cloud only, so they don't exist on `{{ baseObjectName }}` until a save operation has been completed.
 
-If you try to access a field or property that doesn't exist, the SDK will return a **null** instead of raising an error.
+If you try to access a field or property that doesn't exist, the SDK will return a `null` instead of raising an error.
 
 {% if platform_name === "JavaScript" %}
 Sometimes you may want to get all the fields back at one time (which usually happens when performing data binding) without calling `get` on each field of the object. If your SDK version is 3.0.0+, you may call `toJSON` on `AV.Object` to get a plain JSON object containing all the fields of the object.
@@ -696,7 +696,7 @@ todo.fetchInBackground(new FetchCallback<AVObject>() { // fetchInBackground is e
 ```
 {% endif %}
 
-Keep in mind that **any unsaved changes made to the object prior to calling `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` will be discarded**. To avoid this, you have the option to provide **a list of keys** to the `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` method so that only the fields being specified are retrieved and refreshed (including special built-in fields such as objectId, createdAt, and updatedAt). Changes made to other fields will remain intact.
+Keep in mind that **any unsaved changes made to the object prior to calling `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` will be discarded**. To avoid this, you have the option to provide **a list of keys** to the `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` method so that only the fields being specified are retrieved and refreshed (including special built-in fields such as `objectId`, `createdAt`, and `updatedAt`). Changes made to other fields will remain intact.
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -768,9 +768,9 @@ LeanCloud automatically figures out which data has changed and only fields with 
 
 #### Updating Data Conditionally
 
-By passing a `query` option into the `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}` method, you can specify conditions on the save operation so that the object can be updated atomically only when those conditions are met. If no object matches the conditions, the cloud will return error code **305** to indicate that there was no update taking place.
+By passing a `query` option into the `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}` method, you can specify conditions on the save operation so that the object can be updated atomically only when those conditions are met. If no object matches the conditions, the cloud will return error `305` to indicate that there was no update taking place.
 
-For example, in the Class "Account" there is a field called **balance**, and there are multiple incoming requests that will modify the balance. An account cannot have negative balance, so we can only allow a request to update the balance when the amount requested is lower than or equal to the balance:
+For example, in the class `Account` there is a field called `balance`, and there are multiple incoming requests that want to modify this field. An account cannot have negative balance, so we can only allow a request to update the balance when the amount requested is lower than or equal to the balance:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -841,7 +841,7 @@ The benefit of using `query` option instead of the combination of `{{ baseQueryC
 
 #### Updating Counters
 
-Take Twitter as an example, we need to keep track of how many Likes and Retweets a tweet has gained so far. While a Like or Retweet action can be triggered simultaneously by multiple clients, using `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}` can lead to inaccurate results. To make sure that the total number is stored correctly, LeanCloud allows you to **atomically** increase (or decrease) the value of a number field.
+Take Twitter as an example, we need to keep track of how many Likes and Retweets a tweet has gained so far. While a Like or Retweet action can be triggered simultaneously by multiple clients, using `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}` can lead to inaccurate results. To make sure that the total number is stored correctly, LeanCloud allows you to **atomically** increase (or decrease) the value of a number field:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -888,7 +888,7 @@ theTodo.saveInBackground(new SaveCallback() {
 ```
 {% endif %}
 
-You can also increase (or decrease) the value of a field by any amount by passing in a second argument to `increment`. When no amount is specified, **1** is used by default.
+You can also increase (or decrease) the value of a field by any amount by passing in a second argument to `increment`. When no amount is specified, `1` is used by default.
 
 #### Updating Arrays
 
@@ -913,7 +913,7 @@ There are several operations that can be used to atomically update an array asso
 - `removeAll()`<br/>removes all instances of the given object from an array.
 {% endif %}
 
-For example, Todo has a field named **alarms** for keeping track of times at which a user wants to be alerted. The following code adds the times to the alarms field:
+For example, `Todo` has a field named `alarms` for keeping track of times at which a user wants to be alerted. The following code adds the times to the alarms field:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -985,7 +985,7 @@ void addReminders() {
 
 ### Destroying Objects
 
-The following code deletes a Todo object from the cloud:
+The following code deletes a `Todo` object from the cloud:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1046,7 +1046,7 @@ todo.save();
 {# Please note that use of `object.set(null)` to remove a field from an object is not recommended and will result in unexpected functionality. #}
 
 {% call docs.alertWrap() %}
-Removing data from the cloud should always be dealt with great caution as it may lead to non-recoverable data loss. We strongly advise that you read [ACL Guide](acl-guide.html) to fully understand the risks. You should also consider implementing Class-level, Object-level, and Field-level permissions for your Classes in the cloud to guard against unauthorized data operations.
+Removing data from the cloud should always be dealt with great caution as it may lead to non-recoverable data loss. We strongly advise that you read [ACL Guide](acl-guide.html) to fully understand the risks. You should also consider implementing class-level, object-level, and field-level permissions for your classes in the cloud to guard against unauthorized data operations.
 {% endcall %}
 
 ### Batch Processing
@@ -1101,7 +1101,7 @@ fetchAllInBackground()
 ```
 {% endif %}
 
-The following code sets **isComplete** of all the todos to be **true**:
+The following code sets `isComplete` of all `Todo` objects to be `true`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1156,13 +1156,13 @@ query.findInBackground(new FindCallback<AVObject>() {
 
 ### Data Models
 
-Objects may have relationships with other objects. For example, in a blogging application, a Post object may have many Comment objects. LeanCloud supports three kinds of relationships, including one-to-one, one-to-many, and many-to-many.
+Objects may have relationships with other objects. For example, in a blogging application, a `Post` object may have relationships with many `Comment` objects. LeanCloud supports three kinds of relationships, including one-to-one, one-to-many, and many-to-many.
 
 #### One-to-One and One-to-Many Relationships
 
-One-to-one and one-to-many relationships are modeled by saving `{{ baseObjectName }}` as a value in the other object. For example, each Comment in a blogging app might correspond to one Post.
+One-to-one and one-to-many relationships are modeled by saving `{{ baseObjectName }}` as a value in the other object. For example, each `Comment` in a blogging app might correspond to one `Post`.
 
-The following code creates a new Post with a single Comment:
+The following code creates a new `Post` with a single `Comment`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1219,7 +1219,7 @@ comment.saveInBackground();
 ```
 {% endif %}
 
-Internally, the backend will store the referred-to object with the Pointer type in just one place in order to maintain consistency. You can also link objects using their objectIds like this:
+Internally, the backend will store the referred-to object with the Pointer type in just one place in order to maintain consistency. You can also link objects using their `objectId`s like this:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1294,9 +1294,9 @@ See [Relational Queries](#relational-queries) for more examples.
 
 #### Many-to-Many Relationships
 
-The easiest way to model many-to-many relationships is to use **Arrays**. In most cases, using Arrays helps you reduce the number of queries you need to make and leads to a better performance. However, if additional properties need to be attached to the relationships between two Classes, using **Join Tables** would be a better choice. Keep in mind that the additional properties are used to describe the relationships between Classes rather than any single Class.
+The easiest way to model many-to-many relationships is to use **arrays**. In most cases, using arrays helps you reduce the number of queries you need to make and leads to a better performance. However, if additional properties need to be attached to the relationships between two classes, using **join tables** would be a better choice. Keep in mind that the additional properties are used to describe the relationships between classes rather than any single class.
 
-We recommend you to use Join Tables if the total amount of objects of any Class exceeds 100.
+We recommend you to use join tables if the total amount of objects of any class exceeds 100.
 
 {% call docs.noteWrap() %}
 Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](data-modeling.html) in greater detail, which we highly recommend you reading.
@@ -1316,7 +1316,7 @@ The general steps of performing a basic query include:
 2. Putting conditions on it.
 3. Retrieving an array of objects matching the conditions.
 
-The code below retrieves all the students whose last name is "Smith":
+The code below retrieves all `Student` objects whose `lastname` is `Smith`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1365,7 +1365,7 @@ query.findInBackground(new FindCallback<AVObject>() {
 
 There are several ways to put constraints on the objects found by `{{ baseObjectName }}`.
 
-The code below filters out objects with "Jack" as first name:
+The code below filters out objects with `Jack` as `firstname`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1431,7 +1431,7 @@ query.whereGreaterThanOrEqualTo("age", 18);
 ```
 {% endif %}
 
-You can apply multiple constraints to a single query, and objects will only be in the results if they match all of the constraints. In other words, it's like an **AND** of constraints.
+You can apply multiple constraints to a single query, and objects will only be in the results if they match all of the constraints. In other words, it's like concatenating constraints with `AND`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1452,7 +1452,7 @@ query.whereGreaterThan("age", 18);
 ```
 {% endif %}
 
-You can limit the number of results by setting `limit`. By default, results are limited to 100.
+You can limit the number of results by setting `limit` (default to `100`):
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1471,10 +1471,10 @@ query.limit(10); // Limit to at most 10 results
 {% endif %}
 
 {% call docs.noteWrap() %}
-For performance reasons, the maximum limit allowed is 1,000, meaning LeanCloud would only return 1,000 results even the limit is set to be greater than 1,000.
+For performance reasons, the maximum value allowed for `limit` is `1000`, meaning that LeanCloud would only return 1,000 results even it is set to be greater than `1000`.
 {% endcall %}
 
-If you need exactly one result, you may use `{% if platform_name === "JavaScript" %}first{% endif %}{% if platform_name === "Swift" %}getFirst{% endif %}{% if platform_name === "Android" %}getFirstInBackground{% endif %}` for convenience:
+If you need exactly `1` result, you may use `{% if platform_name === "JavaScript" %}first{% endif %}{% if platform_name === "Swift" %}getFirst{% endif %}{% if platform_name === "Android" %}getFirstInBackground{% endif %}` for convenience:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1574,7 +1574,7 @@ query.skip(20); // Skip the first 20 records
 ```
 {% endif %}
 
-But in reality, the higher the `skip` goes, the slower the query will run. You may consider using **createdAt** or **updatedAt** (which are indexed) to set the range boundaries for large datasets more efficiently. {# , or using the last value returned from an auto-increment field along with `limit` for the purpose of pagination #}
+But in reality, the higher the `skip` goes, the slower the query will run. You may consider using `createdAt` or `updatedAt` (which are indexed) to set the range boundaries for large datasets more efficiently. {# , or using the last value returned from an auto-increment field along with `limit` for the purpose of pagination #}
 
 For sortable types, you can control the order in which results are returned:
 
@@ -1659,7 +1659,7 @@ query.whereDoesNotExist("images");
 
 You can use the `{% if platform_name === "JavaScript" %}matchesKeyInQuery{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}{% if platform_name === "Android" %}{# TODO #}{% endif %}` method to look for objects with values of fields matching those of objects returned by another query.
 
-For example, if you have a Country Class matching countries with languages and a Student Class matching students with their nationalities:
+For example, if you have a `Country` class matching countries with languages and a `Student` class matching students with their nationalities:
 
 country | language
 ---|---
@@ -1700,7 +1700,7 @@ studentQuery.find().then(function (results) {
 ```
 {% endif %}
 
-You can restrict the fields returned by calling `select` with a list of keys. To retrieve todos that contain only the **title** and **priority** fields (and also special built-in fields such as **objectId**, **createdAt**, and **updatedAt**):
+You can restrict the fields returned by calling `select` with a list of keys. To retrieve todos that contain only the `title` and `priority` fields (and also special built-in fields such as `objectId`, `createdAt`, and `updatedAt`):
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1789,7 +1789,7 @@ query.findInBackground(new FindCallback<AVObject>() {
 
 ### Queries on String Values
 
-Use `{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Swift" %}PrefixedBy{% endif %}{% if platform_name === "Android" %}whereStartsWith{% endif %}` to restrict to string values that start with a particular string. Similar to a SQL `LIKE` operator, it is indexed so it is efficient for large datasets.
+Use `{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Swift" %}PrefixedBy{% endif %}{% if platform_name === "Android" %}whereStartsWith{% endif %}` to restrict to string values that start with a particular string. Similar to a `LIKE` operator in SQL, it is indexed so it is efficient for large datasets:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1813,7 +1813,7 @@ query.whereStartsWith("title", "lunch");
 ```
 {% endif %}
 
-Use `{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Swift" %}MatchedSubstring{% endif %}{% if platform_name === "Android" %}whereContains{% endif %}` to restrict to string values that contain a particular string.
+Use `{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Swift" %}MatchedSubstring{% endif %}{% if platform_name === "Android" %}whereContains{% endif %}` to restrict to string values that contain a particular string:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1837,7 +1837,7 @@ query.whereContains("title", "lunch");
 Unlike `{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Swift" %}PrefixedBy{% endif %}{% if platform_name === "Android" %}whereStartsWith{% endif %}`, `{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Swift" %}MatchedSubstring{% endif %}{% if platform_name === "Android" %}whereContains{% endif %}` can't take advantage of indexes, which is not encouraged to be used for large datasets.
 
 {% call docs.noteWrap() %}
-Please note that both `{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Swift" %}PrefixedBy{% endif %}{% if platform_name === "Android" %}whereStartsWith{% endif %}` and `{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Swift" %}MatchedSubstring{% endif %}{% if platform_name === "Android" %}whereContains{% endif %}` perform **case-sensitive** matching, so the examples above will not look for string values containing "Lunch", "LUNCH", etc.
+Please note that both `{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Swift" %}PrefixedBy{% endif %}{% if platform_name === "Android" %}whereStartsWith{% endif %}` and `{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Swift" %}MatchedSubstring{% endif %}{% if platform_name === "Android" %}whereContains{% endif %}` perform **case-sensitive** matching, so the examples above will not look for string values containing `Lunch`, `LUNCH`, etc.
 {% endcall %}
 
 If you are looking for string values that do not contain a particular string, use `matches` with regular expression:
@@ -1872,7 +1872,7 @@ If you are facing performance issues with queries, please refer to [Optimizing P
 
 ### Queries on Array Values
 
-The code below looks for all the objects with 2 as an element of its array field "priority":
+The code below looks for all the objects with `2` as an element of its array field `priority`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1890,7 +1890,7 @@ query.whereEqualTo("priority", 2);
 ```
 {% endif %}
 
-You can also look for objects whose array field "priority" contains 2, 3, **and** 4:
+You can also look for objects whose array field `priority` contains `2`, `3`, **and** `4`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1908,7 +1908,7 @@ query.whereContainsAll("priority", Arrays.asList(2, 3, 4));
 ```
 {% endif %}
 
-To retrieve objects whose field matches any one of the values in a given list, you can use `{% if platform_name === "JavaScript" %}containedIn{% endif %}{% if platform_name === "Swift" %}ContainedIn{% endif %}{% if platform_name === "Android" %}whereContainedIn{% endif %}` instead of performing multiple queries. The code below retrieves todo items with "priority" to be 1 **or** 2:
+To retrieve objects whose field matches any one of the values in a given list, you can use `{% if platform_name === "JavaScript" %}containedIn{% endif %}{% if platform_name === "Swift" %}ContainedIn{% endif %}{% if platform_name === "Android" %}whereContainedIn{% endif %}` instead of performing multiple queries. The code below retrieves todo items with `priority` to be `1` **or** `2`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -1978,7 +1978,7 @@ Conversely, you can use `{% if platform_name === "JavaScript" %}notContainedIn{%
 
 ### Relational Queries
 
-There are several ways to perform queries for relational data. To retrieve objects whose given field matches a particular `{{ baseObjectName }}`, you can use `{% if platform_name === "JavaScript" %}equalTo{% endif %}{% if platform_name === "Swift" %}EqualTo{% endif %}{% if platform_name === "Android" %}whereEqualTo{% endif %}` just like how you use it for other data types. For example, if each Comment has a Post object in its "post" field, you can fetch all the comments for a particular Post with the following code:
+There are several ways to perform queries for relational data. To retrieve objects whose given field matches a particular `{{ baseObjectName }}`, you can use `{% if platform_name === "JavaScript" %}equalTo{% endif %}{% if platform_name === "Swift" %}EqualTo{% endif %}{% if platform_name === "Android" %}whereEqualTo{% endif %}` just like how you use it for other data types. For example, if each `Comment` has a `Post` object in its `post` field, you can fetch all the comments for a particular `Post` with the following code:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -2092,7 +2092,7 @@ query.limit(10);
 query.include('post');
 
 query.find().then(function (comments) {
-  // comments now contains the last ten comments including the "post" associated with each
+  // comments now contains the last ten comments including the post associated with each
   for (var i = 0; i < comments.length; i++) {
     // This does not require a network access
     var post = comments[i].get('post');
@@ -2116,7 +2116,7 @@ query.whereKey("post", .Included)
 query.find { result in
     switch result {
     case .success(let comments):
-        // comments now contains the last ten comments including the "post" associated with each
+        // comments now contains the last ten comments including the post associated with each
         guard let comment = comments.first else { return }
         // This does not require a network access
         let post = comment.get("post") as? LCObject
@@ -2142,7 +2142,7 @@ query.include("post");
 query.findInBackground(new FindCallback<AVObject>() {
     @Override
     public void done(List<AVObject> list, AVException e) {
-        // list now contains the last ten comments including the "post" associated with each
+        // list now contains the last ten comments including the post associated with each
         for (AVObject comment : list) {
             // This does not require a network access
             AVObject post = comment.getAVObject("post");
@@ -2196,17 +2196,17 @@ query.selectKeys(Arrays.asList("post.author.firstname"));
 
 #### Caveats about Relational Queries
 
-The backend of LeanCloud is not built on relational databases, which makes it impossible to join tables while querying. For the relational queries mentioned above, what LeanCloud would do is to first perform an inner query (with 100 as default limit and 1,000 as maximum) and then insert the result from this query into the outer query. If more than 100 records are returned as the result of the inner query and the outer query contains other constraints, the amount of the records returned in the end could be zero or less than your expectation since only 100 records would be inserted into the outer query.
+The backend of LeanCloud is not built on relational databases, which makes it impossible to join tables while querying. For the relational queries mentioned above, what LeanCloud would do is to first perform an inner query (with `100` as default `limit` and `1000` as maximum) and then insert the result from this query into the outer query. If the number of records matching the inner query exceeds the limit and the outer query contains other constraints, the amount of the records returned in the end could be zero or less than your expectation since only the records within the limit would be inserted into the outer query.
 
 The following actions can be taken to solve the problem:
 
-- Make sure the number of records in the result of the inner query is no more than 100. If it is between 100 and 1,000, add 1,000 as the limit of the inner query.
+- Make sure the number of records in the result of the inner query is no more than 100. If it is between 100 and 1,000, set `1000` as the `limit` of the inner query.
 - Create redundancy for the fields being queried by the inner query on the table for the outer query.
 - Repeat the same query with different `skip` values until all the records are gone through (performance issue could occur if the value of `skip` gets too big).
 
 ### Counting Objects
 
-If you just need to count how many objects match a query, but you do not need to retrieve all the objects that match, you can use `{% if platform_name === "JavaScript" %}count{% endif %}{% if platform_name === "Swift" %}count{% endif %}{% if platform_name === "Android" %}countInBackground{% endif %}` instead of `{% if platform_name === "JavaScript" %}find{% endif %}{% if platform_name === "Swift" %}find{% endif %}{% if platform_name === "Android" %}findInBackground{% endif %}`. For example, to count how many todos have been completed:
+If you just need to count how many objects match a query but do not need to retrieve the actual objects, use `{% if platform_name === "JavaScript" %}count{% endif %}{% if platform_name === "Swift" %}count{% endif %}{% if platform_name === "Android" %}countInBackground{% endif %}` instead of `{% if platform_name === "JavaScript" %}find{% endif %}{% if platform_name === "Swift" %}find{% endif %}{% if platform_name === "Android" %}findInBackground{% endif %}`. For example, to count how many todos have been completed:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -2245,10 +2245,10 @@ query.countInBackground(new CountCallback() {
 
 ### Compound Queries
 
-Compound queries can be used if complex query conditions need to be specified. A compound query is a logical combination ("OR" or "AND") of subqueries.
+Compound queries can be used if complex query conditions need to be specified. A compound query is a logical combination (`OR` or `AND`) of subqueries.
 
 {% call docs.noteWrap() %}
-Note that we do not support GeoPoint or non-filtering constraints (e.g. `near`, `withinGeoBox`, `limit`, `skip`, `ascending`, `descending`, `include`) in the subqueries of a compound query.
+Note that we do not support `GeoPoint` or non-filtering constraints (e.g. `near`, `withinGeoBox`, `limit`, `skip`, `ascending`, `descending`, `include`) in the subqueries of a compound query.
 {% endcall %}
 
 #### OR-ed Query Constraints
@@ -2335,7 +2335,7 @@ query.findInBackground(new FindCallback<AVObject>() {
 {% endif %}
 
 {% call docs.noteWrap() %}
-Queries regarding GeoPoints cannot be present among OR-ed queries.
+Queries regarding `GeoPoint` cannot be present among OR-ed queries.
 {% endcall %}
 
 #### AND-ed Query Constraints
@@ -2398,7 +2398,7 @@ query.whereEqualTo("isComplete", true);
 ```
 {% endif %}
 
-However, by combining AND-ed queries with OR-ed queries together you can construct complicated query conditions in your program. The code below looks for all the todos created today that either have no location set or have 3 as priority:
+However, by combining AND-ed queries with OR-ed queries together you can construct complicated query conditions in your program. The code below looks for all the todos created today that either have no `location` set or have `3` as `priority`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -2572,11 +2572,11 @@ AVOSCloud.initialize(this, "{{appid}}", "{{appkey}}");
 ```
 {% endif %}
 
+{#
 ### Demo
 
 The video here shows the effect of using LiveQuery on the web client and the mobile client of the same app:
 
-{# 2017-06-09 this video is over-sized, put it on qiniu instead of hosting it locally for better performance #}
 <div style="border:2px solid #ccc; margin-bottom:1em;">
   <video src="https://lc-lhzo7z96.cn-n1.lcfile.com/1496988080458" controls autoplay muted preload="auto" width="100%" height="100%" >
     HTML5 Video is required for this demo, which your browser doesn't support.
@@ -2598,10 +2598,11 @@ Make sure to create your account in the mini program first. If you create your a
 {% call docs.noteWrap() %}
 You may also be interested in watching our [LeanCloud Open Course (Chinese)](http://www.bilibili.com/video/av11291992/) to get yourself familiarized with the basics of the tool.
 {% endcall %}
+#}
 
 ### Creating a Subscription
 
-To make a query *live*, create a normal `{{ baseQueryClassName }}` object, put conditions on it if there are, and then subscribe to it:
+To make a query **live**, create a normal `{{ baseQueryClassName }}` object, put conditions on it if there are, and then subscribe to it:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -2638,7 +2639,7 @@ liveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
 ```
 {% endif %}
 
-Now you will be able to receive updates related to `{{ baseObjectName }}`. If an `Employee` object is created by another client with *Kelly* as `first_name`, the following code can get the new `Employee` for you:
+Now you will be able to receive updates related to `{{ baseObjectName }}`. If an `Employee` object is created by another client with `Kelly` as `first_name`, the following code can get the new `Employee` for you:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -2686,7 +2687,7 @@ liveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
 ```
 {% endif %}
 
-If someone updates this `Employee` by changing its `team` to *Finance*, the following code can get the updated version for you:
+If someone updates this `Employee` by changing its `team` to `Finance`, the following code can get the updated version for you:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -3011,7 +3012,7 @@ AVFile file = new AVFile(
 When creating files from URLs, the SDK will not upload the actual files into the cloud but will store the addresses of the files as strings. This will not lead to actual traffic for uploading files, as opposed to creating files in other ways by doing which the files will be actually stored into the cloud.
 {% endcall %}
 
-LeanCloud will auto-detect the type of the file you are uploading based on the file extension, but you can specify the **Content-Type** (commonly referred to as MIME type) with a third parameter:
+LeanCloud will auto-detect the type of the file you are uploading based on the file extension, but you can specify the `Content-Type` (commonly referred to as MIME type) with a third parameter:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -3069,11 +3070,11 @@ AVFile file = AVFile.withAbsoluteLocalPath("avatar.jpg", Environment.getExternal
 ```
 {% endif %}
 
-The file we uploaded here is named *avatar.jpg*. There are a couple of things to note here:
+The file we uploaded here is named `avatar.jpg`. There are a couple of things to note here:
 
-- Each file uploaded will get its unique ID, so it is allowed for multiple files to share the same name.
+- Each file uploaded will get its unique `objectId`, so it is allowed for multiple files to share the same name.
 - A correct extension needs to be assigned to each file which the cloud will use to infer the type of a file. For example, if you are storing a PNG image with `{{ fileObjectName }}`, use `.png` as its extension.
-- If the file doesn't have an extension and the `ContentType` parameter is not specified, LeanCloud defaults the file's type to be *application/octet-stream*.
+- If the file doesn't have an extension and the `ContentType` parameter is not specified, LeanCloud defaults the file's type to be `application/octet-stream`.
 
 ### Saving Files
 
@@ -3123,7 +3124,7 @@ file.saveInBackground(new SaveCallback() {
 {% endif %}
 
 {% call docs.noteWrap() %}
-A file successfully uploaded can be found in the `_File` class and cannot be modified later. If you need to change the file, you have to upload the modified file again and a new ID and URL will be generated.
+A file successfully uploaded can be found in the `_File` class and cannot be modified later. If you need to change the file, you have to upload the modified file again and a new `objectId` and URL will be generated.
 {% endcall %}
 
 You can associate a file with `{{ baseObjectName }}` after it is saved:
@@ -3177,7 +3178,7 @@ file.saveInBackground(new SaveCallback() {
 
 {# 2017-11-09 doesn't apply to swift, php, python #}
 {% if platform_name === "JavaScript" or platform_name === "Objective-C" or platform_name === "Java" or platform_name === "Android" %}
-On a related note, if the files are stored as an array of objects and you want to get them within a single query, you need to use the `{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "Java" or platform_name === "Android" %}include{% endif %}` method with `{{ baseQueryClassName }}`. For example, if you are retrieving all the todos with the same title "get cakes" and you want to retrieve their related attachments at the same time:
+On a related note, if the files are stored as an array of objects and you want to get them within a single query, you need to use the `{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "Java" or platform_name === "Android" %}include{% endif %}` method with `{{ baseQueryClassName }}`. For example, if you are retrieving all the todos with the same title `get cakes` and you want to retrieve their related attachments at the same time:
 {% endif %}
 
 {% if platform_name === "JavaScript" %}
@@ -3276,7 +3277,7 @@ file.saveInBackground(new SaveCallback() {
 
 ### File Metadata
 
-When uploading a file, you can specify or retrieve metadata for that file using the `metaData` method. This metadata can contain additional properties you want to put on the file. However, once the upload completes, you cannot update the file any more including its metadata content.
+When uploading a file, you can specify or retrieve metadata for that file using the `metaData` method. This metadata can contain additional properties you want to put on the file. However, once the upload completes, you cannot update the file anymore including its metadata content.
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -3443,9 +3444,7 @@ LeanCloud offers a shared domain for all the apps to access the files stored in 
 
 ### CDN Support
 
-Files stored on LeanCloud are hosted on [content delivery network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network) for both East China and North China regions.
-
-If your apps aren't running on these regions and you want to speed up delivery of static files for users from different regions, you can follow the instructions below to set up your own CDN.
+Files stored on LeanCloud are hosted on [content delivery network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network) for both East China and North China regions. If your apps aren't running on these regions and you want to speed up delivery of static files for users from different regions, you can follow the instructions below to set up your own CDN.
 
 Take [Amazon CloudFront CDN](https://aws.amazon.com/cloudfront/) as an example:
 
@@ -3482,7 +3481,7 @@ query.find().then(function (results) {
 
 ### The `then` Method
 
-Each Promise has a method called `then` which takes in two callbacks. The first callback is called when the Promise is `resolved` (runs successfully) while the second one is called when the Promise is `rejected` (gets error).
+Each `Promise` has a method called `then` which takes in two callbacks. The first callback is called when the `Promise` is `resolved` (runs successfully) while the second one is called when it is `rejected` (gets error):
 
 ```js
 obj.save().then(function (obj) {
@@ -3506,7 +3505,7 @@ obj.save().then(function (obj) {
 
 ### Chaining Promises Together
 
-Promise allows you to elegantly connect asynchronous requests together according to the order they should be called. If the callback of a Promise returns another Promise, the callback in the second then will not be resolved unless the one in the first then is resolved. This is also called **Promise Chain**.
+Promise allows you to elegantly connect asynchronous requests together according to the order they should be called. If the callback of a `Promise` returns another `Promise`, the callback in the second `then` will not be resolved unless the one in the first `then` is resolved. This is also called **Promise Chain**.
 
 ```js
 // Add contents to the page following the order of chapters
@@ -3532,9 +3531,9 @@ new AV.Query('Chapter').get(chapterIds[0]).then(function (chapter0) {
 
 ### Error Handling with Promises
 
-If any single Promise in the chain throws an error, all the callbacks following it meant for successful operations will be skipped until an error handling callback is encountered.
+If any single `Promise` in the chain throws an error, all the callbacks following it meant for successful operations will be skipped until an error handling callback is encountered.
 
-It is a common practice to attach an error handling function at the end of a Promise chain.
+It is a common practice to attach an error handling function at the end of a `Promise` chain.
 
 The code above can be rewritten with `try` and `catch` in the following way:
 
@@ -3568,7 +3567,7 @@ Further reading on Promises:
 
 LeanCloud allows you to associate real-world latitude and longitude coordinates with an object by adding `{{ geoPointObjectName }}` to the `{{ baseObjectName }}`. By doing so, queries on the proximity of an object to a given point can be performed, allowing you to easily implement functions like looking for users or places nearby.
 
-To associate a point with an object, you need to create the point first. The code below creates `{{geoPointObjectName}}` with 39.9 as latitude and 116.4 as longitude:
+To associate a point with an object, you need to create the point first. The code below creates `{{geoPointObjectName}}` with `39.9` as `latitude` and `116.4` as `longitude`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -3705,7 +3704,7 @@ query.withinGeoBox(
 There are a couple of things to keep in mind:
 
 - Each `{{ baseObjectName }}` may only have one field containing `{{ geoPointObjectName }}` object.
-- Points should not exceed the extreme ends of the ranges. Latitude should be between -90.0 and 90.0. Longitude should be between -180.0 and 180.0. Attempting to set latitude or longitude out of bounds will cause an error.
+- Points should not exceed the extreme ends of the ranges. Latitude should be between `-90.0` and `90.0`. Longitude should be between `-180.0` and `180.0`. Attempting to set latitude or longitude out of bounds will cause an error.
 {# - Using the `near` constraint will also limit results to within 100 miles. #}
 
 ## Users
@@ -3819,9 +3818,9 @@ user.signUpInBackground(new SignUpCallback() {
 Note that we used `{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}{% if platform_name === "Android" %}signUpInBackground{% endif %}` instead of `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}`. New `{{ userObjectName }}`s should always be created using the `{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}{% if platform_name === "Android" %}signUpInBackground{% endif %}` method and subsequent updates to a user can be done with `{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Android" %}saveInBackground{% endif %}`.
 
 {% call docs.noteWrap() %}
-If the code returns the error 202, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column, otherwise error 203 or 214 will occur.
+If the code returns the error `202`, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column, otherwise error `203` or `214` will occur.
 
-You may ask a user to sign up with their email address without an additional username so that the user can directly [reset their password with email](#resetting-passwords). Make sure the **username** field is filled in properly.
+You may ask a user to sign up with their email address without an additional username so that the user can directly [reset their password with email](#resetting-passwords). Make sure the `username` field is filled in properly.
 {% endcall %}
 
 When creating a user with username and password, the SDK sends the password to the cloud in plaintext through HTTPS and the password will be hashed once it arrives to the cloud. We never store passwords in plaintext, nor will we ever transmit passwords back to the client in plaintext. Our hashing algorithm guarantees that the original password cannot be retrieved by [rainbow table](https://en.wikipedia.org/wiki/Rainbow_table) attack and even app developers themselves will not be able to see the password. Keep in mind that **the password should not be hashed by the client, or the [password reset function](#resetting-passwords) will not work**.
@@ -3914,7 +3913,7 @@ AVUser.signUpOrLoginByMobilePhoneInBackground(
 
 #### Phone Number Format
 
-A phone number that `{{ userObjectName }}` accepts should have a leading plus sign (+) immediately followed by the country code and the phone number. You should leave out all the dashes, spaces, and other non-numeric characters. For instance, `+8618200008888` is a valid China number (86 is the country code), and `+15555551234` is a valid US or Canada number (1 is the country code, and 555 is the area code).
+A phone number that `{{ userObjectName }}` accepts should have a leading plus sign (`+`) immediately followed by the country code and the phone number. You should leave out all the dashes, spaces, and other non-numeric characters. For instance, `+8618200008888` is a valid China number (`86` is the country code), and `+15555551234` is a valid US or Canada number (`1` is the country code, and `555` is the area code).
 
 For a list of countries and regions that LeanCloud can reach out through phones, please refer to the [International SMS](sms-guide.html#international-sms) section in the SMS guide.
 
@@ -4115,13 +4114,13 @@ AVUser.signUpOrLoginByMobilePhoneInBackground(
 
 #### Sandbox Phone Number
 
-During the development of your application, you may need to test the signup or login API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be greatly affected by such limitations.
+During the development of your application, you may need to test the sign-up or log-in related API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be greatly affected.
 
-To work around it, you can set up a sandbox phone number in [Dashboard > SMS > Settings](/dashboard/messaging.html?appid={{apppid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. So whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connection to the carrier networks being made.
+To work around it, you can set up a sandbox phone number in [Dashboard > SMS > Settings](/dashboard/messaging.html?appid={{apppid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. Whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connections to the carrier networks being made.
 
-On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a phone number and a verification code in order for them to review the app as a normal user. Failing to do so may result in their app being rejected by Apple Store.
+On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a fixed combination of phone number and verification code for them to review the app as a normal user. Failure to do so may result in their app being rejected by App Store.
 
-For the sending and receiving limitations on SMS messages, please read our [SMS Guide](sms-guide.html) to learn more.
+For more details regarding limitations of sending and receiving SMS messages, see [SMS Guide](sms-guide.html).
 
 #### Single Device Sign-on
 
@@ -4139,7 +4138,7 @@ The account will be automatically recovered 15 minutes after the last attempt an
 
 ### Verifying Emails
 
-You can request that your users have their email addresses verified before they can log in or access certain functions in your app. By doing so it gets harder for spam users to abuse your app. Each time when a user is created or has their email set or changed, the `emailVerified` of this user will be set to **false** in the cloud, and if you enabled **Send verification emails when users register or change email addresses** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), an email containing a verification link will be sent to this user automatically. You can choose to prevent users with unverified email addresses to log in in the same panel.
+You can request that your users have their email addresses verified before they can log in or access certain functions in your app. By doing so it gets harder for spam users to abuse your app. Each time when a user is created or has their email set or changed, the `emailVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification emails when users register or change email addresses** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), an email containing a verification link will be sent to this user automatically. You can choose to prevent users with unverified email addresses to log in in the same panel.
 
 If a user forgets to click on the link and needs to have their account verified later, the following code can be used to send a new email:
 
@@ -4185,11 +4184,11 @@ AVUser.requestEmailVerifyInBackground(
 ```
 {% endif %}
 
-The `emailVerified` will be set to **true** after the link is clicked on. This field can never be **true** when a user account is first created or when the email is missing.
+The `emailVerified` will be set to `true` after the link is clicked on. This field can never be `true` when a user account is first created or when the `email` field is empty.
 
 ### Verifying Phone Numbers
 
-Similar to [Verifying Emails](#verifying-emails), you can also request that your users have their phone numbers verified before they can log in or access certain functions in your app. Each time when a user is created or has their phone number set or changed, the `mobilePhoneVerified` of this user will be set to **false** in the cloud, and if you enabled **Send verification SMS when users register or change phone numbers** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), a text message containing a verification code will be sent to this user automatically. You can choose to prevent users with unverified phone numbers to log in in the same panel.
+Similar to [Verifying Emails](#verifying-emails), you can also request that your users have their phone numbers verified before they can log in or access certain functions in your app. Each time when a user is created or has their phone number set or changed, the `mobilePhoneVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification SMS when users register or change phone numbers** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), a text message containing a verification code will be sent to this user automatically. You can choose to prevent users with unverified phone numbers to log in in the same panel.
 
 You can also manually initiate a verification request at anytime with the following code:
 
@@ -4215,7 +4214,7 @@ AV.User.requestMobilePhoneVerify(
 ```
 {% endif %}
 
-After the verification code is entered by the user, call the `{% if platform_name === "JavaScript" %}verifyMobilePhone{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}{% if platform_name === "Android" %}{# TODO #}{% endif %}` method and LeanCloud will set the user's `emailVerified` to true:
+After the verification code is entered by the user, call the `{% if platform_name === "JavaScript" %}verifyMobilePhone{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}{% if platform_name === "Android" %}{# TODO #}{% endif %}` method and LeanCloud will set the user's `emailVerified` to `true`:
 
 {% if platform_name === "JavaScript" %}
 ```js
@@ -4310,7 +4309,7 @@ AVUser currentUser = AVUser.getCurrentUser();
 
 ### Setting The Current User
 
-A **session token** will be returned to the client after a user is logged in, which will be cached by our SDK and will be used for authenticating requests made by the same `{{ userObjectName }}` in the future. The session token will be included in the Header of each HTTP request made from the client, which helps the cloud identify the `{{ userObjectName }}` sending the request.
+A **session token** will be returned to the client after a user is logged in, which will be cached by our SDK and will be used for authenticating requests made by the same `{{ userObjectName }}` in the future. The session token will be included in the header of each HTTP request made from the client, which helps the cloud identify the `{{ userObjectName }}` sending the request.
 
 Below are the situations when you may need to log a user in with session token:
 
@@ -4351,11 +4350,11 @@ AVUser.becomeWithSessionTokenInBackground(
 The `{% if platform_name === "JavaScript" %}become{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}{% if platform_name === "Android" %}becomeWithSessionTokenInBackground{% endif %}` method will ensure the session token is valid before setting the current user.
 
 {% call docs.alertWrap() %}
-For security reasons, please avoid passing session token as a part of URL in non-private environments. This increases the risk that they will be captured by attackers.
+For security reasons, please avoid passing session tokens as a part of URLs in non-private environments. This increases the risk that they will be captured by attackers.
 {% endcall %}
 
 {% call docs.noteWrap() %}
-If **Log out the user when password is updated** is checked on in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [403 (Forbidden)](error_code.html#_403) will be returned as an error.
+If **Log out the user when password is updated** is checked on in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [`403 (Forbidden)`](error_code.html#_403) will be returned as an error.
 {% endcall %}
 
 The code below checks if a session token is valid:
@@ -4440,7 +4439,7 @@ AVUser.requestPasswordResetInBackground(
 ```
 {% endif %}
 
-The code above will check if there is a user in the `_User` table that has the email provided, and will send them a password reset email if so. As mentioned previously, you can make the username of each user to be the same as their email, or collect the email separately and store it in the email field.
+The code above will check if there is a user in the `_User` table that has the `email` to be the same as the one provided, and will send them a password reset email if so. As mentioned previously, you can make the `username` of each user to be the same as their `email`, or collect the email separately and store it in the `email` field.
 
 {% call docs.noteWrap() %}
 The content of the password reset email is fully customizable. You can go to your app's [Email](/dashboard/app.html?appid={{appid}}#/email) page and modify
@@ -4498,10 +4497,10 @@ AVUser.requestPasswordResetBySmsCodeInBackground(
 ```
 {% endif %}
 
-LeanCloud will try to match the given phone number with the user's mobilePhoneNumber field, and then send the verification code.
+The code above will check if there is a user in the `_User` table that has the `mobilePhoneNumber` to be the same as the one provided, and will send them a verification code if so.
 
 {% call docs.noteWrap() %}
-By changing the settings in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the mobilePhoneVerified field is true.
+By changing the settings in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the `mobilePhoneVerified` field is `true`.
 {% endcall %}
 
 The code below resets the password of a user after they enter the verification code and a new password:
@@ -4577,7 +4576,7 @@ AVQuery<AVUser> userQuery = new AVQuery<>("_User");
 
 For security reasons, **the `_User` table of each new app has its `find` permission disabled by default**. Each user can only access their own data in `_User` table and cannot access that of others. If you need to allow each user to view other users' data, we recommend that you create a new table to store such data and enable the `find` permission of this table. You may also encapsulate queries on users within [LeanEngine](leanengine_overview.html) and avoid opening up `find` permissions of `_User` tables.
 
-See [Security of User Objects](#security-of-user-objects) for other restrictions applied to the `_User` table, and [Data and Security](data-security.html) for more information regarding Class-level permission settings.
+See [Security of User Objects](#security-of-user-objects) for other restrictions applied to the `_User` table, and [Data and Security](data-security.html) for more information regarding class-level permission settings.
 
 ### Associations
 
@@ -4679,7 +4678,7 @@ The `{{ userObjectName }}` obtained from `{% if platform_name === "JavaScript" %
 
 To check if `{{ userObjectName }}` is authenticated, you can invoke the `{% if platform_name === "JavaScript" %}isAuthenticated{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}{% if platform_name === "Android" %}isAuthenticated{% endif %}` method. You do not need to check if `{{ userObjectName }}` is authenticated if it is obtained via an authenticated method.
 
-As a reminder, the user's password can be set when signing up but cannot be modified and saved to the cloud afterwards unless the user requests it to be [reset](#resetting-passwords). It will not be cached on the client and will show as null when being retrieved from the cloud after the user is logged in.
+As a reminder, the user's password can be set when signing up but cannot be modified and saved to the cloud afterwards unless the user requests it to be [reset](#resetting-passwords). It will not be cached on the client and will show as `null` when being retrieved from the cloud after the user is logged in.
 
 ### Security of Other Objects
 
@@ -4717,7 +4716,7 @@ AV.User.signUpOrlogInWithAuthData({
 
 LeanCloud then verifies that the provided `authData` is valid and checks to see if a user is already associated with this data. If so, it returns a status code of `200 OK` and the details (including a [`sessionToken`](#setting-the-current-user) for the user).
 
-If the `authData` is not linked to any account, you will instead receive a status code of `201 Created`, indicating that a new user was created. The body of the response will contain the objectId, createdAt, sessionToken, and an automatically-generated unique username. For example:
+If the `authData` is not linked to any account, you will instead receive a status code of `201 Created`, indicating that a new user was created. The body of the response will contain the `objectId`, `createdAt`, `sessionToken`, and an automatically-generated unique `username`. For example:
 
 ```json
 {
@@ -4748,7 +4747,7 @@ To ensure that each `{{ userObjectName }}` is linked with a service account only
 
 `authData` is a JSON object with keys for each linked service containing the data below. In each case, you are responsible for completing the authentication flow (usually through OAuth 1.0 or 2.0) to obtain the information from the service provider which is required for linking.
 
-[Sina Weibo](http://open.weibo.com/) authData:
+`authData` for [Sina Weibo](http://open.weibo.com/):
 
 ```json
 {
@@ -4762,7 +4761,7 @@ To ensure that each `{{ userObjectName }}` is linked with a service account only
 }
 ```
 
-[Tencent QQ](http://t.qq.com/) authData:
+`authData` for [Tencent QQ](http://t.qq.com/):
 
 ```json
 {
@@ -4775,7 +4774,7 @@ To ensure that each `{{ userObjectName }}` is linked with a service account only
   }
 }
 ```
-[WeChat/WeiXin](http://open.weixin.qq.com/) authData:
+`authData` for [WeChat/WeiXin](http://open.weixin.qq.com/):
 
 ```json
 {
@@ -4789,11 +4788,11 @@ To ensure that each `{{ userObjectName }}` is linked with a service account only
 }
 ```
 
-LeanCloud automatically validates the integrity of the access token for the services above to prevent data forge attack. When the validation fails, LeanCloud will respond with *"invalid authData"* error and the linking will not be established.
+LeanCloud automatically validates the integrity of the access token for the services above to prevent data forge attack. When the validation fails, LeanCloud will respond with `invalid authData` error and the linking will not be established.
 
 When using other services (such as Github, Twitter, and Facebook) for linking, you are responsible for validating the access token from the service provider. You also need to turn off the **Validate the access token for third-party login** option in your app's [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) to let LeanCloud know how to process the authData and handle the linking accordingly.
 
-authData for other services:
+`authData` for other services:
 
 ```json
 {
@@ -4863,7 +4862,7 @@ AVAnonymousUtils.logIn(new LogInCallback() {
 ```
 {% endif %}
 
-You can add new properties or fields to an anonymous user just like with a normal user, such as username, password, email, etc. You can also convert an anonymous user to a normal user by going through the same sign-up process as you do with a normal user. An anonymous user can:
+You can add new properties or fields to an anonymous user just like with a normal user, such as `username`, `password`, `email`, etc. You can also convert an anonymous user to a normal user by going through the same sign-up process as you do with a normal user. An anonymous user can:
 
 - [Sign up with username and password](#signing-up).
 - [Link to a third-party service or platform](#linking-users), such as Github.
@@ -4941,19 +4940,11 @@ If an anonymous user is not converted to a normal user before they log out, they
 
 ## Roles
 
-As your app grows in scope and user-base, you may find yourself needing more coarse-grained control over access to pieces of your data than user-linked ACLs can provide. To address this requirement, LeanCloud supports a form of Role-based Access Control. Check the detailed [ACL Guide](acl-guide.html) to learn how to set it up for your objects.
+As your app grows in scope and user-base, you may find yourself needing more coarse-grained control over access to pieces of your data than user-linked ACLs can provide. To address this requirement, LeanCloud supports a form of role-based access control. Check the detailed [ACL Guide](acl-guide.html) to learn how to set it up for your objects.
 
 ## In-App Searching
 
-In-App Searching offers a better way to search through the information contained within your apps. It's built with search engine capabilities that you can easily tap into your app.
-
-Effective and useful app search is crucial for helping app users find what they need. Maximise the value of your app's search features using these principles.
-
-You can use full-text for efficient search capabilities. Text indexes are automatically created for you. Your strings are turned into tokens for fast searching.
-
-Note: Full Text Search can be resource intensive. Ensure the cost of using indexes is worth the benefit.
-
-For more details, see {{inapp_search_guide_url}}.
+In-App Searching offers a better way to search through the information contained within your apps. It's built with search engine capabilities that you can easily tap into your app. Effective and useful searching functionality in your app is crucial for helping users find what they need. For more details, see {{inapp_search_guide_url}}.
 
 ## In-App Socializing
 
@@ -4984,5 +4975,5 @@ If you are using Android WebView, the following configurations need to be done w
 
    Keep in mind that this method is only supported on Android 4.4 and above.
 3. When developing the UI of your app with WebView, Native makes use of Hybrid for the app running on your phone. We recommend that you first design the UI of your app with Chrome Developer Tools. After the UI is done, start working on data binding with Native during which you can debug WebView on your phone with Remote debugger. This will save you a lot of time on developing and debugging. If you choose to develop UI with Remote debugger as well, you will end up spending more time on it.
-4. As a security practice to prevent JavaScript from calling Java functions for accessing the file system of an Android device, Android 4.2 and later versions only allow WebView to access the methods exposed by the annotation [@JavascriptInterface](http://developer.android.com/reference/android/webkit/JavascriptInterface.html). If you have users using Android 4.2 or above, make sure the annotation is added or **Uncaught TypeError** might be triggered.
+4. As a security practice to prevent JavaScript from calling Java functions for accessing the file system of an Android device, Android 4.2 and later versions only allow WebView to access the methods exposed by the annotation [`@JavascriptInterface`](http://developer.android.com/reference/android/webkit/JavascriptInterface.html). If you have users using Android 4.2 or above, make sure the annotation is added or `Uncaught TypeError` might be triggered.
 {% endif %}
