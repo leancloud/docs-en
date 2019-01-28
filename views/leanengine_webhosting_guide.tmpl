@@ -2,8 +2,8 @@
 {% import "views/_helper.njk" as docs %}
 
 {% raw %}<script>$(window).load(function() {$('.do-expand-all').click();})</script>{% endraw %}
-# Web Hosting Development Guide &middot; {{platformName}}
 
+# LeanEngine {{platformName}} Web Hosting Guide
 
 Web hosting is a sub-module of LeanEngine; it allows you to develop a web application with {{platformName}}.
 
@@ -53,10 +53,7 @@ lean deploy
 
 ###  Setting up the domain name
 
-In the "Web Hosting Domain Name" section of [LeanEngine > Settings](/cloud.html?appid={{appid}}#/conf), you can fill in a custom second-level domain name. For example, if you set `myapp`, you can access your website through our second-level domain name:
-
-- `http://myapp.avosapps.us` (Global)
-- `http://myapp.leanapp.cn` (China Region)
+In the "Web Hosting Domain Name" section of [LeanEngine > Settings](/cloud.html?appid={{appid}}#/conf), you can fill in a custom second-level domain name. For example, if you set `myapp`, you can access your website through our second-level domain name `http://myapp.avosapps.us`.
 
 
 <div class="callout callout-info">You may need to wait a few hours till DNS settings are effective</div>
@@ -289,7 +286,7 @@ LeanEngine's access log can be exported from [App Console > LeanEngine > Access 
 
 ### Time zone
 
-In the China region, China standard time (`Asia/Shanghai`) is used. The US region uses UTC time.
+The time zone used on the server is UTC.
 
 {% block section_timezone %}{% endblock %}
 

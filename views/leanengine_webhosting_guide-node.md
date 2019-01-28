@@ -1,4 +1,3 @@
-
 {# Specify inherited template #}
 {% extends "./leanengine_webhosting_guide.tmpl" %}
 {% set productName = 'LeanEngine' %}
@@ -69,8 +68,6 @@ We also support `package-lock.json` and `yarn.lock` :
 
 - If your application directory contains `package-lock.json`, dependencies will be installed according to versions in the file (requires Node.js 8.0 or higher).
 - If your application directory contains `yarn.lock`, then `yarn install` will be used instead of `npm install` to install dependencies (requires Node.js 4.8 and above).
-
-<div class="callout callout-info"> Note that `package-lock.json` and `yarn.lock` contain the URLs for downloading dependencies, so if you use npmjs.org as the source when generating the lock file, then deploying in China may be slower; On the other hand, if you use cnpmjs.org as source, the deploying outside China may be slower. If you don't want to use `package-lock.json` and `yarn.lock`, add them to `.gitignore` (Git deployment) or `.leanengineignore` (when using the command line tool to deploy).</div>
 {% endblock %}
 
 {% block supported_frameworks %}
@@ -577,7 +574,7 @@ We do not recommend enabling it in the production environment, otherwise a huge 
 {% endblock %}
 
 {% block section_timezone %} 
-You need to pay attention to the different methods of the Date type in JavaScript. Some will return UTC time and some will return local time (China standard time in China):
+You need to pay attention to the different methods of the Date type in JavaScript. Some will return UTC time and some will return local time:
 
 Function | Timezone | result
 ---------|----------|--------
