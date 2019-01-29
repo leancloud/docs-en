@@ -66,8 +66,7 @@ After importing the RTM SDK into your project, you can get a new instance of the
 var { Realtime } = require('leancloud-realtime');
 var realtime = new Realtime({
   appId:  '{{appid}}',
-  appKey: '{{appkey}}',
-  region: 'us'
+  appKey: '{{appkey}}'
 });
 ```
 
@@ -1394,8 +1393,7 @@ Message priority can be set in the {% if platform_name === "JavaScript" %}`send`
 var { Realtime, TextMessage, MessagePriority } = require('leancloud-realtime');
 var realtime = new Realtime({
   appId:  '{{appId}}',
-  appKey: '{{appKey}}',
-  region: 'cn'
+  appKey: '{{appKey}}'
 });
 
 realtime.createIMClient('host').then(function (clientHost) {

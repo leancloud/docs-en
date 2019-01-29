@@ -170,8 +170,7 @@ var APP_KEY = '{{appKey}}';
 // Same as using AV.init('APP_ID', 'APP_KEY')
 AV.init({
   appId:  APP_ID,
-  appKey: APP_KEY,
-  region: 'us'
+  appKey: APP_KEY
 });
 ```
 {% endif %}
@@ -239,15 +238,6 @@ Then specify the permissions needed by the SDK and declare the `MyLeanCloudApp` 
 </application>
 ```
 {% endif %}
-
-{#
-Apps running on LeanCloud are region-specific, which means that no data will be communicated across regions. Therefore, incorrect region settings will cause the initialization to fail.
-
-Each region has its own REST APIs. Please refer to the following documentations for the correct URL schemes of APIs to be used:
-
-- Docs for US: https://us.leancloud.cn/docs/rest_api.html.
-- Docs for China: https://leancloud.cn/docs/rest_api.html.
-#}
 
 ### Debugging
 
