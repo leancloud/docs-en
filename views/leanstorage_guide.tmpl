@@ -75,7 +75,7 @@ todo.saveInBackground(new SaveCallback() {
 {% endif %}
 
 {% call docs.noteWrap() %}
-The SDK designed for each language interacts with the same [REST API](rest-api.html) via HTTPS, offering fully functional interfaces for you to manipulate the data in the cloud.
+The SDK designed for each language interacts with the same [REST API](rest_api.html) via HTTPS, offering fully functional interfaces for you to manipulate the data in the cloud.
 {% endcall %}
 
 ## Getting Started
@@ -147,7 +147,7 @@ Or load it with the following `<script>` tag:
 <script src="//cdn.jsdelivr.net/npm/leancloud-storage@{{jssdkversion}}/dist/av-live-query-min.js"></script>
 ```
 
-You also need to go to your app's [Dashboard > Storage > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Misc** section before you can expect it to work.
+You also need to go to your app's [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Misc** section before you can expect it to work.
 {% endif %}
 {% if platform_name === "Swift" %}
 {# TODO #}
@@ -156,9 +156,9 @@ You also need to go to your app's [Dashboard > Storage > Settings](/dashboard/st
 {# TODO #}
 {% endif %}
 
-### Initializing Your Application
+### Initializing Your Project
 
-First, go to your app's [Dashboard > Settings](/dashboard/app.html?appid={{appid}}#/key) and look for your App ID and App Key.
+First, go to your app's [Dashboard > Settings > API Keys](/app.html?appid={{appid}}#/key) and look for your App ID and App Key.
 
 {% if platform_name === "JavaScript" %}
 Next, copy and paste them into your initialization code:
@@ -241,19 +241,24 @@ Then specify the permissions needed by the SDK and declare the `MyLeanCloudApp` 
 
 ### Debugging
 
-You can easily trace the problems in your application by turning debug logs on during the development phase. Once enabled, details of every request made by the SDK along with errors will be output to IDE, browser console, or [Dashboard > LeanEngine > Logs](/dashboard/cloud.html?appid={{appid}}#/log).
+You can easily trace the problems in your project by turning debug logs on during the development phase. Once enabled, details of every request made by the SDK along with errors will be output to IDE, browser console, or your app's [Dashboard > LeanEngine > App Logs](/cloud.html?appid={{appid}}#/log).
 
 {% if platform_name === "JavaScript" %}
-```js
-// In Node.js, set environment variable DEBUG=leancloud*
-// Debug logs will be enabled when running app with npm
+If you are using Node.js, you can set the environment variable `DEBUG=leancloud*` when starting the app with npm:
+
+```sh
 DEBUG=leancloud* npm start
+```
 
-// If using Node.js with LeanEngine, go to Dashboard > LeanEngine > Settings > Custom Environment Variables
-// Put DEBUG in the first field and leancloud:* in the second field (make sure to include the colon between leancloud and *)
+If you are using Node.js with [LeanEngine](leanengine_overview.html), you can set the environment variable by going to [Dashboard > LeanEngine > Settings > Custom Environment Variables](/cloud.html?appid={{appid}}#/conf), put `DEBUG` in the first field and `leancloud:*` in the second field (make sure to include the colon between `leancloud` and `*`). When debugging locally with [command-line interface](leanengine_cli.html), you can set the environment variable `DEBUG=leancloud:*` to have logs output to your app's [Dashboard > LeanEngine > App Logs](/cloud.html?appid={{appid}}#/log):
+
+```sh
 DEBUG=leancloud:* lean up
+```
 
-// Set localStorage in browser console
+You can output logs to your browser console by setting `localStorage`:
+
+```js
 localStorage.setItem('debug', 'leancloud*');
 
 // Enable debug logs for LiveQuery
@@ -279,11 +284,11 @@ Make sure debug logs are turned off before your app is published. Failure to do 
 {% if platform_name === "JavaScript" %}
 ### Web Security
 
-If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [Dashboard > Settings](/dashboard/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
+If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [Dashboard > Settings > Security](/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
 
 However, since your app is exposed to the internet, simply setting up whitelist domains can't totally guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
 
-- [Data and Security](data-security.html)
+- [Data and Security](data_security.html)
 - [ACL Guide](acl-guide.html)
 {% endif %}
 
@@ -395,10 +400,10 @@ We do not recommend storing large pieces of binary data like images or documents
 {% call docs.noteWrap() %}
 Keep in mind that our backend stores dates in UTC format and the SDK will convert them to local times upon retrieval.
 
-The date values displayed in the Data Browser in [Dashboard > Data](/dashboard/data.html?appid={{appid}}#/) are also converted to match your operating system's timezone. The only exception is that when you retrieve these date values through our [REST API](rest-api.html), they will remain in UTC format. You can manually convert them using appropriate timezones when necessary.
+The date values displayed in the your app's [Dashboard > LeanStorage > Data](/data.html?appid={{appid}}#/) are also converted to match your operating system's timezone. The only exception is that when you retrieve these date values through our [REST API](rest_api.html), they will remain in UTC format. You can manually convert them using appropriate timezones when necessary.
 {% endcall %}
 
-{# For more information about how LeanCloud handles data and security, check out our documentation on [Data and Security](data-security.html). #}
+{# For more information about how LeanCloud handles data and security, check out our documentation on [Data and Security](data_security.html). #}
 
 ### Creating Objects
 
@@ -436,7 +441,7 @@ If you keep seeing `Maximum call stack size exceeded` exception in your log, cha
 From version 1.4.0 onwards, the JavaScript SDK is compatible with ES6 classes. If you're using ES6 in your codebase, you can subclass `AV.Object` with the `extends` keyword. However, when using `extends`, the SDK is not automatically aware of your subclasses. You will need to register the subclasses with the SDK:
 
 ```js
-class Todo extends `AV.Object` {
+class Todo extends AV.Object {
   // More properties and methods
 }
 
@@ -504,7 +509,7 @@ todo.saveInBackground();
 ```
 {% endif %}
 
-To make sure the data is successfully saved, take a look at [Dashboard > Data > Todo](/data.html?appid={{appid}}#/) in your app. You should see something like this when you click on the `objectId` of the object:
+To make sure the data is successfully saved, take a look at [Dashboard > LeanStorage > Data > `Todo`](/data.html?appid={{appid}}#/Todo) in your app. You should see something like this when you click on the `objectId` of the object:
 
 ```json
 {
@@ -523,7 +528,7 @@ To make sure the data is successfully saved, take a look at [Dashboard > Data > 
 ```
 
 {% call docs.noteWrap() %}
-You don't have to create or set up a new class called `Todo` in Dashboard before running the code above. The class will be automatically created in your app.
+You don't have to create or set up a new class called `Todo` in [Dashboard > LeanStorage > Data](/data.html?appid={{appid}}#/) before running the code above. The class will be automatically created in your app.
 {% endcall %}
 
 There are several built-in fields that are provided by default which you don't need to specify in your code:
@@ -759,7 +764,7 @@ todo.saveInBackground();
 ```
 {% endif %}
 
-LeanCloud automatically figures out which data has changed and only fields with changes will be sent to the cloud. The fields you didn't update will remain intact.
+LeanCloud automatically figures out which data has changed and only the fields with changes will be sent to the cloud. The fields you didn't update will remain intact.
 
 #### Updating Data Conditionally
 
@@ -832,7 +837,7 @@ query.getFirstInBackground(new GetCallback<AVObject>() {
 
 **`query` option only works for existing objects.** In other words, it has no effect on objects that haven't been saved to the cloud yet.
 
-The benefit of using `query` option instead of the combination of `{{ baseQueryClassName }}` and `{{ baseObjectName }}` shows up when you have multiple clients trying to update the same field at the same time. The latter way is more cumbersome and may lead to potential problems.
+The benefit of using `query` option instead of combining `{{ baseQueryClassName }}` and `{{ baseObjectName }}` shows up when you have multiple clients trying to update the same field at the same time. The latter way is more cumbersome and may lead to potential inconsistencies.
 
 #### Updating Counters
 
@@ -1296,7 +1301,7 @@ The easiest way to model many-to-many relationships is to use **arrays**. In mos
 We recommend you to use join tables if the total amount of objects of any class exceeds 100.
 
 {% call docs.noteWrap() %}
-Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](data-modeling.html) in greater detail, which we highly recommend you reading.
+Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](relation-guide.html) in greater detail, which we highly recommend you reading.
 {% endcall %}
 
 ## Queries
@@ -2534,7 +2539,7 @@ LiveQuery has both free and paid plans. See [Pricing](https://leancloud.cn/prici
 
 ### Initializing LiveQuery
 
-LiveQuery is supported by Android SDK v4.2.0+, JavaScript SDK v3.0.0+, and iOS SDK v5.0.0+. To use LiveQuery in your app, go to [Dashboard > Storage > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Misc** section, then include the following code:
+LiveQuery is supported by Android SDK v4.2.0+, JavaScript SDK v3.0.0+, and iOS SDK v5.0.0+. To use LiveQuery in your app, go to your app's [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf) and check the **Enable LiveQuery** option under the **Other** section, then include the following code:
 
 {% if platform_name === "JavaScript" %}
 ```html
@@ -3393,12 +3398,12 @@ file.deleteInBackground(new DeleteCallback() {
 {% endif %}
 
 {% call docs.alertWrap() %}
-By default, a file is not allowed to be deleted. You can change the setting by going to [Dashboard > Data > `_File`](/data.html?appid={{appid}}#/_File) and select **Misc** > **Permission Settings** > **delete**.
+By default, a file is not allowed to be deleted. You can change the setting by going to [Dashboard > LeanStorage > Data > `_File`](/data.html?appid={{appid}}#/_File) and select **Other** > **Permission Settings** > **`delete`**.
 {% endcall %}
 
 ### Enabling HTTPS
 
-If you demand that the files in the cloud should be accessed through HTTPS, check on **Enable HTTPS domain** in [Dashboard > Data > Settings > Files](/dashboard/storage.html?appid={{appid}}#/storage/conf). There is no free quota on using HTTPS for files and you will see the pricing once the function is enabled.
+If you demand that the files in the cloud should be accessed through HTTPS, check on **Enable HTTPS domain** in [Dashboard > LeanStorage > Settings > Files](/storage.html?appid={{appid}}#/storage/conf). There is no free quota on using HTTPS for files and you will see the pricing once the function is enabled.
 
 {% call docs.alertWrap() %}
 By enabling HTTPS, whether the URLs of the files returned by API use HTTPS or HTTP will be affected. Keep in mind that even the function is not enabled, the clients can still access files with HTTPS URLs which will lead to additional expenditure.
@@ -3440,7 +3445,7 @@ Or go to your project's **Target** panel, open the **Info** tab and modify setti
 
 ### Setting up Custom Domain
 
-LeanCloud offers a shared domain for all the apps to access the files stored in the cloud. However, due to the Cyber Security Law of the countries where we offer our services, the shared domain might not be available all the time. We highly recommend that you **set up your custom domains for accessing files** so that your apps will not be affected when the shared domain becomes unavailable. You can set up custom domains at [Storage > Settings > Files](/dashboard/storage.html?appid={{appid}}#/storage/conf).
+LeanCloud offers a shared domain for all the apps to access the files stored in the cloud. However, due to the Cyber Security Law of the countries where we offer our services, the shared domain might not be available all the time. We highly recommend that you **set up your custom domains for accessing files** so that your apps will not be affected when the shared domain becomes unavailable. You can set up custom domains at [Dashboard > LeanStorage > Settings > Files](/storage.html?appid={{appid}}#/storage/conf).
 
 ### CDN Support
 
@@ -3751,7 +3756,7 @@ user.set('gender', 'secret');
 
 user.signUp().then(function (user) {
   console.log(user);
-  var sessionToken = user.get('sessionToken')
+  var sessionToken = user.get('sessionToken');
 }, function (error) {
   // Error handling
 });
@@ -3917,7 +3922,7 @@ AVUser.signUpOrLoginByMobilePhoneInBackground(
 
 A phone number that `{{ userObjectName }}` accepts should have a leading plus sign (`+`) immediately followed by the country code and the phone number. You should leave out all the dashes, spaces, and other non-numeric characters. For instance, `+8618200008888` is a valid China number (`86` is the country code), and `+15555551234` is a valid US or Canada number (`1` is the country code, and `555` is the area code).
 
-For a list of countries and regions that LeanCloud can reach out through phones, please refer to the [International SMS](sms-guide.html#international-sms) section in the SMS guide.
+For a list of countries and regions that LeanCloud can reach out through phones, please refer to the [Pricing](sms-guide.html#pricing) section of the SMS guide.
 
 ### Logging in
 
@@ -4018,7 +4023,7 @@ AVUser.loginByMobilePhoneNumberInBackground(
 {% endif %}
 
 {% call docs.noteWrap() %}
-By default, LeanCloud allows a user to log in to their account as long as the phone number and the password are correct even when the ownership of the phone hasn't been [verified](#verifying-phone-numbers). To make your app more secure, you can choose to allow only those who have their phones verified to log in. The option can be found in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf).
+By default, LeanCloud allows a user to log in to their account as long as the phone number and the password are correct even when the ownership of the phone hasn't been [verified](#verifying-phone-numbers). To make your app more secure, you can choose to allow only those who have their phones verified to log in. The option can be found in [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf).
 {% endcall %}
 
 You may also let a user in with a verification code sent to their phone, which is useful when the user forgets the password and does not want to reset it at the moment. To do so, create a link or a button that says something like "Log in with SMS Verification Code". When a user clicks on it, call the `{% if platform_name === "JavaScript" %}requestLoginSmsCode{% endif %}{% if platform_name === "Swift" %}requestLoginVerificationCode{% endif %}{% if platform_name === "Android" %}requestLoginSmsCodeInBackground{% endif %}` method to send the verification code for the login request:
@@ -4118,7 +4123,7 @@ AVUser.signUpOrLoginByMobilePhoneInBackground(
 
 During the development of your application, you may need to test the sign-up or log-in related API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be greatly affected.
 
-To work around it, you can set up a sandbox phone number in [Dashboard > SMS > Settings](/dashboard/messaging.html?appid={{apppid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. Whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connections to the carrier networks being made.
+To work around it, you can set up a sandbox phone number in [Dashboard > LeanMessage > SMS > Settings](/messaging.html?appid={{apppid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. Whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connections to the carrier networks being made.
 
 On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a fixed combination of phone number and verification code for them to review the app as a normal user. Failure to do so may result in their app being rejected by App Store.
 
@@ -4140,7 +4145,7 @@ The account will be automatically recovered 15 minutes after the last attempt an
 
 ### Verifying Emails
 
-You can request that your users have their email addresses verified before they can log in or access certain functions in your app. By doing so it gets harder for spam users to abuse your app. Each time when a user is created or has their email set or changed, the `emailVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification emails when users register or change email addresses** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), an email containing a verification link will be sent to this user automatically. You can choose to prevent users with unverified email addresses to log in in the same panel.
+You can request that your users have their email addresses verified before they can log in or access certain functions in your app. By doing so it gets harder for spam users to abuse your app. Each time when a user is created or has their email set or changed, the `emailVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification emails when users register or change email addresses** in [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf), an email containing a verification link will be sent to this user automatically. You can choose to prevent users with unverified email addresses to log in in the same panel.
 
 If a user forgets to click on the link and needs to have their account verified later, the following code can be used to send a new email:
 
@@ -4190,7 +4195,7 @@ The `emailVerified` will be set to `true` after the link is clicked on. This fie
 
 ### Verifying Phone Numbers
 
-Similar to [Verifying Emails](#verifying-emails), you can also request that your users have their phone numbers verified before they can log in or access certain functions in your app. Each time when a user is created or has their phone number set or changed, the `mobilePhoneVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification SMS when users register or change phone numbers** in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), a text message containing a verification code will be sent to this user automatically. You can choose to prevent users with unverified phone numbers to log in in the same panel.
+Similar to [Verifying Emails](#verifying-emails), you can also request that your users have their phone numbers verified before they can log in or access certain functions in your app. Each time when a user is created or has their phone number set or changed, the `mobilePhoneVerified` of this user will be set to `false` in the cloud, and if you enabled **Send verification SMS when users register or change phone numbers** in [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf), a text message containing a verification code will be sent to this user automatically. You can choose to prevent users with unverified phone numbers to log in in the same panel.
 
 You can also manually initiate a verification request at anytime with the following code:
 
@@ -4356,7 +4361,7 @@ For security reasons, please avoid passing session tokens as a part of URLs in n
 {% endcall %}
 
 {% call docs.noteWrap() %}
-If **Log out the user when password is updated** is checked on in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [`403 (Forbidden)`](error_code.html#_403) will be returned as an error.
+If **Log out the user when password is updated** is checked on in [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [`403 (Forbidden)`](error_code.html#_403) will be returned as an error.
 {% endcall %}
 
 The code below checks if a session token is valid:
@@ -4444,7 +4449,7 @@ AVUser.requestPasswordResetInBackground(
 The code above will check if there is a user in the `_User` table that has the `email` to be the same as the one provided, and will send them a password reset email if so. As mentioned previously, you can make the `username` of each user to be the same as their `email`, or collect the email separately and store it in the `email` field.
 
 {% call docs.noteWrap() %}
-The content of the password reset email is fully customizable. You can go to your app's [Email](/dashboard/app.html?appid={{appid}}#/email) page and modify
+The content of the password reset email is fully customizable. You can go to your app's [Dashboard > Settings > Email Templates](/app.html?appid={{appid}}#/email) and modify
 the corresponding template.
 {% endcall %}
 
@@ -4502,7 +4507,7 @@ AVUser.requestPasswordResetBySmsCodeInBackground(
 The code above will check if there is a user in the `_User` table that has the `mobilePhoneNumber` to be the same as the one provided, and will send them a verification code if so.
 
 {% call docs.noteWrap() %}
-By changing the settings in [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the `mobilePhoneVerified` field is `true`.
+By changing the settings in [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the `mobilePhoneVerified` field is `true`.
 {% endcall %}
 
 The code below resets the password of a user after they enter the verification code and a new password:
@@ -4578,7 +4583,7 @@ AVQuery<AVUser> userQuery = new AVQuery<>("_User");
 
 For security reasons, **the `_User` table of each new app has its `find` permission disabled by default**. Each user can only access their own data in `_User` table and cannot access that of others. If you need to allow each user to view other users' data, we recommend that you create a new table to store such data and enable the `find` permission of this table. You may also encapsulate queries on users within [LeanEngine](leanengine_overview.html) and avoid opening up `find` permissions of `_User` tables.
 
-See [Security of User Objects](#security-of-user-objects) for other restrictions applied to the `_User` table, and [Data and Security](data-security.html) for more information regarding class-level permission settings.
+See [Security of User Objects](#security-of-user-objects) for other restrictions applied to the `_User` table, and [Data and Security](data_security.html) for more information regarding class-level permission settings.
 
 ### Associations
 
@@ -4736,7 +4741,7 @@ If the `authData` is not linked to any account, you will instead receive a statu
 }
 ```
 
-By default, `authData` cannot be returned to the client by using the `{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Swift" %}Included{% endif %}{% if platform_name === "Android" %}include{% endif %}` or `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` method on a query unless the record is owned by the current user. To change this behavior, you can go to your app's [Data](/dashboard/data.html?appid={{appid}}#/_User), select the `_User` class, click on the arrow icon on the authData column header, click on "Edit", and check off the **Restrict read and write permission to the owning user** option so that anyone can have access to it.
+By default, `authData` cannot be returned to the client by using the `{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Swift" %}Included{% endif %}{% if platform_name === "Android" %}include{% endif %}` or `{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Swift" %}fetch{% endif %}{% if platform_name === "Android" %}fetchInBackground{% endif %}` method on a query unless the record is owned by the current user. To change this behavior, you can go to your app's [Dashboard > LeanStorage > Data > `_User`](/data.html?appid={{appid}}#/_User), click on the arrow icon on the `authData` column header, click on "Edit", and check off the **Restrict read and write permissions to the owner** option so that anyone can have access to it.
 
 To ensure that each `{{ userObjectName }}` is linked with a service account only once, a unique index needs to be created for the `authData.<SERVICE_NAME>.uid` key in the `_User` class.
 
@@ -4792,7 +4797,7 @@ To ensure that each `{{ userObjectName }}` is linked with a service account only
 
 LeanCloud automatically validates the integrity of the access token for the services above to prevent data forge attack. When the validation fails, LeanCloud will respond with `invalid authData` error and the linking will not be established.
 
-When using other services (such as Github, Twitter, and Facebook) for linking, you are responsible for validating the access token from the service provider. You also need to turn off the **Validate the access token for third-party login** option in your app's [Data > Settings](/dashboard/storage.html?appid={{appid}}#/storage/conf) to let LeanCloud know how to process the authData and handle the linking accordingly.
+When using other services (such as GitHub, Twitter, and Facebook) for linking, you are responsible for validating the access token from the service provider. You also need to turn off the **Validate the access token for third-party login** option in your app's [Dashboard > LeanStorage > Settings](/storage.html?appid={{appid}}#/storage/conf) to let LeanCloud know how to process the `authData` and handle the linking accordingly.
 
 `authData` for other services:
 
@@ -4946,11 +4951,11 @@ As your app grows in scope and user-base, you may find yourself needing more coa
 
 ## In-App Searching
 
-In-App Searching offers a better way to search through the information contained within your apps. It's built with search engine capabilities that you can easily tap into your app. Effective and useful searching functionality in your app is crucial for helping users find what they need. For more details, see {{inapp_search_guide_url}}.
+In-App Searching offers a better way to search through the information contained within your apps. It's built with search engine capabilities that you can easily tap into your app. Effective and useful searching functionality in your app is crucial for helping users find what they need. For more details, see [In-App Searching Guide](app_search_guide.html).
 
 ## In-App Socializing
 
-In-app socializing offers features like following, timeline, status update, interaction, messaging, etc. For more details, see {{status_system_guide_url}}.
+In-app socializing offers features like following, timeline, status update, interaction, messaging, etc. For more details, see [In-App Socializing Guide](status_system.html#{% if platform_name === "JavaScript" %}javascript-sdk{% endif %}{% if platform_name === "Swift" %}ios-sdk{% endif %}{% if platform_name === "Android" %}android-sdk{% endif %}).
 
 {% if platform_name === "JavaScript" %}
 ## WebView

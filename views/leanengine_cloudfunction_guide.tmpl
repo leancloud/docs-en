@@ -1,0 +1,1982 @@
+{% set var_app_domain = "{App Domain}" %}
+{% import "views/_helper.njk" as docs %}
+
+# {{platformName}} Cloud Function Guide
+
+Cloud function is a sub-module of LeanEngine that allows you to run functions on the cloud in response to the requests made by clients. Before you continue, make sure you have read [LeanEngine Overview](leanengine_overview.html).
+
+When developing your application, you may need to write logics that:
+
+- Are shared by multiple platforms (like iOS, Android, and web) and you wish to write them only once.
+- Need to be modified frequently (like the sorting rules of a list) but you don't want to release a new version of client each time you make a change.
+- Demand high network traffic or computing power (like producing statistics on a huge table) which you don't want to run on clients.
+- Need to be triggered when certain events happen (hooking). For example, when a user deletes an account, you may wish to delete the entries in other tables that are related to this account as well.
+- Need to bypass certain restrictions set by ACL.
+- Need to be performed routinely. For example, you may wish to clean up inactive accounts every month.
+
+With cloud function, you can deploy these logics written in any language (JavaScript, Python, PHP, or Java) on the cloud and have LeanEngine run them for you.
+
+If you have no idea how to deploy you project to LeanEngine, take a look at [LeanEngine Quick Start](leanengine_quickstart.html).
+
+This guide uses {{platformName}} as an example, but LeanEngine supports many other languages as well. You can choose the one you are familiar with for development:
+
+- [Node.js](leanengine_cloudfunction_guide-node.html){% if platformName === "Node.js" %} <span class="text-muted">(current)</span>{% endif %}
+- [Python](leanengine_cloudfunction_guide-python.html){% if platformName === "Python" %} <span class="text-muted">(current)</span>{% endif %}
+- [PHP](leanengine_cloudfunction_guide-php.html){% if platformName === "PHP" %} <span class="text-muted">(current)</span>{% endif %}
+- [Java](leanengine_cloudfunction_guide-java.html){% if platformName === "Java" %} <span class="text-muted">(current)</span>{% endif %}
+
+## Cloud Functions
+
+In this [example](https://github.com/leancloud/{% if platformName === "Node.js" %}node-js-getting-started{% endif %}{% if platformName === "Python" %}python-getting-started{% endif %}{% if platformName === "PHP" %}slim-getting-started{% endif %}{% if platformName === "Java" %}java-war-getting-started{% endif %}), a simple cloud function named `hello` is defined in `{% if platformName === "Node.js" %}cloud.js{% endif %}{% if platformName === "Python" %}cloud.py{% endif %}{% if platformName === "PHP" %}src/cloud.php{% endif %}{% if platformName === "Java" %}src/main/java/cn/leancloud/demo/todo/Cloud.java{% endif %}`. By doing so, clients running on all platforms will be able to call it and get the return value of it. The computing process of the function is done on the cloud side rather than on the client side, so there will be less burden on the clients.
+
+Now let's look into a more complex example.
+
+Imagine that you have an app that lets users review the movies they have watched. An object containing a single review of a movie may look like this:
+
+```json
+{
+  "movie": "Despicable Me",
+  "stars": 5,
+  "comment": "These minions are so cute. I wish they are real and I can have them in my home!"
+}
+```
+
+`stars` is the score given by the user, ranging from 1 to 5. If you want to obtain the average score of *Despicable Me*, one thing you can do is to have the client search for all the reviews of this movie and calculate the average score on the device. However, this requires all the reviews of this movie to be fetched to the client, which leads to unnecessary network traffic. With cloud function, you can simply have the client pass the name of the movie to the cloud and receive the calculated score only.
+
+Cloud functions accept parameters in JSON objects which we can include the name of the movie in. All the methods defined in {% if platformName === "Node.js" %}[LeanStorage JavaScript SDK](leanstorage_guide-js.html){% endif %}{% if platformName === "Python" %}[LeanStorage Python SDK](leanstorage_guide-python.html){% endif %}{% if platformName === "PHP" %}[LeanStorage PHP SDK](leanstorage_guide-php.html){% endif %}{% if platformName === "Java" %}[LeanStorage Java SDK](leanstorage_guide-java.html){% endif %} can be used on LeanEngine, so we can write the cloud function `averageStars` like this:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.define('averageStars', function (request) {
+  var query = new AV.Query('Review');
+  query.equalTo('movie', request.params.movie);
+  return query.find().then(function (results) {
+    var sum = 0;
+    for (var i = 0; i < results.length; i++) {
+      sum += results[i].get('stars');
+    }
+    return sum / results.length;
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def averageStars(movie, **params):
+    reviews = leancloud.Query(Review).equal_to('movie', movie).find()
+    result = sum(x.get('stars') for x in reviews)
+    return result
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+use \LeanCloud\Engine\Cloud;
+use \LeanCloud\Query;
+use \LeanCloud\CloudException;
+
+Cloud::define("averageStars", function($params, $user) {
+    $query = new Query("Review");
+    $query->equalTo("movie", $params["movie"]);
+    try {
+        $reviews = $query->find();
+    } catch (CloudException $ex) {
+        // Log the error message if the query fails
+        error_log($ex->getMessage());
+        return 0;
+    }
+    $sum = 0;
+    forEach($reviews as $review) {
+        $sum += $review->get("stars");
+    }
+    if (count($reviews) > 0) {
+         return $sum / count($reviews);
+    } else {
+         return 0;
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineFunction("averageStars")
+public static float getAverageStars(@EngineFunctionParam("movie") String movie)
+    throws AVException {
+  AVQuery<AVObject> query = new AVQuery("Review");
+  query.whereEqualTo("movie", movie);
+  List<AVObject> reviews = query.find();
+  int sum = 0;
+  if (reviews == null && reviews.isEmpty()) {
+    return 0;
+  }
+  for (AVObject review : reviews) {
+    sum += review.getInt("star");
+  }
+  return sum / reviews.size();
+}
+```
+{% endif %}
+
+{% if platformName === "Python" %}
+The default name of the cloud function used by the SDK is the same as the function name in Python. If you need a different name for the function, you can have it specified after `engine.define`:
+
+```python
+@engine.define('averageStars')
+def my_custom_average_start(movie, **params):
+    pass
+```
+{% endif %}
+
+### Parameters and Return Values
+
+{% if platformName === "Node.js" %}
+A `Request` will be passed into a cloud function as a parameter. Each `Request` contains the following properties:
+
+- `params: Object`: The parameters sent from the client; might be an `AV.Object` when the function is called with `rpc`.
+- `currentUser?: AV.User`: The user logged in at the client side (according to the header `LC-Session`).
+- `sessionToken?: String`: The `sessionToken` sent from the client (according to the header `X-LC-Session`).
+- `meta: object`: Other information about the client, including `remoteAddress` which is the IP address of the client.
+
+If the cloud function returns a Promise, the client will receive the response once the Promise is resolved. If an error occurred in the Promise, the client will receive the error as the response. An exception made by `AV.Cloud.Error` will be considered as a client-side error and will not be output as an error message. The error messages for other exceptions will be printed out accordingly.
+
+We recommend that you chain Promises together to make it easy to process tasks asynchronously and handle errors. **Make sure to have the cloud function return the chained Promises.** You can read [Promises/A+ Proposal](https://github.com/promises-aplus/promises-spec) to learn more about Promises.
+{% endif %}
+{% if platformName === "Python" %}
+The parameters provided when calling a cloud function will be directly passed as the parameters of them. If you want to pass extra parameters to the cloud function, we recommend that you pack them into a keyword argument to avoid potential exceptions:
+
+```python
+@engine.define
+def my_cloud_func(foo, bar, baz, **params):
+    pass
+```
+
+You can access `engine.current` within a cloud function to get additional information regarding the client. Each `engine.current` contains the following properties:
+
+- `engine.current.user: leancloud.User`: The user logged in at the client side (according to the header `LC-Session`).
+- `engine.current.session_token: str`: The `sessionToken` sent from the client (according to the header `X-LC-Session`).
+- `engine.current.meta: dict`: Other information about the client, including `remote_address` which is the IP address of the client.
+{% endif %}
+{% if platformName === "PHP" %}
+The following parameters can be accessed within a cloud function:
+
+- `$params: array`: The parameters sent from the client.
+- `$user: User`: The user logged in at the client side (according to the header `LC-Session`).
+- `$meta: array`: Other information about the client, including `$meta['remoteAddress']` which is the IP address of the client.
+{% endif %}
+{% if platformName === "Java" %}
+The following parameters can be accessed within a cloud function:
+
+- `@EngineFunctionParam`: The parameters sent from the client.
+- `AVUser.getCurrentUser()`: The user logged in at the client side (according to the header `LC-Session`).
+- `EngineRequestContext`: Other information about the client.
+{% endif %}
+
+### Calling Cloud Functions with SDK
+
+You can call cloud functions with any LeanCloud SDK:
+
+```objc
+// Construct the dictionary to be passed to the cloud
+NSDictionary *dicParameters = [NSDictionary dictionaryWithObject:@"Despicable Me"
+                                                          forKey:@"movie"];
+
+// Call averageStars with parameters
+[AVCloud callFunctionInBackground:@"averageStars"
+                   withParameters:dicParameters
+                   block:^(id object, NSError *error) {
+                   if(error == nil){
+                     // Success; object is the returned value from the cloud function
+                   } else {
+                     // Error handling
+                   }
+}];
+```
+```js
+var paramsJson = {
+  movie: "Despicable Me"
+};
+AV.Cloud.run('averageStars', paramsJson).then(function (data) {
+  // Success; data is the returned value from the cloud function
+}, function (err) {
+  // Error handling
+});
+```
+```python
+from leancloud import cloudfunc
+
+cloudfunc.run('averageStars', movie='Despicable Me')
+```
+```php
+use \LeanCloud\Engine\Cloud;
+$params = array(
+    "movie" => "Despicable Me"
+);
+Cloud::run("averageStars", $params);
+```
+```java
+// Construct the parameters to be passed to the cloud
+Map<String, String> dicParameters = new HashMap<String, String>();
+dicParameters.put("movie", "Despicable Me");
+
+// Call averageStars with parameters
+AVCloud.callFunctionInBackground("averageStars", dicParameters, new FunctionCallback() {
+    public void done(Object object, AVException e) {
+        if (e == null) {
+            // Success; object is the returned value from the cloud function
+        } else {
+            // Error handling
+        }
+    }
+});
+```
+
+### Calling Cloud Functions with REST API
+
+See [LeanEngine REST API Guide](leanengine-rest-api.html).
+
+### Calling Cloud Functions on LeanEngine
+
+You can call the cloud functions defined by `{% if platformName === "Node.js" %}AV.Cloud.define{% endif %}{% if platformName === "Python" %}engine.define{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::define{% endif %}{% if platformName === "Java" %}@EngineFunction{% endif %}` with `{% if platformName === "Node.js" %}AV.Cloud.run{% endif %}{% if platformName === "Python" %}leancloud.cloudfunc.run{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::run{% endif %}{% if platformName === "Java" %}AVCloud.callFunction{% endif %}`:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.run('averageStars', {
+  movie: 'Despicable Me'
+}).then(function (data) {
+  // Success; data is the returned value from the cloud function
+}, function (error) {
+  // Error handling
+});
+```
+
+By doing so, a local function call will be triggered without initiating an HTTP request. If you want to call the cloud function through an HTTP request, add `remote: true` as an option. This will be helpful when you use Node.js SDK outside of a LeanEngine environment:
+
+```js
+AV.Cloud.run('averageStars', { movie: 'Despicable Me' }, { remote: true }).then(function (data) {
+  // Success; data is the returned value from the cloud function
+}, function (error) {
+  // Error handling
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+from leancloud import cloudfunc
+
+cloudfunc.run('averageStars', movie='Despicable Me')
+```
+
+By doing so, the cloud function will be called through an HTTP request. If you want to trigger the function locally, use `leancloud.cloudfunc.run.local` instead of `leanengine.cloudfunc.run`.
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+try {
+    $result = Cloud::run("averageStars", array("movie" => "Despicable Me"));
+} catch (\Exception $ex) {
+    // Error handling
+}
+```
+
+By doing so, a local function call will be triggered without initiating an HTTP request.
+{% endif %}
+{% if platformName === "Java" %}
+```java
+Map<String, Object> params = new HashMap<String, Object>();
+params.put("movie", "Despicable Me");
+try {
+  float result = AVCloud.callFunction("averageStars", params);
+} catch (AVException e) {
+  e.printStackTrace();
+}
+```
+{% endif %}
+
+### Calling Cloud Functions with RPC
+
+By calling cloud functions with RPC, LeanEngine will automatically serialize the HTTP response body and the SDK will get the response in the format of `{% if platformName === "Node.js" %}AV.Object{% endif %}{% if platformName === "Python" %}leancloud.Object{% endif %}{% if platformName === "PHP" %}LeanObject{% endif %}{% if platformName === "Java" %}AVObject{% endif %}`:
+
+```objc
+NSDictionary *dicParameters = [NSDictionary dictionaryWithObject:@"Despicable Me"
+                                                          forKey:@"movie"];
+
+[AVCloud rpcFunctionInBackground:@"averageStars"
+                  withParameters:parameters
+                  block:^(id object, NSError *error) {
+                  if(error == nil){
+                    // Success
+                  }
+                  else {
+                    // Error handling
+                  }
+}];
+```
+```js
+var paramsJson = {
+  movie: "Despicable Me"
+};
+
+AV.Cloud.rpc('averageStars', paramsJson).then(function (object) {
+  // Success
+}, function (error) {
+  // Error handling
+});
+```
+```python
+from leancloud import cloudfunc
+
+cloudfunc.rpc('averageStars', movie='Despicable Me')
+```
+```java
+// Construct parameters
+Map<String, String> dicParameters = new HashMap<String, String>();
+dicParameters.put("movie", "Despicable Me");
+
+AVCloud.rpcFunctionInBackground("averageStars", dicParameters,
+  new FunctionCallback<AVObject>() {
+    @Override
+    public void done(AVObject object, AVException e) {
+      Assert.assertNull(e);
+    }
+  }
+);
+```
+
+### Error Codes
+
+You can customize error codes for cloud functions in accordance with [HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.define('errorCode', function (request) {
+  return AV.User.logIn('NotThisUser', 'P@ssword');
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def error_code(**params):
+    leancloud.User.login('not_this_user', 'P@ssword')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define("errorCode", function($params, $user) {
+    User::logIn("not_this_user", "P@ssword");
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineFunction("errorCode")
+public static AVUser getCurrentUser() throws Exception {
+  AVUser u = AVUser.getCurrentUser();
+  if (u == null) {
+    throw new AVException(211, "Could not find the user.");
+  } else {
+    return u;
+  }
+}
+```
+{% endif %}
+
+The client will receive `{ "code": 211, "error": "Could not find the user." }` from the function above.
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.define('customErrorCode', function (request) {
+  throw new AV.Cloud.Error('Custom error message.', { code: 123 });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+from leancloud import LeanEngineError
+
+@engine.define
+def custom_error_code(**params):
+    raise LeanEngineError(123, 'Custom error message.')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define("customErrorCode", function($params, $user) {
+    throw new FunctionError("Custom error message.", 123);
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineFunction()
+public static void customErrorCode() throws Exception {
+  throw new AVException(123, "Custom error message.");
+}
+```
+{% endif %}
+
+The client will receive `{ "code": 123, "error": "Custom error message." }` from the function above.
+
+### Timeouts
+
+The time limit for a cloud function to be processed is 15 seconds. If the cloud function does not make a response after this, HTTP error `503` will be triggered with error message `The request timed out on the server`. {% if platformName === "Node.js" %}An error log like `LeanEngine: /1.1/functions/<cloudFunc>: function timeout (15000ms)` will be printed on the server side. Keep in mind that even after the client already receives the error message, the function may still be running, but the return value of the function will not be able to be sent to the client and an error log like `Can't set headers after they are sent` will be printed.{% endif %}{% if platformName === "Python" %}{# TODO #}{% endif %}{% if platformName === "PHP" %}An error log like `WARNING: [pool www] child ... exited on signal 9 (SIGKILL) after ... seconds from start` will be printed on the server side.{% endif %}{% if platformName === "Java" %}{# TODO #}{% endif %}
+
+{% if platformName === "Node.js" %}
+#### Handling Timeouts
+
+We recommend that you have your application handle tasks asynchronously to avoid timeouts. You may:
+
+1. Create a new class in LeanStorage with a field named `status`.
+2. For each new task, create an object with this class and mark `status` to be `ongoing`. End the request by sending the `id` of this task back to the client:
+   ```js
+   return new Promise((resolve, reject) => {
+     resolve(id);
+   });
+   ```
+3. After the task is completed, change its `status` to be `completed` or `failed`.
+4. You can check the status of a task at any time with its `id`.
+{% endif %}
+{% if platformName === "Python" %}
+#### Handling Timeouts
+
+We recommend that you have your application handle tasks asynchronously to avoid timeouts. LeanEngine Python makes use of `gevent` to create an event loop. You can create your own `greenlet` with `gevent.spawn`:
+
+```python
+def handle(req):
+    data = do_some_stuff()
+
+    @gevent.spawn
+    def stuff_should_be_executed_asynchronously():
+        resp = requests.get('http://time.consuming.api.com/foo', data=data)
+        do_more_stuff(resp.json)
+
+    return # The function above will run asynchronously and this parent function will return immediately
+```
+{% endif %}
+
+{% if platformName === "Python" %}
+### Splitting Cloud Functions
+
+Sometimes you may want to split functions handling different classes into different files:
+
+```python
+# Post.py
+import leancloud
+
+post_engine = leancloud.Engine()
+
+@post_engine.define
+def post_func():
+    pass
+```
+```python
+# Comment.py
+import leancloud
+
+comment_engine = leancloud.Engine()
+
+@comment_engine.define
+def comment_func():
+    pass
+```
+
+To introduce all these functions into `cloud.py`:
+
+```python
+# cloud.py
+import leancloud
+from Post import post_engine
+from Comment import comment_engine
+
+engine = leancloud.Engine()
+
+# Load functions from post_engine and comment_engine into engine
+# Equivalent to registering both post_func and comment_func here in cloud.py
+engine.register(post_engine)
+engine.register(comment_engine)
+```
+
+When using `engine.register`, make sure each function does not share the same name with others.
+{% endif %}
+
+## Hooking
+
+A hook can be **automatically** triggered when certain events happen (like before or after saving or updating an object). Keep in mind that:
+
+- [Importing data](dashboard_guide.html/#importing-data) on the dashboard will not trigger any hooks.
+- [Dead loops](#preventing-dead-loops) may be caused if hooks are not defined properly.
+- Hooks cannot be applied to `_Installation` table.
+
+For hooks starting with `before` (including `{% if platformName === "Node.js" %}onLogin{% endif %}{% if platformName === "Python" %}on_login{% endif %}{% if platformName === "PHP" %}onLogin{% endif %}{% if platformName === "Java" %}onLogin{% endif %}`), if an exception occurs inside the function, the data operation will be terminated. Therefore, you can reject certain data operations by having functions throw an error. For hooks starting with `after` (including `{% if platformName === "Node.js" %}onVerified{% endif %}{% if platformName === "Python" %}on_verified{% endif %}{% if platformName === "PHP" %}onVerified{% endif %}{% if platformName === "Java" %}onVerified{% endif %}`), such exception will not terminate the data operation because the operation is already completed before the function is executed.
+
+To ensure that hooks are triggered internally by LeanStorage services, our SDK will verify the source of each request. If the verification fails, the error message `Hook key check failed` will be returned. If you see such error message when debugging locally, make sure you are using our command-line interface for debugging.
+
+### `{% if platformName === "Node.js" %}beforeSave{% endif %}{% if platformName === "Python" %}before_save{% endif %}{% if platformName === "PHP" %}beforeSave{% endif %}{% if platformName === "Java" %}beforeSave{% endif %}`
+
+You can perform an operation before an object is saved, like data verification and pre-processing. For example, a comment on a movie may be too long to be displayed on the client and needs to be cut off to 140 characters:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.beforeSave('Review', function (request) {
+  var comment = request.object.get('comment');
+  if (comment) {
+    if (comment.length > 140) {
+      // Cut off and add '…' in the end
+      request.object.set('comment', comment.substring(0, 140) + '…');
+    }
+  } else {
+    // Return an error without saving the object
+    throw new AV.Cloud.Error('No comment provided!');
+  }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.before_save('Review') # Review is the name of the class that needs this hook
+def before_review_save(review):
+    comment = review.get('comment')
+    if not comment:
+        raise leancloud.LeanEngineError(message='No comment provided!')
+    if len(comment) > 140:
+        review.comment.set('comment', comment[:140] + '…')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::beforeSave("Review", function($review, $user) {
+    $comment = $review->get("comment");
+    if ($comment) {
+        if (strlen($comment) > 140) {
+            // Cut off and add '…' in the end
+            $review->set("comment", substr($comment, 0, 140) . "…");
+        }
+    } else {
+        // Return an error without saving the object
+        throw new FunctionError("No comment provided!", 101);
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Review", type = EngineHookType.beforeSave)
+public static AVObject reviewBeforeSaveHook(AVObject review) throws Exception {
+  if (AVUtils.isBlankString(review.getString("comment"))) {
+    throw new Exception("No comment provided!");
+  } else if (review.getString("comment").length() > 140) {
+    review.put("comment", review.getString("comment").substring(0, 140) + "…");
+  }
+  return review;
+}
+```
+{% endif %}
+
+### `{% if platformName === "Node.js" %}afterSave{% endif %}{% if platformName === "Python" %}after_save{% endif %}{% if platformName === "PHP" %}afterSave{% endif %}{% if platformName === "Java" %}afterSave{% endif %}`
+
+You can perform an operation after an object is saved. For example, to update the total number of comments after a comment is created:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.afterSave('Comment', function (request) {
+  var query = new AV.Query('Post');
+  return query.get(request.object.get('post').id).then(function (post) {
+    post.increment('comments');
+    return post.save();
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import leancloud
+
+@engine.after_save('Comment') # Comment is the name of the class that needs this hook
+def after_comment_save(comment):
+    post = leancloud.Query('Post').get(comment.id)
+    post.increment('commentCount')
+    try:
+        post.save()
+    except leancloud.LeanCloudError:
+        raise leancloud.LeanEngineError(message='An error occurred while trying to save the post.')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::afterSave("Comment", function($comment, $user) {
+    $query = new Query("Post");
+    $post = $query->get($comment->get("post")->getObjectId());
+    $post->increment("commentCount");
+    try {
+        $post->save();
+    } catch (CloudException $ex) {
+        throw new FunctionError("An error occurred while trying to save the post: " . $ex->getMessage());
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Review", type = EngineHookType.afterSave)
+public static void reviewAfterSaveHook(AVObject review) throws Exception {
+  AVObject post = review.getAVObject("post");
+  post.fetch();
+  post.increment("comments");
+  post.save();
+}
+```
+{% endif %}
+
+Or, to add a new field `from` for each new user:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.afterSave('_User', function (request) {
+  console.log(request.object);
+  request.object.set('from', 'LeanCloud');
+  return request.object.save().then(function (user) {
+    console.log('Success!');
+  });
+});
+```
+
+Even though the return value of such hook is not important, we still recommend that you have the function return a Promise so that error logs can be printed out when exceptions occur.
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.after_save('_User')
+def after_user_save(user):
+    print user
+    user.set('from', 'LeanCloud')
+    try:
+        user.save()
+    except LeanCloudError, e:
+        print 'Error: ', e
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::afterSave("_User", function($userObj, $currentUser) {
+    $userObj->set("from", "LeanCloud");
+    try {
+        $userObj->save();
+    } catch (CloudException $ex) {
+        throw new FunctionError("An error occurred while trying to save the user: " . $ex->getMessage());
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "_User", type = EngineHookType.afterSave)
+public static void userAfterSaveHook(AVUser user) throws Exception {
+  user.put("from", "LeanCloud");
+  user.save();
+}
+```
+{% endif %}
+
+### `{% if platformName === "Node.js" %}beforeUpdate{% endif %}{% if platformName === "Python" %}before_update{% endif %}{% if platformName === "PHP" %}beforeUpdate{% endif %}{% if platformName === "Java" %}beforeUpdate{% endif %}`
+
+You can perform an operation before an object is updated. You will be able to know which fields are updated, or reject the data operation:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.beforeUpdate('Review', function (request) {
+  // Check the length of comment if it is updated
+  if (request.object.updatedKeys.indexOf('comment') != -1) {
+    if (request.object.get('comment').length > 140) {
+      // Reject the update if comment is too long
+      throw new AV.Cloud.Error('Your comment cannot be longer than 140 characters.');
+    }
+  }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.before_update('Review')
+def before_hook_object_update(obj):
+    # Check the length of comment if it is updated
+    assert obj.updated_keys == ['clientValue']
+    if 'comment' not in obj.updated_keys:
+        # Skip the check if comment is not updated
+        return
+    if len(obj.get('comment')) > 140:
+        # Reject the update if comment is too long
+        raise leancloud.LeanEngineError(message='Your comment cannot be longer than 140 characters.')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::beforeUpdate("Review", function($review, $user) {
+    // updateKeys contains all the fields being updated
+    if (in_array("comment", $review->updatedKeys) &&
+        strlen($review->get("comment")) > 140) {
+        throw new FunctionError("Your comment cannot be longer than 140 characters.");
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Review", type = EngineHookType.beforeUpdate)
+public static AVObject reviewBeforeUpdateHook(AVObject review) throws Exception {
+  List<String> updateKeys = EngineRequestContext.getUpdateKeys();
+  for (String key : updateKeys) {
+    if ("comment".equals(key) && review.getString("comment").length()>140) {
+      throw new Exception("Your comment cannot be longer than 140 characters.");
+    }
+  }
+  return review;
+}
+```
+{% endif %}
+
+{% call docs.noteWrap() %}
+Do not attempt to modify `{% if platformName === "Node.js" %}request.object{% endif %}{% if platformName === "Python" %}obj{% endif %}{% if platformName === "PHP" %}$review{% endif %}{% if platformName === "Java" %}review{% endif %}` since changes made to it will not be saved to LeanStorage. If you want to reject the change, you can have the function throw an error.
+{% endcall %}
+
+{% call docs.noteWrap() %}
+The object passed into the function is a temporary object and may be different from the one saved to LeanStorage in the end (which may have atomic operations applied to).
+{% endcall %}
+
+### `{% if platformName === "Node.js" %}afterUpdate{% endif %}{% if platformName === "Python" %}after_update{% endif %}{% if platformName === "PHP" %}afterUpdate{% endif %}{% if platformName === "Java" %}afterUpdate{% endif %}`
+
+{% call docs.alertWrap() %}
+Dead loops may be triggered if this hook is not defined properly. This may lead to extra API calls or even extra bills. See [Preventing Dead Loops](#preventing-dead-loops) for more details.
+{% endcall %}
+
+You can perform an operation after an object is updated. For example, to create a log each time an article is edited:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.afterUpdate('Article', function (request) {
+  console.log('Article with id ' + request.object.id + ' is updated.');
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import leancloud
+
+@engine.after_update('Article') # Article is the name of the class that needs this hook
+def after_article_update(article):
+    print 'Article with id {} is updated.'.format(article.id)
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::afterUpdate("Article", function($article, $user) {
+    // Print logs to the console
+    error_log("Article with id {$article->getObjectId()} is updated.");
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Article", type = EngineHookType.afterUpdate)
+public static void articleAfterUpdateHook(AVObject article) throws Exception {
+  LogUtil.avlog.d("Article with id " + article.getObjectId() + " is updated.");
+}
+```
+{% endif %}
+
+#### Preventing Dead Loops
+
+You might be wondering why we can modify and save the `post` object in the `{% if platformName === "Node.js" %}afterUpdate{% endif %}{% if platformName === "Python" %}after_update{% endif %}{% if platformName === "PHP" %}afterUpdate{% endif %}{% if platformName === "Java" %}afterUpdate{% endif %}` hook without triggering this hook again. This is because LeanEngine automatically identifies and pre-processes all the `{% if platformName === "Node.js" %}request.object{% endif %}{% if platformName === "Python" %}leancloud.Object{% endif %}{% if platformName === "PHP" %}LeanObject{% endif %}{% if platformName === "Java" %}post{% endif %}` objects passed in by a hook to prevent the hook to be triggered again.
+
+However, if the following situations happen, you still need to handle them by yourself:
+
+- You called `fetch` on the `{% if platformName === "Node.js" %}request.object{% endif %}{% if platformName === "Python" %}leancloud.Object{% endif %}{% if platformName === "PHP" %}LeanObject{% endif %}{% if platformName === "Java" %}post{% endif %}` objects passed in.
+- You constructed the `{% if platformName === "Node.js" %}request.object{% endif %}{% if platformName === "Python" %}leancloud.Object{% endif %}{% if platformName === "PHP" %}LeanObject{% endif %}{% if platformName === "Java" %}post{% endif %}` objects passed in by yourself with methods like `{% if platformName === "Node.js" %}AV.Object.createWithoutData(){% endif %}{% if platformName === "Python" %}leancloud.Object.create_without_data(){% endif %}{% if platformName === "PHP" %}LeanObject::create(){% endif %}{% if platformName === "Java" %}AVObject.createWithoutData(String, String){% endif %}`.
+
+To prevent such objects from triggering certain hooks, you can call `{% if platformName === "Node.js" %}object.disableBeforeHook(){% endif %}{% if platformName === "Python" %}leancloud.Object.disable_before_hook(){% endif %}{% if platformName === "PHP" %}LeanObject->disableBeforeHook(){% endif %}{% if platformName === "Java" %}post.disableBeforeHook(){% endif %}` or `{% if platformName === "Node.js" %}object.disableAfterHook(){% endif %}{% if platformName === "Python" %}leancloud.Object.disable_after_hook(){% endif %}{% if platformName === "PHP" %}LeanObject->disableAfterHook(){% endif %}{% if platformName === "Java" %}post.disableAfterHook(){% endif %}` on them:
+
+{% if platformName === "Node.js" %}
+```js
+// Directly modifying and saving the object will not trigger afterUpdate
+request.object.set('foo', 'bar');
+request.object.save().then(function (obj) {
+  // Your logics here
+});
+
+// Use disableAfterHook if you called fetch on the object
+request.object.fetch().then(function (obj) {
+  obj.disableAfterHook();
+  obj.set('foo', 'bar');
+  return obj.save();
+}).then(function (obj) {
+  // Your logics here
+});
+
+// Use disableAfterHook if you constructed the object by yourself
+var obj = AV.Object.createWithoutData('Post', request.object.id);
+obj.disableAfterHook();
+obj.set('foo', 'bar');
+obj.save().then(function (obj) {
+  // Your logics here
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.after_update('Post')
+def after_post_update(post):
+    # Directly modifying and saving the object will not trigger after_update
+    post.set('foo', 'bar')
+    post.save()
+
+    # Use disable_after_hook if you called fetch on the object
+    post.fetch()
+    post.disable_after_hook()
+    post.set('foo', 'bar')
+
+    # Use disable_after_hook if you constructed the object by yourself
+    post = leancloud.Object.extend('Post').create_without_data(post.id)
+    post.disable_after_hook()
+    post.save()
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::afterUpdate("Post", function($post, $user) {
+    // Directly modifying and saving the object will not trigger afterUpdate
+    $post->set('foo', 'bar');
+    $post->save();
+
+    // Use disableAfterHook if you called fetch on the object
+    $post->fetch();
+    $post->disableAfterHook();
+    $post->set('foo', 'bar');
+    $post->save();
+
+    // Use disableAfterHook if you constructed the object by yourself
+    $post = LeanObject::create("Post", $post->getObjectId());
+    $post->disableAfterHook();
+    $post->save();
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className="Post", type = EngineHookType.afterUpdate)
+public static void afterUpdatePost(AVObject post) throws AVException {
+  // Directly modifying and saving the object will not trigger afterUpdate
+  post.put("foo", "bar");
+  post.save();
+
+  // Use disableAfterHook if you called fetch on the object
+  post.fetch();
+  post.disableAfterHook();
+  post.put("foo", "bar");
+
+  // Use disableAfterHook if you constructed the object by yourself
+  post = AVObject.createWithoutData("Post", post.getObjectId());
+  post.disableAfterHook();
+  post.save();
+}
+```
+{% endif %}
+
+### `{% if platformName === "Node.js" %}beforeDelete{% endif %}{% if platformName === "Python" %}before_delete{% endif %}{% if platformName === "PHP" %}beforeDelete{% endif %}{% if platformName === "Java" %}beforeDelete{% endif %}`
+
+You can perform an operation before an object is deleted. For example, before an album is deleted, check if there are any photos in it:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.beforeDelete('Album', function (request) {
+  // See if there is a Photo belonging to this Album
+  var query = new AV.Query('Photo');
+  var album = AV.Object.createWithoutData('Album', request.object.id);
+  query.equalTo('album', album);
+  return query.count().then(function (count) {
+    if (count > 0) {
+      // The delete operation will be aborted
+      throw new AV.Cloud.Error('Cannot delete an album if it still has photos in it.');
+    }
+  }, function (error) {
+    throw new AV.Cloud.Error('Error ' + error.code + ' occurred when finding photos: ' + error.message);
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import leancloud
+
+@engine.before_delete('Album') # Album is the name of the class that needs this hook
+def before_album_delete(album):
+    query = leancloud.Query('Photo')
+    query.equal_to('album', album)
+    try:
+        matched_count = query.count()
+    except leancloud.LeanCloudError:
+        raise engine.LeanEngineError(message='An error occurred with LeanEngine.')
+    if count > 0:
+        # The delete operation will be aborted
+        raise engine.LeanEngineError(message='Cannot delete an album if it still has photos in it.')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::beforeDelete("Album", function($album, $user) {
+    $query = new Query("Photo");
+    $query->equalTo("album", $album);
+    try {
+        $count = $query->count();
+    } catch (CloudException $ex) {
+        throw new FunctionError("An error occurred when getting photo count: {$ex->getMessage()}");
+    }
+    if ($count > 0) {
+        // The delete operation will be aborted
+        throw new FunctionError("Cannot delete an album if it still has photos in it.");
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Album", type = EngineHookType.beforeDelete)
+public static AVObject albumBeforeDeleteHook(AVObject album) throws Exception {
+  AVQuery query = new AVQuery("Photo");
+  query.whereEqualTo("album", album);
+  int count = query.count();
+  if (count > 0) {
+    // The delete operation will be aborted
+    throw new Exception("Cannot delete an album if it still has photos in it.");
+  } else {
+    return album;
+  }
+}
+```
+{% endif %}
+
+### `{% if platformName === "Node.js" %}afterDelete{% endif %}{% if platformName === "Python" %}after_delete{% endif %}{% if platformName === "PHP" %}afterDelete{% endif %}{% if platformName === "Java" %}afterDelete{% endif %}`
+
+You can perform an operation after an object is deleted. For example, when an album is being deleted, instead of checking if there are any photos left, we directly delete all the photos in it:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.afterDelete('Album', function (request) {
+  var query = new AV.Query('Photo');
+  var album = AV.Object.createWithoutData('Album', request.object.id);
+  query.equalTo('album', album);
+  return query.find().then(function (posts) {
+    return AV.Object.destroyAll(posts);
+  }).catch(function (error) {
+    console.error('Error ' + error.code + ' occurred when finding photos: ' + error.message);
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import leancloud
+
+@engine.after_delete('Album') # Album is the name of the class that needs this hook
+def after_album_delete(album):
+    query = leancloud.Query('Photo')
+    query.equal_to('album', album)
+    try:
+        query.destroy_all()
+    except leancloud.LeanCloudError:
+        raise leancloud.LeanEngineError(message='An error occurred with LeanEngine.')
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::afterDelete("Album", function($album, $user) {
+    $query = new Query("Photo");
+    $query->equalTo("album", $album);
+    try {
+        $photos = $query->find();
+        LeanObject::destroyAll($photos);
+    } catch (CloudException $ex) {
+        throw new FunctionError("An error occurred when getting photo count: {$ex->getMessage()}");
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Album", type = EngineHookType.afterDelete)
+public static void albumAfterDeleteHook(AVObject album) throws Exception {
+  AVQuery query = new AVQuery("Photo");
+  query.whereEqualTo("album", album);
+  List<AVObject> result = query.find();
+  if (result != null && !result.isEmpty()) {
+    AVObject.deleteAll(result);
+  }
+}
+```
+{% endif %}
+
+### `{% if platformName === "Node.js" %}onVerified{% endif %}{% if platformName === "Python" %}on_verified{% endif %}{% if platformName === "PHP" %}onVerified{% endif %}{% if platformName === "Java" %}onVerified{% endif %}`
+
+You can perform an operation after a user's email or phone number is verified:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onVerified('sms', function (request) {
+  console.log('User ' + request.object + ' is verified by SMS.');
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.on_verified('sms')
+def on_sms_verified(user):
+    print user
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::onVerifed("sms", function($user, $meta) {
+    error_log("User {$user->getUsername()} is verified by SMS.");
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "_User", type = EngineHookType.onVerified)
+public static void userOnVerifiedHook(AVUser user) throws Exception {
+  LogUtil.avlog.d("User " + user.getObjectId() + " is verified by SMS.");
+}
+```
+{% endif %}
+
+The first parameter is the type of verification (`sms` for phone number and `email` for email). Keep in mind that you don't have to update fields like `emailVerified` with this hook since the system automatically updates them.
+
+### `{% if platformName === "Node.js" %}onLogin{% endif %}{% if platformName === "Python" %}on_login{% endif %}{% if platformName === "PHP" %}onLogin{% endif %}{% if platformName === "Java" %}onLogin{% endif %}`
+
+You can perform an operation before a user tries to log in. For example, to prevent blocked users from logging in:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onLogin(function (request) {
+  // The user is not logged in yet and their information is in request.object
+  console.log('User ' + request.object + ' is trying to log in.');
+  if (request.object.get('username') === 'noLogin') {
+    // The user cannot log in if an error is thrown (error 401 will be returned)
+    throw new AV.Cloud.Error('Forbidden');
+  }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.on_login
+def on_login(user):
+    print user
+    if user.get('username') == 'noLogin':
+      # The user cannot log in if an error is thrown (error 401 will be returned)
+      raise LeanEngineError('Forbidden')
+    # The user will be logged in if the function returns normally
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::onLogin(function($user) {
+    error_log("User {$user->getUsername()} is trying to log in.");
+    if ($user->get("blocked")) {
+        // The user cannot log in if an error is thrown (error 401 will be returned)
+        throw new FunctionError("Forbidden");
+    }
+    // The user will be logged in if the function returns normally
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "_User", type = EngineHookType.onLogin)
+public static AVUser userOnLoginHook(AVUser user) throws Exception {
+  if ("noLogin".equals(user.getUsername())) {
+    throw new Exception("Forbidden");
+  } else {
+    return user;
+  }
+}
+```
+{% endif %}
+
+### Hooks for LeanMessage
+
+See [LeanMessage Overview > LeanEngine Hooks](rtm-overview.html#leanengine-hooks) for more instructions on the methods introduced below.
+
+#### `{% if platformName === "Node.js" %}onIMMessageReceived{% endif %}{% if platformName === "Python" %}_messageReceived{% endif %}{% if platformName === "PHP" %}_messageReceived{% endif %}{% if platformName === "Java" %}messageReceived{% endif %}`
+
+You can perform an operation after a message is delivered to the cloud but before it is delivered to the receiver. For example, to filter out certain keywords from the message:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMMessageReceived((request) => {
+    // request.params: {
+    //     fromPeer: 'Tom',
+    //     receipt: false,
+    //     groupId: null,
+    //     system: null,
+    //     content: '{"_lctext":"Hello!","_lctype":-1}',
+    //     convId: '5789a33a1b8694ad267d8040',
+    //     toPeers: ['Jerry'],
+    //     __sign: '1472200796787,a0e99be208c6bce92d516c10ff3f598de8f650b9',
+    //     bin: false,
+    //     transient: false,
+    //     sourceIP: '121.239.62.103',
+    //     timestamp: 1472200796764
+    // }
+
+    let content = request.params.content;
+    console.log('content', content);
+    let processedContent = content.replace('selling drugs', '**');
+    // Must return the content or an error will be triggered
+    return {
+        content: processedContent
+    };
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _messageReceived(**params):
+    # params: {
+    #   'fromPeer': 'Tom',
+    #   'receipt': false,
+    #   'groupId': null,
+    #   'system': null,
+    #   'content': '{"_lctext":"Hello!","_lctype":-1}',
+    #   'convId': '5789a33a1b8694ad267d8040',
+    #   'toPeers': ['Jerry'],
+    #   '__sign': '1472200796787,a0e99be208c6bce92d516c10ff3f598de8f650b9',
+    #   'bin': false,
+    #   'transient': false,
+    #   'sourceIP': '121.239.62.103',
+    #   'timestamp': 1472200796764
+    # }
+    print('_messageReceived start')
+    content = json.loads(params['content'])
+    text = content._lctext
+    print('text:', text)
+    processed_content = text.replace('selling drugs', '**')
+    print('_messageReceived end')
+    # Must return the content or an error will be triggered
+    return {
+        'content': processed_content
+    }
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define("_messageReceived", function($params, $user) {
+    // params: {
+    //     fromPeer: 'Tom',
+    //     receipt: false,
+    //     groupId: null,
+    //     system: null,
+    //     content: '{"_lctext":"Hello!","_lctype":-1}',
+    //     convId: '5789a33a1b8694ad267d8040',
+    //     toPeers: ['Jerry'],
+    //     __sign: '1472200796787,a0e99be208c6bce92d516c10ff3f598de8f650b9',
+    //     bin: false,
+    //     transient: false,
+    //     sourceIP: '121.239.62.103',
+    //     timestamp: 1472200796764
+    // };
+
+    error_log('_messageReceived start');
+    $content = json_decode($params["content"], true);
+    $text = $content["_lctext"];
+    error_log($text);
+    $processedContent = preg_replace("selling drugs", "**", $text);
+    // Must return the content or an error will be triggered
+    return array("content" => $processedContent);
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.messageReceived)
+public static Map<String, Object> onMessageReceived(Map<String, Object> params) {
+  System.out.println(params);
+  Map<String, Object> result = new HashMap<String, Object>();
+  String content = (String)params.get("content");
+  Map<String,Object> contentMap = (Map<String,Object>)JSON.parse(content);
+  String text = (String)(contentMap.get("_lctext").toString());
+  String processedContent = text.replace("selling drugs", "**");
+  result.put("content", processedContent);
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMReceiversOffline{% endif %}{% if platformName === "Python" %}_receiversOffline{% endif %}{% if platformName === "PHP" %}_receiversOffline{% endif %}{% if platformName === "Java" %}receiversOffline{% endif %}`
+
+You can perform an operation if a message is delivered to the receiver but the receiver is offline. For example, to slice the first 32 characters of the message as the title for the push notification:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMReceiversOffline((request) => {
+    let params = request.params;
+    let content = params.content;
+
+    // params.content is the content of the message
+    let shortContent = content;
+
+    if (shortContent.length > 32) {
+        shortContent = content.slice(0, 32);
+    }
+
+    console.log('shortContent', shortContent);
+
+    return {
+        pushMessage: JSON.stringify({
+            // Self-increase the number of unread messages
+            // Can be set to a fixed number
+            badge: "Increment",
+            sound: "default",
+            // Using development certificate
+            _profile: "dev",
+            alert: shortContent
+        })
+    }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _receiversOffline(**params):
+    print('_receiversOffline start')
+    # params['content'] is the content of the message
+    content = params['content']
+    short_content = content[:32]
+    print('short_content:', short_content)
+    payloads = {
+        # Self-increase the number of unread messages
+        # Can be set to a fixed number
+        'badge': 'Increment',
+        'sound': 'default',
+        # Using development certificate
+        '_profile': 'dev',
+        'alert': short_content,
+    }
+    print('_receiversOffline end')
+    return {
+        'pushMessage': json.dumps(payloads),
+    }
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_receiversOffline', function($params, $user) {
+    error_log('_receiversOffline start');
+    // content is the content of the message
+    $shortContent = $params["content"];
+    if (strlen($shortContent) > 32) {
+        $shortContent = substr($shortContent, 0, 32);
+    }
+
+    $json = array(
+        // Self-increase the number of unread messages
+        // Can be set to a fixed number
+        "badge" => "Increment",
+        "sound" => "default",
+        // Using development certificate
+        "_profile" => "dev",
+        "alert" => shortContent
+    );
+
+    $pushMessage = json_encode($json);
+    return array(
+        "pushMessage" => $pushMessage,
+    );
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.receiversOffline)
+public static Map<String, Object> onReceiversOffline(Map<String, Object> params) {
+  // content is the content of the message
+  String alert = (String)params.get("content");
+  if(alert.length() > 32){
+    alert = alert.substring(0, 32);
+  }
+  System.out.println(alert);
+  Map<String, Object> result = new HashMap<String, Object>();
+  JSONObject object = new JSONObject();
+  // Self-increase the number of unread messages
+  // Can be set to a fixed number
+  object.put("badge", "Increment");
+  object.put("sound", "default");
+  // Using development certificate
+  object.put("_profile", "dev");
+  object.put("alert", alert);
+  result.put("pushMessage", object.toString());
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMMessageSent{% endif %}{% if platformName === "Python" %}_messageSent{% endif %}{% if platformName === "PHP" %}_messageSent{% endif %}{% if platformName === "Java" %}messageSent{% endif %}`
+
+You can perform an operation after a message is delivered to the receiver. For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMMessageSent((request) => {
+  console.log('params:', request.params);
+
+  // params: {
+  //   fromPeer: 'Tom',
+  //   receipt: false,
+  //   onlinePeers: [],
+  //   content: '12345678',
+  //   convId: '5789a33a1b8694ad267d8040',
+  //   msgId: 'fptKnuYYQMGdiSt_Zs7zDA',
+  //   __sign: '1472703266575,30e1c9b325410f96c804f737035a0f6a2d86d711',
+  //   bin: false,
+  //   transient: false,
+  //   sourceIP: '114.219.127.186',
+  //   offlinePeers: ['Jerry'],
+  //   timestamp: 1472703266522
+  // }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _messageSent(**params):
+    print('_messageSent start')
+    print('params:', params)
+    print('_messageSent end')
+    return {}
+
+# _messageSent start
+# params: {
+#   '__sign': '1472703266575,30e1c9b325410f96c804f737035a0f6a2d86d711',
+#   'bin': False,
+#   'content': '12345678',
+#   'convId': '5789a33a1b8694ad267d8040',
+#   'fromPeer': 'Tom',
+#   'msgId': 'fptKnuYYQMGdiSt_Zs7zDA',
+#   'offlinePeers': ['Jerry'],
+#   'onlinePeers': [],
+#   'receipt': False,
+#   'sourceIP': '114.219.127.186',
+#   'timestamp': 1472703266522,
+#   'transient': False
+# }
+# _messageSent end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_messageSent', function($params, $user) {
+    error_log('_messageSent start');
+    error_log('params:' . json_encode($params));
+    return array();
+
+    // _messageSent start
+    // params: {
+    //   fromPeer: 'Tom',
+    //   receipt: false,
+    //   onlinePeers: [],
+    //   content: '12345678',
+    //   convId: '5789a33a1b8694ad267d8040',
+    //   msgId: 'fptKnuYYQMGdiSt_Zs7zDA',
+    //   __sign: '1472703266575,30e1c9b325410f96c804f737035a0f6a2d86d711',
+    //   bin: false,
+    //   transient: false,
+    //   sourceIP: '114.219.127.186',
+    //   offlinePeers: ['Jerry'],
+    //   timestamp: 1472703266522
+    // }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.messageSent)
+public static Map<String, Object> onMessageSent(Map<String, Object> params) {
+  System.out.println(params);
+  Map<String, Object> result = new HashMap<String, Object>();
+  // …
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMConversationStart{% endif %}{% if platformName === "Python" %}_conversationStart{% endif %}{% if platformName === "PHP" %}_conversationStart{% endif %}{% if platformName === "Java" %}conversationStart{% endif %}`
+
+You can perform an operation after the signature verification (if enabled) of creating a conversation is completed but before the conversation is created. For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMConversationStart((request) => {
+  let params = request.params;
+  console.log('params:', params);
+
+  // params: {
+  //     initBy: 'Tom',
+  //     members: ['Tom', 'Jerry'],
+  //     attr: {
+  //         name: 'Tom & Jerry'
+  //     },
+  //     __sign: '1472703266397,b57285517a95028f8b7c34c68f419847a049ef26'
+  // }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _conversationStart(**params):
+    print('_conversationStart start')
+    print('params:', params)
+    print('_conversationStart end')
+    return {}
+
+# _conversationStart start
+# params: {
+#   '__sign': '1472703266397,b57285517a95028f8b7c34c68f419847a049ef26',
+#   'attr': {'name': 'Tom & Jerry'},
+#   'initBy': 'Tom',
+#   'members': ['Tom', 'Jerry']
+# }
+# _conversationStart end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_conversationStart', function($params, $user) {
+    error_log('_conversationStart start');
+    error_log('params:' . json_encode($params));
+    return array();
+
+    // _conversationStart start
+    // params: {
+    //     initBy: 'Tom',
+    //     members: ['Tom', 'Jerry'],
+    //     attr: {
+    //         name: 'Tom & Jerry'
+    //     },
+    //     __sign: '1472703266397,b57285517a95028f8b7c34c68f419847a049ef26'
+    // }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.conversationStart)
+public static Map<String, Object> onConversationStart(Map<String, Object> params) {
+  System.out.println(params);
+  Map<String, Object> result = new HashMap<String, Object>();
+  // Refuse to create the conversation if it is initiated by Tom
+  if ("Tom".equals(params.get("initBy"))) {
+    result.put("reject", true);
+    // Custom error code
+    result.put("code", 9890);
+  }
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMConversationStarted{% endif %}{% if platformName === "Python" %}_conversationStarted{% endif %}{% if platformName === "PHP" %}_conversationStarted{% endif %}{% if platformName === "Java" %}conversationStarted{% endif %}`
+
+You can perform an operation after a conversation is created. For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMConversationStarted((request) => {
+  let params = request.params;
+  console.log('params:', params);
+
+  // params: {
+  //     convId: '5789a33a1b8694ad267d8040',
+  //     __sign: '1472723167361,f5ceedde159408002fc4edb96b72aafa14bc60bb'
+  // }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _conversationStarted(**params):
+    print('_conversationStarted start')
+    print('params:', params)
+    print('_conversationStarted end')
+    return {}
+
+# _conversationStarted start
+# params: {
+#   '__sign': '1472723167361,f5ceedde159408002fc4edb96b72aafa14bc60bb',
+#   'convId': '5789a33a1b8694ad267d8040'
+# }
+# _conversationStarted end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_conversationStarted', function($params, $user) {
+    error_log('_conversationStarted start');
+    error_log('params:' . json_encode($params));
+    return array();
+
+    // _conversationStarted start
+    // params: {
+    //     convId: '5789a33a1b8694ad267d8040',
+    //     __sign: '1472723167361,f5ceedde159408002fc4edb96b72aafa14bc60bb'
+    // }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.conversationStarted)
+public static Map<String, Object> onConversationStarted(Map<String, Object> params) throws Exception {
+  System.out.println(params);
+  Map<String, Object> result = new HashMap<String, Object>();
+  String convId = (String)params.get("convId");
+  System.out.println(convId);
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMConversationAdd{% endif %}{% if platformName === "Python" %}_conversationAdd{% endif %}{% if platformName === "PHP" %}_conversationAdd{% endif %}{% if platformName === "Java" %}conversationAdd{% endif %}`
+
+You can perform an operation after the signature verification (if enabled) of adding a member into a conversation is completed but before the member is added. This will be triggered both when the member proactively joins the conversation or is added by another member. **Keep in mind that this hook will not be triggered when creating a conversation with client IDs.** For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMConversationAdd((request) => {
+  let params = request.params;
+  console.log('params:', params);
+
+  // params: {
+  //     initBy: 'Tom',
+  //     members: ['Mary'],
+  //     convId: '5789a33a1b8694ad267d8040',
+  //     __sign: '1472786231813,a262494c252e82cb7a342a3c62c6d15fffbed5a0'
+  // }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _conversationAdd(**params):
+    print('_conversationAdd start')
+    print('params:', params)
+    print('_conversationAdd end')
+    return {}
+
+# _conversationAdd start
+# params: {
+#   '__sign': '1472786231813,a262494c252e82cb7a342a3c62c6d15fffbed5a0',
+#   'convId': '5789a33a1b8694ad267d8040',
+#   'initBy': 'Tom',
+#   'members': ['Mary']
+# }
+# _conversationAdd end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_conversationAdd', function($params, $user) {
+    error_log('_conversationAdd start');
+    error_log('params:' . json_encode($params));
+    return array();
+
+    // _conversationAdd start
+    // params: {
+    //     initBy: 'Tom',
+    //     members: ['Mary'],
+    //     convId: '5789a33a1b8694ad267d8040',
+    //     __sign: '1472786231813,a262494c252e82cb7a342a3c62c6d15fffbed5a0'
+    // }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.conversationAdd)
+public static Map<String, Object> onConversationAdd(Map<String, Object> params) {
+  System.out.println(params);
+  String[] members = (String[])params.get("members");
+  Map<String, Object> result = new HashMap<String, Object>();
+  System.out.println("members");
+  System.out.println(members);
+  // Refuse to add the member if it is initiated by Tom
+  if ("Tom".equals(params.get("initBy"))) {
+    result.put("reject", true);
+    // Custom error code
+    result.put("code", 9890);
+  }
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMConversationRemove{% endif %}{% if platformName === "Python" %}_conversationRemove{% endif %}{% if platformName === "PHP" %}_conversationRemove{% endif %}{% if platformName === "Java" %}conversationRemove{% endif %}`
+
+You can perform an operation after the signature verification (if enabled) of removing a member from a conversation is completed but before the member is removed. This will not be triggered when the member proactively quits the conversation. For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMConversationRemove((request) => {
+  let params = request.params;
+  console.log('params:', params);
+  console.log('Removed client ID:', params.members[0]);
+
+  // params: {
+  //     initBy: 'Tom',
+  //     members: ['Jerry'],
+  //     convId: '57c8f3ac92509726c3dadaba',
+  //     __sign: '1472787372605,abdf92b1c2fc4c9820bc02304f192dab6473cd38'
+  // }
+  // Removed client ID: Jerry
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _conversationRemove(**params):
+    print('_conversationRemove start')
+    print('params:', params)
+    print('Removed client ID:', params['members'][0])
+    print('_conversationRemove end')
+    return {}
+
+# _conversationRemove start
+# params: {
+#   '__sign': '1472787372605,abdf92b1c2fc4c9820bc02304f192dab6473cd38',
+#   'convId': '57c8f3ac92509726c3dadaba',
+#   'initBy': 'Tom',
+#   'members': ['Jerry']
+# }
+# Removed client ID: Jerry
+# _conversationRemove end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_conversationRemove', function($params, $user) {
+
+    error_log('_conversationRemove start');
+    error_log('params:' . json_encode($params));
+    error_log('Removed client ID:' . $params['members'][0]);
+    return array();
+
+    // _conversationRemove start
+    // params: {
+    //     initBy: 'Tom',
+    //     members: ['Jerry'],
+    //     convId: '57c8f3ac92509726c3dadaba',
+    //     __sign: '1472787372605,abdf92b1c2fc4c9820bc02304f192dab6473cd38'
+    // }
+    // Removed client ID: Jerry
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.conversationRemove)
+public static Map<String, Object> onConversationRemove(Map<String, Object> params) {
+  System.out.println(params);
+  String[] members = (String[])params.get("members");
+  Map<String, Object> result = new HashMap<String, Object>();
+  System.out.println("members");
+  // Refuse to remove the member if it is initiated by Tom
+  if ("Tom".equals(params.get("initBy"))) {
+    result.put("reject", true);
+    // Custom error code
+    result.put("code", 9892);
+  }
+  return result;
+}
+```
+{% endif %}
+
+#### `{% if platformName === "Node.js" %}onIMConversationUpdate{% endif %}{% if platformName === "Python" %}_conversationUpdate{% endif %}{% if platformName === "PHP" %}_conversationUpdate{% endif %}{% if platformName === "Java" %}conversationUpdate{% endif %}`
+
+You can perform an operation before the properties of a conversation (including notifications) are updated. For example, to print out a log in LeanEngine:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.onIMConversationUpdate((request) => {
+  let params = request.params;
+  console.log('params:', params);
+  console.log('name:', params.attr.name);
+
+  // params: {
+  //     convId: '57c9208292509726c3dadb4b',
+  //     initBy: 'Tom',
+  //     attr: {
+  //         name: 'Tom and Jerry',
+  //         type: 'public'
+  //     }
+  // }
+  // name: Tom and Jerry
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def _conversationUpdate(**params):
+    print('_conversationUpdate start')
+    print('params:', params)
+    print('name:', params['attr']['name'])
+    print('_conversationUpdate end')
+    return {}
+
+# _conversationUpdate start
+# params: {
+#   '__sign': '1472787372605,abdf92b1c2fc4c9820bc02304f192dab6473cd38',
+#   'convId': '57c8f3ac92509726c3dadaba',
+#   'initBy': 'Tom',
+#   'members': ['Jerry']
+# }
+# name: Tom and Jerry
+# _conversationUpdate end
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define('_conversationUpdate', function($params, $user) {
+    error_log('_conversationUpdate start');
+    error_log('params:' . json_encode($params));
+    error_log('name:' . $params['attr']['name']);
+    return array();
+
+    // _conversationUpdate start
+    // params: {
+    //     convId: '57c9208292509726c3dadb4b',
+    //     initBy: 'Tom',
+    //     attr: {
+    //         name: 'Tom and Jerry',
+    //         type: 'public'
+    //     }
+    // }
+    // name: Tom and Jerry
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@IMHook(type = IMHookType.conversationUpdate)
+public static Map<String, Object> onConversationUpdate(Map<String, Object> params) {
+  System.out.println(params);
+  Map<String, Object> result = new HashMap<String, Object>();
+  Map<String,Object> attr = (Map<String,Object>)params.get("attr");
+  System.out.println(attr);
+  // Map<String,Object> attrMap = (Map<String,Object>)JSON.parse(attr);
+  String name = (String)attr.get("name");
+  // System.out.println(attrMap);
+  System.out.println(name);
+  // Refuse to change the property if it is initiated by Tom
+  if ("Tom".equals(params.get("initBy"))) {
+    result.put("reject", true);
+    // Custom error code
+    result.put("code", 9893);
+  }
+  return result;
+}
+```
+{% endif %}
+
+### Error Codes for Hooks
+
+You can define error codes for hooks like `{% if platformName === "Node.js" %}beforeSave{% endif %}{% if platformName === "Python" %}before_save{% endif %}{% if platformName === "PHP" %}beforeSave{% endif %}{% if platformName === "Java" %}beforeSave{% endif %}`:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.beforeSave('Review', function (request) {
+  // Convert the object into a string with JSON.stringify()
+  throw new AV.Cloud.Error(JSON.stringify({
+    code: 123,
+    message: 'An error occurred.'
+  }));
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.before_save('Review') # Review is the name of the class that needs this hook
+def before_review_save(review):
+    comment = review.get('comment')
+    if not comment:
+      raise leancloud.LeanEngineError(
+        code=123,
+        message='An error occurred.'
+      )
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::beforeSave("Review", function($review, $user) {
+   $comment = $review->get("comment");
+   if (!$comment) {
+       throw new FunctionError(json_encode(array(
+           "code" => 123,
+           "message" => "An error occurred.",
+       )));
+   }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineHook(className = "Review", type = EngineHookType.beforeSave)
+public static AVObject reviewBeforeSaveHook(AVObject review) throws Exception {
+  throw new AVException(123, "An error occurred.");
+}
+```
+{% endif %}
+
+The client will receive `Cloud Code validation failed. Error detail: { "code": 123, "message": "An error occurred." }` as the response. You can retrieve the error message by **slicing the string**.
+
+### Timeouts for Hooks
+
+The time limit for a hook to be processed is 3 seconds. If a hook is triggered by another cloud function (like a `{% if platformName === "Node.js" %}beforeSave{% endif %}{% if platformName === "Python" %}before_save{% endif %}{% if platformName === "PHP" %}beforeSave{% endif %}{% if platformName === "Java" %}beforeSave{% endif %}` or `{% if platformName === "Node.js" %}afterSave{% endif %}{% if platformName === "Python" %}after_save{% endif %}{% if platformName === "PHP" %}afterSave{% endif %}{% if platformName === "Java" %}afterSave{% endif %}` triggered by saving an object), the time limit of this hook will be further limited.
+
+For example, if a `{% if platformName === "Node.js" %}beforeSave{% endif %}{% if platformName === "Python" %}before_save{% endif %}{% if platformName === "PHP" %}beforeSave{% endif %}{% if platformName === "Java" %}beforeSave{% endif %}` is triggered by a cloud function that has already taken 13 seconds, there will be only 2 seconds left for this hook. See [Timeouts](#timeouts).
+
+{% if platformName === "Node.js" %}
+## Editing Cloud Functions Online
+
+If you just want to use cloud functions without setting up a complete Node.js project, you can edit cloud functions on the web console. Keep in mind that:
+
+- Setting up cloud functions on the web console will override the project you deployed with Git or command-line interface.
+- You can only set up cloud functions (including hooks) on the web console. You cannot use other functions of an ordinary Node.js project (like web hosting or routers).
+
+In your app's [Dashboard > LeanEnging > Deploy > Edit Online](/cloud.html?appid={{appid}}#/deploy), you can:
+
+- **Create functions** by specifying function types, function names, code in the functions, and comments. Click on **Save** to finish creating a function.
+- **Deploy functions** by specifying the environment and clicking on **Deploy**.
+- **Preview functions** by viewing all the functions in a single code snippet. You can save the snippet as `cloud.js` and put it in a Node.js project so you can deploy the project with the cloud functions you created.
+- **Maintain functions** by editing them, viewing version histories, and deleting them.
+
+{% call docs.alertWrap() %}
+Make sure to click on **Deploy** after editing cloud functions.
+{% endcall %}
+{% endif %}
+
+## Scheduled Tasks
+
+You can set up timers to schedule your cloud functions. For example, to clean up temporary data every night, to send push notifications to users every Monday, etc. The timer can be accurate to a **second**.
+
+The time restrictions applied to ordinary cloud functions also apply to scheduled functions. See [Timeouts](#timeouts).
+
+{% call docs.noteWrap() %}
+A timer will be disabled if it triggers more than 30 `400` (Bad Request) or `502` (Bad Gateway) errors within the past 24 hours. The system will also send out a reminder email to you regarding the issue. The error log [`timerAction short-circuited and no fallback available`](#error-messages-for-scheduled-tasks) will also be printed out in the web console.
+{% endcall %}
+
+After deploying your program to LeanEngine, go to your app's [Dashboard > LeanEngine > Scheduled Tasks](/cloud.html?appid={{appid}}#/task) and click on **Create a Timer** to create a timer for a cloud function. For example, if we have a function named `logTimer`:
+
+{% if platformName === "Node.js" %}
+```js
+AV.Cloud.define('logTimer', function (request) {
+  console.log('This log is printed by logTimer.');
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+@engine.define
+def logTimer(movie, **params):
+    print 'This log is printed by logTimer.'
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+Cloud::define("logTimer", function($params, $user) {
+    error_log("This log is printed by logTimer.");
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@EngineFunction("logTimer")
+public static float logTimer throws Exception {
+  LogUtil.avlog.d("This log is printed by logTimer.");
+}
+```
+{% endif %}
+
+After a timer is created, the default status of it will be `Disabled`. You need to click on <span class="label label-default">Enable</span> to activate the timer. You can see the logs of the timer in [Dashboard > LeanEngine > App Logs](/cloud.html?appid={{appid}}#/log).
+
+You can set up timers with either [cron expressions](http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger) or intervals with **seconds** as the unit. For example, to run a function on 8:00 every Monday, use `0 0 8 ? * MON` as the cron expression.
+
+You can create up to 6 timers for each of the staging environment and the production environment, which means that you can create 12 timers in total.
+
+### Error Messages for Scheduled Tasks
+
+The error messages of timers will be output to [Dashboard > LeanEngine > App Logs](/cloud.html?appid={{appid}}#/log). Below are some common errors and the reasons causing them:
+
+- **timerAction timed-out and no fallback available**<br>A function triggered by a timer reached its 15-second time limit for processing. See [Handling Timeouts](#handling-timeouts).
+- **timerAction short-circuited and no fallback available**<br>A timer is disabled due to frequent timeouts happening to the function it is triggering.
+
+## Using Master Key
+
+Since cloud functions are running on the server side, we can assume that requests made by these functions are trustable. Therefore, you can enable global Master Key for all these requests, which will have your program ignore permission settings of classes and those done by ACL so it can access data in the cloud without any restrictions. The code below enables Master Key for your program:
+
+{% if platformName === "Node.js" %}
+```js
+// Often in server.js
+AV.Cloud.useMasterKey();
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+# Often in wsgi.py
+leancloud.use_master_key(True)
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+// Often in src/app.php
+Client::useMasterKey(true);
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+// Often in src/…/AppInitListener.java
+JavaRequestSignImplementation.instance().setUseMasterKey(true);
+```
+{% endif %}
+
+{% if platformName === "Node.js" %}
+If the code above is not added into your program, your program will not be able to access the data protected by ACL. You will have to specify a `sessionToken` to have your program perform an operation with the permission of a user:
+
+```js
+var post = new Post();
+post.save(
+  { author: user },
+  {
+    // You can also use request.sessionToken (need to enable Cloud.CookieSession when using web hosting)
+    sessionToken: user.getSessionToken()
+  }
+);
+```
+
+Or, you can enable Master Key for a single operation to ignore permission settings:
+
+```js
+post.destroy({ useMasterKey: true });
+```
+
+You can also disable Master Key for a single operation with `useMasterKey: false`.
+
+So when should global Master Key be enabled?
+
+- If your cloud functions mainly perform operations for global data, enabling Master Key will make these operations easier to be completed. Make sure to implement permission verifications in your program carefully.
+- If your cloud functions mainly perform operations that are related to each single user, disabling Master Key would make your application more secure. Your program can still take in the `sessionToken` from each request for certain operations (like saving objects).
+{% endif %}
+
+See [ACL Guide](acl-guide.html) and [Using ACL in LeanEngine](acl_guide_leanengine.html) for more information regarding permission settings with LeanEngine.

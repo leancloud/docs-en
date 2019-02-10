@@ -1,4 +1,4 @@
-{% extends "./storage-guide.tmpl" %}
+{% extends "./leanstorage_guide.tmpl" %}
 {% set platform_name = "Swift" %}
 {% set baseObjectName = "LCObject" %}
 {% set baseQueryClassName = "LCQuery" %}

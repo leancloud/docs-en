@@ -15,7 +15,6 @@
 .doc-content {
   margin-bottom: 56px;
 }
-
 .course-about {
   font-size: 13px;
   color: #aaa; 
@@ -84,7 +83,6 @@
 }
 .tags>li {
   display: inline-block;
-  margin-bottom: 1em;
 }
 .tags>li>a {
   min-width: 90px;
@@ -144,38 +142,14 @@
     color: #3090e4;
     border-color: #3090e4;
 }
-.section-content li {
-  padding: 0;
-  margin: 0
-}
-.section-content li {
-  line-height: 2.25;
-}
-.section-content li > a {
-  font-weight: 400;
-}
-.section-content .suffix::before {
-  content: "·";
-  color: #ccc;
-  padding: 0 8px;
-  text-decoration: none;
-}
-.section-content .suffix::before:hover{
-text-decoration: none;
-}
-.section-content .suffix a {
-  opacity: 0.7;
-  font-weight: 200;
-}
 </style>
 </head>
 
-<!-- <body id="home" class="dashboard-init" ng-cloak ng-controller="AppCtrl" data-spy="scroll" data-target=".scrollspy"> -->
-<body id="home" class="dashboard-init" ng-cloak ng-controller="AppCtrl">
+<body id="home" class="dashboard-init" ng-cloak ng-controller="AppCtrl" data-spy="scroll" data-target=".scrollspy">
+
 {% include 'templates/include/header.html' %}
 
-<!-- <div class="container-fluid doc-content <%= node %> platform-as-tab" id="content"> -->
-<div class="container doc-content <%= node %>" id="content">
+<div class="container-fluid doc-content <%= node %> platform-as-tab" id="content">
   {{body}}
 </div>
 <!-- .container-fluid, .doc-content -->
@@ -184,30 +158,30 @@ text-decoration: none;
 {% include 'templates/include/footer.html' %}
 
 <script type="text/javascript">
-// $(document).ready(function(){
-//   $('a[data-toggle="pill"]').on('show.bs.tab', function (e) {
-//     var $this = $(e.target),
-//         source = $this.attr('href'),
-//         pane = $this.attr('data-target');
-//     //console.log($this, source, pane, source.charAt(0) !== '#',$(pane).is(':empty'));
-//     if( source.charAt(0) !== '#' && $(pane).is(':empty') ) {  
-//       $.get(source, function(data) {
-//           $(pane).html($(data).find('#backbone').html());
-//       });
-//       //console.log("filled");
-//     }
-//     return true;
-//   });
-// });
+$(document).ready(function(){
+  $('a[data-toggle="pill"]').on('show.bs.tab', function (e) {
+    var $this = $(e.target),
+        source = $this.attr('href'),
+        pane = $this.attr('data-target');
+    //console.log($this, source, pane, source.charAt(0) !== '#',$(pane).is(':empty'));
+    if( source.charAt(0) !== '#' && $(pane).is(':empty') ) {  
+      $.get(source, function(data) {
+          $(pane).html($(data).find('#backbone').html());
+      });
+      //console.log("filled");
+    }
+    return true;
+  });
+});
 
 // get nav items ready for scrollspy
-// $(window).load(function() {
-//   $('#section-nav').affix({
-//       offset: {
-//         top: $('nav').outerHeight(true) + $('.doc-home-title').outerHeight(true)
-//       }
-//   }).addClass('loaded');
-// });
+$(window).load(function() {
+  $('#section-nav').affix({
+      offset: {
+        top: $('nav').outerHeight(true) + $('.doc-home-title').outerHeight(true)
+      }
+  }).addClass('loaded');
+});
 </script>
 </body>
 </html>

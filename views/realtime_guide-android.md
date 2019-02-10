@@ -1,3 +1,3 @@
-{% extends "./rtm-guide.tmpl" %}
+{% extends "./realtime_guide.tmpl" %}
 {% set platform_name = "Android" %}
 {% set conversationObjectName = "AVIMConversation" %}

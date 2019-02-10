@@ -11,59 +11,151 @@ layout: index.swig
   <div class="col-md-8 col-md-offset-2 col-xs-offset-0">
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane active" id="tab-docs">
-
-        <div class="section">
-          <h2 class="section-title"><span>LeanStorage</span></h2>
-          <div class="row">
-            <div class="section-content col-xs-12 col-sm-6 col-md-6">
-              <ul class="list-inline">
-                <li><a href="storage-guide-js.html">LeanStorage JavaScript Guide</a>
-                  <small class="suffix">
-                    <a target="_blank" href="https://leancloud.github.io/javascript-sdk/docs/">API Reference</a>
-                  </small>
-                </li>
-                <li><a href="storage-guide-swift.html">LeanStorage Swift Guide</a></li>
-                <li><a href="storage-guide-android.html">LeanStorage Android Guide</a>
-                  <small class="suffix">
-                    <a target="_blank" href="https://leancloud.cn/api-docs/android/index.html">API Reference</a>
-                  </small>
-                </li>
-                <li><a href="sms-guide.html">Short Message Service (SMS) Guide</a></li>
-              </ul>
-            </div>
+        <div class="toc-hack" style="display: none;">
+          <ul>
+          </ul>
+        </div>
+        <div style="height: 100px;" class="mobile-hide">
+          &nbsp;
+          <div id="section-nav" class="scrollspy text-center mobile-hide affix-top loaded">
+            <div class="spinner"></div>
+            <ul class="nav">
+            </ul>
           </div>
         </div>
-
         <div class="section">
-          <h2 class="section-title"><span>LeanEngine</span></h2>
+          <h2 class="section-title"><span class="font-logo">LeanStorage</span></h2>
           <div class="row">
             <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <h3>Guides</h3>
               <ul class="list-unstyled">
-                <li><a href="leanengine_webhosting_guide-node.html">LeanEngine Node.js Web Hosting Guide</a></li>
-                <li><a href="leanengine_webhosting_guide-java.html">LeanEngine Java Web Hosting Guide</a></li>
+                <!-- <li><a href="storage_overview.html">LeanStorage Overview</a></li> -->
+                <!-- <li><a href="data_security.html">Data and Security</a></li> -->
+                <li> <span>LeanStorage Guides</span>
+                  <ul class="list-unstyled tags">
+                    <li><a href="leanstorage_guide-android.html">Android</a></li>
+                    <!-- <li><a href="leanstorage_guide-java.html">Java</a></li> -->
+                    <li><a href="leanstorage_guide-js.html">JavaScript</a></li>
+                    <!-- <li><a href="leanstorage_guide-php.html">PHP</a></li> -->
+                    <!-- <li><a href="leanstorage_guide-python.html">Python</a></li> -->
+                    <li><a href="leanstorage_guide-swift.html">Swift</a></li>
+                  </ul>
+                </li>
+                <li> <span>API References</span>
+                  <ul class="list-unstyled tags">
+                    <li><a href="https://leancloud.cn/api-docs/android/index.html">Android</a></li>
+                    <li><a href="https://leancloud.github.io/javascript-sdk/docs/">JavaScript</a></li>
+                    <li><a href="https://leancloud.cn/api-docs/php/">PHP</a></li>
+                  </ul>
+                </li>
+                <!-- <li><a href="relation-guide.html">Data Modeling</a></li> -->
+                <!-- <li><a href="acl-guide.html">ACL Guide</a></li> -->
               </ul>
             </div>
             <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <!-- <h3>REST</h3>
               <ul class="list-unstyled">
-                <li><a href="leanengine_webhosting_guide-python.html">LeanEngine Python Web Hosting Guide</a></li>
-                <li><a href="leanengine_webhosting_guide-php.html">LeanEngine PHP Web Hosting Guide</a></li>
-              </ul>
+                  <li><a href="rest_api.html">LeanStorage REST API</a></li>
+              </ul> -->
             </div>
           </div>
         </div>
-
         <div class="section">
-          <h2 class="section-title"><span>LeanMessage</span></h2>
+          <h2 class="section-title"><span class="font-logo">LeanEngine + LeanCache</span></h2>
           <div class="row">
             <div class="section-content col-xs-12 col-sm-6 col-md-6">
-              <ul class="list-inline">
-                <li><a href="rtm-guide-js.html">LeanMessage JavaScript Guide</a></li>
-                <li><a href="rtm-guide-objc.html">LeanMessage Objective-C Guide</a></li>
-                <li><a href="rtm-guide-android.html">LeanMessage Android Guide</a></li>
+              <h3>Guides</h3>
+              <ul class="list-unstyled">
+                <li><a href="leanengine_overview.html">LeanEngine Overview</a></li>
+                <li><a href="leanengine_quickstart.html">Quick Start</a></li>
+                <li><a href="leanengine_plan.html">Plans and Prices</a></li>
+                <li> <span>Web Hosting Guides</span>
+                  <ul class="list-unstyled tags">
+                    <li><a href="leanengine_webhosting_guide-node.html">Node.js</a></li>
+                    <li><a href="leanengine_webhosting_guide-python.html">Python</a></li>
+                    <li><a href="leanengine_webhosting_guide-php.html">PHP</a></li>
+                    <li><a href="leanengine_webhosting_guide-java.html">Java</a></li>
+                  </ul>
+                </li>
+                <li> <span>Cloud Function Guides</span>
+                  <ul class="list-unstyled tags">
+                    <li><a href="leanengine_cloudfunction_guide-node.html">Node.js</a></li>
+                    <li><a href="leanengine_cloudfunction_guide-python.html">Python</a></li>
+                    <li><a href="leanengine_cloudfunction_guide-php.html">PHP</a></li>
+                    <li><a href="leanengine_cloudfunction_guide-java.html">Java</a></li>
+                  </ul>
+                </li>
+                <li><a href="leanengine_cli.html">Command-Line Interface Guide</a></li>
+                <li><a href="acl_guide_leanengine.html">Using ACL in LeanEngine</a></li>
               </ul>
+            </div>
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <!-- <h3>LeanCache</h3>
+              <ul class="list-unstyled">
+                  <li><a href="leancache_guide.html">LeanCache Guide</a></li>
+              </ul> -->
+              <!-- <h3>REST</h3>
+              <ul class="list-unstyled">
+                  <li><a href="leanengine-rest-api.html">LeanEngine REST API</a></li>
+              </ul> -->
             </div>
           </div>
         </div>
+        <div class="section">
+          <h2 class="section-title"><span class="font-logo">LeanMessage</span></h2>
+          <div class="row">
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <h3>Guides</h3>
+              <ul class="list-unstyled">
+                <!-- <li><a href="realtime_v2.html">LeanMessage Overview</a></li> -->
+                <li> <span>LeanMessage Guides</span>
+                  <ul class="list-unstyled tags">
+                    <li><a href="realtime_guide-android.html">Android</a></li>
+                    <li><a href="realtime_guide-js.html">JavaScript</a></li>
+                    <li><a href="realtime_guide-objc.html">Objective-C</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <!-- <h3>REST</h3>
+              <ul class="list-unstyled">
+                  <li><a href="realtime_rest_api_v2.html">LeanMessage REST API</a></li>
+              </ul> -->
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h2 class="section-title"><span class="font-logo">Short Message Service (SMS)</span></h2>
+          <div class="row">
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <h3>Guides</h3>
+              <ul class="list-unstyled">
+                  <li><a href="sms-guide.html">Short Message Service (SMS) Guide</a></li>
+              </ul>
+            </div>
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <!-- <h3>REST</h3>
+              <ul class="list-unstyled">
+                <li><a href="rest_sms_api.html">SMS REST API</a></li>
+              </ul> -->
+            </div>
+          </div>
+        </div>
+        <!-- <div class="section">
+          <h2 class="section-title"><span class="font-logo">More</span></h2>
+          <div class="row">
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+              <h3>Components</h3>
+              <ul class="list-unstyled">
+                <li><a href="app_search_guide.html">In-App Searching Guide</a>
+                <li><a href="status_system.html">In-App Socializing Guide</a></li>
+              </ul>
+            </div>
+            <div class="section-content col-xs-12 col-sm-6 col-md-6">
+            </div>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>

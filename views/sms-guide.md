@@ -128,7 +128,7 @@ $(document).ready(function () {
                 targets: [3],
                 className: 'text-right text-nowrap',
                 render: function (data, type, row, meta) {
-                    return '<span class="text-muted" style="opacity: 0.5;">$</span><span style="display: inline-block; width: 6.5rem;">' + data.toFixed(4) + '</span>';
+                    return '<span class="text-muted" style="opacity: 0.5;">$</span><span style="display: inline-block; width: 5.5rem;">' + data.toFixed(4) + '</span>';
                 }
             }
         ]

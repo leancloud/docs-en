@@ -277,7 +277,7 @@ The approach using `AV.User` depends on LeanStorage SDK. See [Installing Plugins
 Once connected to the server either way, there is no difference in using any functionalities described in the rest of this documentation.
 
 {% if platform_name === "JavaScript" %}
-Please note that you only need to call `createIMClient` **once** throughout your application and throughout the lifespan of your application.
+Please note that you only need to call `createIMClient` **once** throughout your project and throughout the lifespan of your project.
 
 Internally our SDK will not create multiple `IMClient` instances for the same `clientId`, which means that if you call the `createIMClient` method multiple times with the same `clientId`, you will always get the same `IMClient` instance. However, there can be scenarios where multiple `IMClient`s are needed in one place, such as allowing user to switch accounts within your app. In such case, try to create two `IMClient`s with **different** `clientId`s, which will make both of them functional.
 {% endif %}
@@ -288,7 +288,7 @@ Internally our SDK will not create multiple `IMClient` instances for the same `c
 {% if platform_name === "Android" %}
 <!-- Does this apply to Android? -->
 <!--
-Please note that you only need to call `open` **once** throughout your application and throughout the lifespan of your application.
+Please note that you only need to call `open` **once** throughout your project and throughout the lifespan of your project.
 
 Internally our SDK will not create multiple `AVIMClient` instances for the same `clientId`, which means that if you call the `open` method multiple times with the same `clientId`, you will always get the same `AVIMClient` instance. However, there can be scenarios where multiple `AVIMClient`s are needed in one place, such as allowing user to switch accounts within your app. In such case, try to create two `AVIMClient`s with **different** `clientId`s, which will make both of them functional.
 -->
@@ -414,7 +414,7 @@ clientTom.createConversation({
 
 As you can see, there are no distinctions between a one-on-one conversation and a group conversation except that they have different numbers of members. We design out SDK in this way so that you can use the same method to create any kinds of conversations regardless of their types.
 
-The `{{ conversationObjectName }}` object will be saved to the [`_Conversation`](/dashboard/data.html?appid={{appid}}#/_Conversation) class on LeanCloud.
+The `{{ conversationObjectName }}` object will be saved to your app's [Dashboard > LeanStorage > Data > `_Conversation`](/data.html?appid={{appid}}#/_Conversation) class on LeanCloud.
 
 <!-- Conversations are not synced with the server until the first message is sent. This means that other members will not see a newly created conversation until the first message is sent. You can force the empty conversation to be synced by calling conversation.send() on your Conversation instance. -->
 
@@ -1470,7 +1470,7 @@ tom.open(new AVIMClientCallback() {
 
 When participating in group conversations with a lot of active members, you may need to grab someone's attention in a group or give a hint to someone where to pay attention to when they come back after a long conversation.
 
-Mentioning other people in groups is handy since it sends them a notification about your message if they didn't mute the group. You also have the option to send them a notification anyway even though they muted the group. The option can be found in your app's [Messaging Settings](/dashboard/messaging.html?appid={{appid}}#/message/realtime/conf).
+Mentioning other people in groups is handy since it sends them a notification about your message if they didn't mute the group. You also have the option to send them a notification anyway even though they muted the group. The option can be found in your app's [Dashboard > LeanMessage > RTM > Settings](/messaging.html?appid={{appid}}#/message/realtime/conf).
 
 <!-- – even if they don't have a username. Just type the @ symbol and select whoever you would like to address.  -->
 
@@ -2130,7 +2130,7 @@ client.ping(['Jerry']);
 
 To abide by the national cyber-security law, our server proactively monitors all messages in group conversations (including temporary conversations and system conversations). It uses a pre-defined dictionary to conduct keyword scanning, which detects and blocks certain keywords or phrases by replacing them with two asterisk symbols (`**`).
 
-Our server supports user-defined dictionary so that you can use it to extend the scope of standard screening to fit your needs. All you need to do is to prepare the dictionary file and upload it to your app's [Messaging Settings](/dashboard/messaging.html?appid={{appid}}#/message/realtime/conf).
+Our server supports user-defined dictionary so that you can use it to extend the scope of standard screening to fit your needs. All you need to do is to prepare the dictionary file and upload it to your app's [Dashboard > LeanMessage > RTM > Settings](/messaging.html?appid={{appid}}#/message/realtime/conf).
 
 Your dictionary file must be in the following format:
 
@@ -2207,7 +2207,7 @@ Please note that currently we don't support a user to block other users or conve
 {% endcall %}
 
 {% call docs.noteWrap() %}
-Blacklisting is a paid feature on subscription. You can subscribe or unsubscribe to it anytime in your app's [Messaging Settings](/dashboard/messaging.html?appid={{appid}}#/message/realtime/conf).
+Blacklisting is a paid feature on subscription. You can subscribe or unsubscribe to it anytime in your app's [Dashboard > LeanMessage > RTM > Settings](/messaging.html?appid={{appid}}#/message/realtime/conf).
 {% endcall %}
 
 ## Limitations

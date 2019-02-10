@@ -1,112 +1,1129 @@
-{% set var_app_domain = '{User Domain}' %}
+{% set var_app_domain = "{App Domain}" %}
 {% import "views/_helper.njk" as docs %}
 
-{% raw %}<script>$(window).load(function() {$('.do-expand-all').click();})</script>{% endraw %}
+# {{platformName}} Web Hosting Guide
 
-# LeanEngine {{platformName}} Web Hosting Guide
+Web hosting is a sub-module of LeanEngine that allows you to develop a web application with {{platformName}}. It provides functions including cloud functions, hooks, hosting for static files, and custom routing, with your own domains binded to the service. You can use it to create a landing or download page for your mobile application, develop an admin console or a complete website, or run custom logics that has to be on the server side.
 
-Web hosting is a sub-module of LeanEngine; it allows you to develop a web application with {{platformName}}.
+If you don't know how to create a LeanEngine project, debug it locally, or deploy it to the cloud, please first read [LeanEngine Quick Start](leanengine_quickstart.html). Other related documents include:
 
-It provides cloud functions and hooks, hosting for static files and custom routing. You can also bind your own domain names to the service.
-You can use it to create landing/download pages for your mobile applications, develop an admin console or a complete website, or run custom logic that has to be on the server side.
+- [LeanEngine Overview](leanengine_overview.html) (overview of all features)
+- [Command-Line Interface Guide](leanengine_cli.html)
+- [LeanCache Guide](leancache_guide.html) (using the in-memory cache service to improve performance)
 
-If you don't know how to create a LeanEngine project, debug it locally and deploy it to the cloud, please first read [LeanEngine Quick Start](leanengine_quickstart.html). Other related documents include:
+This guide uses {{platformName}} as an example, but LeanEngine supports many other languages as well. You can choose the one you are familiar with for development:
 
- - [LeanEngine Service Overview](leanengine_overview.html) (Overview of all features)
- - [Command Line Tool Usage Guide](leanengine_cli.html)
- - [LeanCache Usage Guide](leancache_guide.html) (using the in-memory cache service to improve performance)
- - [LeanEngine Project Examples](leanengine_examples.html)
- - [LeanEngine FAQs](leanengine_faq.html)
+- [Node.js](leanengine_webhosting_guide-node.html){% if platformName === "Node.js" %} <span class="text-muted">(current)</span>{% endif %}
+- [Python](leanengine_webhosting_guide-python.html){% if platformName === "Python" %} <span class="text-muted">(current)</span>{% endif %}
+- [PHP](leanengine_webhosting_guide-php.html){% if platformName === "PHP" %} <span class="text-muted">(current)</span>{% endif %}
+- [Java](leanengine_webhosting_guide-java.html){% if platformName === "Java" %} <span class="text-muted">(current)</span>{% endif %}
 
-This document uses {{platformName}} as an example, but LeanEngine supports many other languages. You can choose the technology stack you are familiar with for development:
+## Starting with the Example Project
 
-- [Node.js](leanengine_webhosting_guide-node.html)
-- [Python](leanengine_webhosting_guide-python.html)
-- [PHP](leanengine_webhosting_guide-php.html)
-- [Java](leanengine_webhosting_guide-java.html)
-- [C#](leanengine_webhosting_guide-dotnet.html)
+Clone the sample code {% if platformName === "Node.js" %}[`node-js-getting-started`](https://github.com/leancloud/node-js-getting-started){% endif %}{% if platformName === "Python" %}[`python-getting-started`](https://github.com/leancloud/python-getting-started){% endif %}{% if platformName === "PHP" %}[`slim-getting-started`](https://github.com/leancloud/slim-getting-started){% endif %}{% if platformName === "Java" %}[`java-war-getting-started`](https://github.com/leancloud/java-war-getting-started){% endif %} to local:
 
+{% if platformName === "Node.js" %}
+```sh
+git clone https://github.com/leancloud/node-js-getting-started.git
+```
+{% endif %}
+{% if platformName === "Python" %}
+```sh
+git clone https://github.com/leancloud/python-getting-started.git
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```sh
+git clone https://github.com/leancloud/slim-getting-started.git
+```
+{% endif %}
+{% if platformName === "Java" %}
+```sh
+git clone https://github.com/leancloud/java-war-getting-started.git
+```
+{% endif %}
 
-## Starting with the example project
+{% if platformName === "Node.js" %}
+Then execute the following command in the project root directory to install dependencies:
 
-{% block getting_started %}{% endblock %}
+```sh
+npm install
+```
+{% endif %}
+{% if platformName === "Python" %}
+Before you launch a Python project locally, make sure the following dependencies are ready:
 
-### Local operation and debugging
+- **`python`**: Make sure the version you installed locally is the same as the one you want to use for production. This helps you avoid compatibility issues. We recommend that you use [`pyenv`](https://github.com/pyenv/pyenv) to manage your local Python versions.
+- **`pip`**: Used to install third-party dependencies.
+- **`virtualenv`**: Optional. We recommend that you use `virtualenv` or similar tools to create an independent Python environment for each project to avoid potential conflicts.
 
-After all dependencies are installed, you can use our command-line tool in the project root directory to start a development server:
+Please make sure the dependencies above are installed locally properly, then execute the following command under the project directory to install the third-party dependencies for the project:
 
+```sh
+pip install -r requirements.txt
+```
+{% endif %}
+{% if platformName === "PHP" %}
+Then use `composer` to install third-party dependencies:
+
+```sh
+composer install
+```
+{% endif %}
+
+### Running and Debugging Locally
+
+After all dependencies are installed, you can use our command-line interface in the project root directory to start a development server:
 
 ```sh
 lean up
 ```
 
-Please refer to the [Command Line Tool Usage Guide](leanengine_cli.html) for more on the command-line tool and local debugging.
+For more information regarding command-line interface and local debugging, see [Command-Line Interface Guide](leanengine_cli.html).
 
-### Deploying to the cloud
+### Deploying to the Cloud
 
-
-Run in your project root directory:
+Run the following command in your project root directory:
 
 ```sh
 lean deploy
 ```
 
-###  Setting up the domain name
+###  Setting up Second-Level Domains
 
-In the "Web Hosting Domain Name" section of [LeanEngine > Settings](/cloud.html?appid={{appid}}#/conf), you can fill in a custom second-level domain name. For example, if you set `myapp`, you can access your website through our second-level domain name `http://myapp.avosapps.us`.
+In the "Web Hosting Domain" section of your app's [Dashboard > LeanEngine > Settings](/cloud.html?appid={{appid}}#/conf), you can fill in a custom second-level domain. For example, if you set it to be `myapp`, you can access your website through `http://myapp.avosapps.us`.
 
-
-<div class="callout callout-info">You may need to wait a few hours till DNS settings are effective</div>
+{% call docs.noteWrap() %}
+You may need to wait for a few hours until DNS settings take effect.
+{% endcall %}
 
 Our second-level domains support HTTPS by default.
 
-If your app has no requests in 30 days and you haven't purchased a standard instance, the second-level domain may be recycled.
+If no request has been made to your app within the past 30 days and you haven't purchased a standard instance, the second-level domain may be recycled.
 
-{% block runtime_description %}{% endblock %}
+## Project Skeleton
 
-{% block project_constraint %}{% endblock %}
+{% if platformName === "Node.js" %}
+Take the example project as an example, in the project root directory we see a `package.json` file. Keep in mind that **all Node.js projects must contain a `package.json` in order to be correctly recognized by LeanEngine**.
 
-{% block custom_runtime %}{% endblock %}
+### `package.json`
 
-{% block project_start %}{% endblock %}
+There are [many options](https://docs.npmjs.com/files/package.json) that can be specified in `package.json`. The file usually looks like this:
 
-{% block supported_frameworks%}{% endblock %}
+```json
+{
+    "name": "node-js-getting-started",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "engines": {
+        "node": "8.x"
+    },
+    "dependencies": {
+        "express": "4.12.3",
+        "leanengine": "^3.0.2",
+        "leancloud-storage": "^3.3.1"
+    }
+}
+```
 
-{% block use_leanstorage %}{% endblock %}
+Options that LeanEngine will respect include:
 
-## Health monitoring
+- `scripts.start` is the command to start the project (defaults to `node server.js`), which can be modified if you want to attach startup options to Node.js (such as `--es_staging`) or use another file as the entry point.
+- `scripts.prepublish` will run once after the project is built; you can write build commands such as `gulp build` here.
+- `engines.node` specifies the required version of Node.js. For compatibility, the default version is still `0.12`, **so it is recommended that you specify a higher version (`8.x` or above is recommended)**. You can also use `*` to always use the latest version.
+- `dependencies` specifies the project dependencies. LeanEngine will use `npm install --production` during deployment to install all the dependencies listed here. If a dependency has peer dependencies, please make sure they are also listed in `dependencies` (not `devDependencies`).
+- `devDependencies` specifies the dependencies for development. At this time, LeanEngine does **not** install modules in `devDependencies`.
 
-When your application is deployed, LeanEngine's hypervisor will check if it is started successfully every second. The deployment is considered a failure if the check still fails after 30 seconds. After the application starts running normally, regular health monitoring ensures that your app is healthy. And if health monitoring fails, the LeanEngine hypervisor will automatically restart your app.
+We recommend that you create your `package.json` with our [project template](https://github.com/leancloud/node-js-getting-started/blob/master/package.json) as reference.
 
-The URL for health monitoring includes the root path of your application(`/`) and `/__engine/1/ping` which is normally handled by the {{platformName}}. As long as  **one of the two** returns a HTTP response code of 200, the application is considered healthy. So make sure your program uses the {{platformName}} SDK, or your app root path returns 200 as the HTTP status code.
-In addition, in order to support cloud functions and hooks in LeanEngine, the hypervisor will use the URL `/1.1/functions/_ops/metadatas` to communicate with the {{platformName}} SDK. Please the {{platformName}} SDK handle this path, or return 404 as the HTTP response code to indicate that cloud functions and hooks are not used.
+We also support `package-lock.json` and `yarn.lock`:
 
-{% block ping %}
-Please refer to the previous section [Using LeanStorage](#Using LeanStorage) for how to install and use the {{platformName}} SDK,
-{% endblock %}
+- If your project directory contains `package-lock.json`, dependencies will be installed according to versions specified in the file (requires Node.js 8.0 or higher).
+- If your project directory contains `yarn.lock`, then `yarn install` will be used instead of `npm install` to install dependencies (requires Node.js 4.8 or higher).
+{% endif %}
+{% if platformName === "Python" %}
+Your project has to follow the following structure to be recognized by LeanEngine and operate properly.
 
-{% block generalFeature %}
+LeanEngine Python runs your project following WSGI standards, so `wsgi.py` and `requirements.txt` must exist in the project root directory, with `.python-version` and `runtime.txt` to be optional files. When running your program on LeanEngine, `wsgi.py` will be loaded and the global variable `application` will be called as a WSGI function, so make sure `application` exists in your `wsgi.py` as a global variable, function, or class, and conforms WSGI standards.
 
-## Session management
+For more information about **WSGI**, please refer to [PEP333](https://www.python.org/dev/peps/pep-0333/).
 
-{% block cookie_session %}{% endblock %}
+### Adding Third-Party Dependencies
 
-## Implementing common features
+You can fill in the third-party dependencies of the project in `requirements.txt`, with one module per line:
 
-### Sending HTTP request
+```
+# From # sign to the end of the line are comments
+leancloud>=2.0.0,<3.0.0
+Flask>=0.10.1,<1.0.0                               # Specify version number/range of versions
+git+https://github.com/foo/bar.git@master#egg=bar  # Use the remote addresses of version management tool such as Git/SVN
+```
 
-{% block http_client %}{% endblock %}
+See [pip 19.0.1 Documentation > User Guide > Requirements Files](https://pip.pypa.io/en/stable/user_guide/#requirements-files) for details.
 
-### Obtaining client IP
+After deployment, LeanEngine will automatically install dependencies specified in `requirements.txt`. You can use the following command to install dependencies when running and debugging locally:
 
-If you want to get the client's IP, you can get it directly from the `x-real-ip` HTTP header.
+```sh
+pip install -r requirements.txt
+```
 
-{% block code_get_client_ip_address %}{% endblock %}
+When deploying you project to the production environment, it is advisable to specify the exact versions (`foo==1.0.0`) of dependencies to avoid compatibility issues.
 
-### Uploading files
-Websites hosted on {{productName}} can handle file uploads using the file-related API in the {{sdk_name}} SDK.
+### Specifying a Python Version
 
-Assuming the front-end HTML code is like:
+You can select the Python version used to run the code in a way similar to how [`pyenv`](https://github.com/pyenv/pyenv) does: put the desired version of Python in `.python-version` under the project root directory (like `3.6.1`). When deploying your project to LeanEngine, the version specified here will be automatically installed.
+
+If `pyenv` is used locally, it will refer to the same file for Python version. We recommend that you use `pyenv` for local development to ensure that the local environment is the same as the one on LeanEngine. See [`pyenv`'s GitHub repository](https://github.com/pyenv/pyenv) for instructions on installation.
+
+At this time, only CPython is supported. PyPy, Jython, IronPython, or other Python implementations are not supported. It is recommended that you use Python 3.5 or above. If you are still using Python 2, please use Python 2.7.
+
+As mentioned previously, all the frameworks compatible with Python WSGI standard can be deployed to LeanEngine, including [Flask](http://flask.pocoo.org/), [Django](https://www.djangoproject.com/), and [Tornado](http://www.tornadoweb.org/). We offer sample projects built with Flask and Django, which can be used as the template to start building your project:
+
+- [Flask](https://github.com/leancloud/python-getting-started)
+- [Django](https://github.com/leancloud/django-getting-started)
+{% endif %}
+{% if platformName === "PHP" %}
+Your project has to follow the following structure to be recognized by LeanEngine and operate properly.
+
+A LeanEngine PHP project must contain `$PROJECT_DIR/public/index.php` as the startup file for the whole project.
+
+LeanEngine provides PHP 5.6 by default. If you need a specified version of PHP, please add it into `composer.json`:
+
+```json
+"require": {
+  "php": "7.0"
+}
+```
+
+LeanEngine supports version `5.6`, `7.0`, `7.1`, and `7.2` at this time. We will keep adding supports for new versions released in future.
+
+LeanEngine PHP does not depend on any third-party frameworks, so you may use any frameworks you are familiar with for your project, or choose not to use one. Make sure you project can be started by running `public/index.php`.
+
+By default, a PHP-FPM Worker is assigned to every 64 MB memory of a PHP project. You can change the setting in "Custom Environment Variables" of LeanEngine's settings page by adding an environment variable with `PHP_WORKERS` as the name and a number as the value. Keep in mind that if the value is too low, there may be insufficient Workers for new requests, and if the value is too high, requests may not be successfully processed due to low memory space.
+
+The extension `mcrypt` has been removed from the core of PHP 7.2 and is made optional in LeanEngine. You may enable it by adding `ext-mcrypt: *` into `require` of `composer.json`. Note that the time consumed for deployment will increase if `mcrypt` is enabled, so you may keep it off if you do not need it.
+{% endif %}
+{% if platformName === "Java" %}
+Your project has to follow the following structure to be recognized by LeanEngine and operate properly.
+
+LeanEngine Java environment is constructed by Maven. For this reason, the LeanEngine Java project must contain `$PROJECT_DIR/pom.xml` as the startup file for the whole project. Once the building process is done, LeanEngine will search for a package under the directory `$PROJECT_DIR/target`:
+
+- WAR: If your project is built into a WAR file, LeanEngine will run it in a servlet container (currently Jetty 9.x).
+- JAR: If your project is built into a JAR file, LeanEngine will run `java -jar <packageName>.jar`.
+
+We recommend that you use an example project as a starting point since you don't have to configure all the details:
+
+- [`java-war-getting-started`](https://github.com/leancloud/java-war-getting-started): a minimal project that integrates the LeanCloud SDK and creates a WAR file to run as a servlet.
+- [`spring-boot-getting-started`](https://github.com/leancloud/spring-boot-getting-started): a minimal project using the [Spring Boot](https://projects.spring.io/spring-boot/) framework that creates a JAR file.
+
+Java runtime requires more memory, hence we recommend:
+
+- A project based on [example project](https://github.com/leancloud/java-war-getting-started) should use instances with at least 512 MB memory.
+- A project based on [Spring Boot](https://projects.spring.io/spring-boot/) should use instances with at least 1 GB memory.
+- Simulate a reasonable workload locally and check how much memory your project uses. When choosing LeanEngine instances, make sure to leave some margin for traffic variation.
+
+LeanEngine automatically sets `-Xmx` to be 70% of the size of the instance. The rest 30% will be reserved for off-heap memory and other purposes. If your project demands special requirements (like consuming more off-heap memory), you can set your own `-Xmx` parameter. For example, if the memory of your instance is 2 GB, you may go to "Custom Environment Variables" of LeanEngine's settings page and set the environment variable `JAVA_OPTS` to be `-Xmx1500m` in order to limit the size of JVM heap to be 1.5 GB and reserve the rest 500 MB for other purposes. **Keep in mind that if `-Xmx` is too low, more CPU may be consumed for frequent GC tasks.**
+
+{% call docs.alertWrap() %}
+If an unsuitable [instance size](leanengine_plan.html#instance-size) is picked, the deployment process may fail due to OOM error. The project may also restart frequently later on due to the same reason.
+{% endcall %}
+
+LeanEngine Java supports JRE 1.8.
+
+### WAR Projects
+
+First, confirm that [Jetty plugin](https://www.eclipse.org/jetty/documentation/9.4.x/jetty-maven-plugin.html) has been configured in `pom.xml`. The port of the web server can be obtained from the environment variable `LEANCLOUD_APP_PORT`. Please refer to our [example code](https://github.com/leancloud/java-war-getting-started/blob/master/pom.xml) for reference.
+
+Then use Maven to install dependencies and create the package:
+
+```sh
+mvn package
+```
+
+There are several ways to launch the project locally:
+
+#### Launching WAR Projects with Command-Line Interface
+
+```sh
+lean up
+```
+
+See [Command-Line Interface Guide](leanengine_cli.html) for more details.
+
+**Tip**: Comparing to other methods, the command-line interface allows you to easier switch between different applications.
+
+#### Launching WAR Projects with Environment Variables
+
+The following commands set up the environment variables for LeanEngine and launch the project using the jetty plugin:
+
+```sh
+eval "$(lean env)"
+mvn jetty:run
+```
+
+**Tip**: `lean env` outputs the commands for setting up the environment variables required for the current app. You can run it directly with `eval`.
+
+#### Launching WAR Projects with Eclipse
+
+First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right click the project in the **Package Explorer** window and select **Run As** > **Maven Build…**. On the **Main** tab, set **Goals** to be `jetty:run`. Add the following environment variables on the **Environment** tab:
+
+Name | Value
+--- | ---
+`LEANCLOUD_APP_ENV` | `development`
+`LEANCLOUD_APP_ID` | `{{appid}}`
+`LEANCLOUD_APP_KEY` | `{{appkey}}`
+`LEANCLOUD_APP_MASTER_KEY` | `{{masterkey}}`
+`LEANCLOUD_APP_PORT` | `3000`
+
+Hit "run" to launch the project.
+
+### JAR Projects
+
+Use Maven to install dependencies and create the package:
+
+```sh
+mvn package
+```
+
+There are several ways to launch the project locally:
+
+#### Launching JAR Projects with Environment Variables
+
+The following commands set up the required environment variables for LeanEngine and launch the project:
+
+```sh
+eval "$(lean env)"
+java -jar target/{zipped jar file}
+```
+
+**Tip**: `lean env` outputs the commands for setting up the environment variables required for the current app. You can run it directly with `eval`.
+
+#### Launching JAR Projects with Eclipse
+
+First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right click the project in the **Package Explorer** window, select **Run As** > **Run Configurations…**, select `Application`, and set `Main class:` (`cn.leancloud.demo.todo.Application` for the sample project). Add the following environment variables on the **Environment** tab:
+
+Name | Value
+--- | ---
+`LEANCLOUD_APP_ENV` | `development`
+`LEANCLOUD_APP_ID` | `{{appid}}`
+`LEANCLOUD_APP_KEY` | `{{appkey}}`
+`LEANCLOUD_APP_MASTER_KEY` | `{{masterkey}}`
+`LEANCLOUD_APP_PORT` | `3000`
+
+Hit "run" to launch the project.
+{% endif %}
+
+{% if platformName === "Node.js" %}
+## Integration with Web Frameworks
+
+You might have noticed that we use the popular Node.js web framework [Express](http://expressjs.com/) in `package.json` in the sample project.
+
+The Node.js SDK provides integrated support for [Express](http://expressjs.com/) and [Koa](http://koajs.com/).
+
+To use one of those frameworks, add the LeanEngine Node.js SDK to the project:
+
+```sh
+npm install --save leanengine leancloud-storage
+```
+
+And configure it in your code:
+
+### Express
+
+```js
+var express = require('express');
+var AV = require('leanengine');
+
+AV.init({
+  appId: process.env.LEANCLOUD_APP_ID || '{{appid}}',
+  appKey: process.env.LEANCLOUD_APP_KEY || '{{appkey}}',
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY || '{{masterkey}}'
+});
+
+var app = express();
+app.use(AV.express());
+app.listen(process.env.LEANCLOUD_APP_PORT);
+```
+
+You can define custom HTTP APIs:
+
+```js
+app.get('/', function (req, res) {
+  res.render('index', { title: 'Hello World' });
+});
+
+app.get('/time', function (req, res) {
+  res.json({
+    time: new Date()
+  });
+});
+
+app.get('/todos', function (req, res) {
+  new AV.Query('Todo').find().then(function (todos) {
+    res.json(todos);
+  }).catch(function (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  });
+});
+```
+
+For best practice, see our [project template](https://github.com/leancloud/node-js-getting-started).html).
+
+### Koa
+
+```js
+var koa = require('koa');
+var AV = require('leanengine');
+
+AV.init({
+  appId: process.env.LEANCLOUD_APP_ID || '{{appid}}',
+  appKey: process.env.LEANCLOUD_APP_KEY || '{{appkey}}',
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY || '{{masterkey}}'
+});
+
+var app = koa();
+app.use(AV.koa2());  // use AV.koa() if you're using version 1.
+app.listen(process.env.LEANCLOUD_APP_PORT);
+```
+
+You can use Koa to render pages and set up custom HTTP APIs:
+
+```js
+app.use(function* (next) {
+  if (this.url === '/todos') {
+    return new AV.Query('Todo').find().then(todos => {
+      this.body = todos;
+    });
+  } else {
+    yield next;
+  }
+});
+```
+
+When using Koa, it is recommended that you set the version of Node.js to be `4.x` or higher according to the [`package.json`](#package-json) section above.
+
+### Other Web Frameworks
+
+You can also use other web frameworks for development, but you need to implement the logic mentioned in [Health Monitoring](#health-monitoring) by yourself. Here's a simple example using the built-in [`http`](https://nodejs.org/api/http.html) module:
+
+```js
+require('http').createServer(function (req, res) {
+  if (req.url == '/') {
+    res.statusCode = 200;
+    res.end();
+  } else {
+    res.statusCode = 404;
+    res.end();
+  }
+}).listen(process.env.LEANCLOUD_APP_PORT);
+```
+
+You need to listen on `0.0.0.0` (the default behavior of Node.js and Express) instead of `127.0.0.1`.
+
+### Router Timeout
+
+For the reason that asynchronous calls in Node.js can be interrupted by runtime errors or bugs, in order to reduce the memory usage of the server in such situation and let the clients receive errors earlier, you can set a timeout so that the server returns an HTTP error when a request takes too long to be processed.
+
+When implementing router with Express, the default timeout is 15 seconds. This can be adjusted in `app.js`:
+
+```js
+// Set default timeout
+app.use(timeout('15s'));
+```
+{% endif %}
+{% if platformName === "Java" %}
+## Integration with Web Frameworks
+
+LeanEngine Java depends on Servlet 3.1.0. You can use any web frameworks based on Servlet 3.1.0.
+{% endif %}
+
+## Using LeanStorage
+
+{% if platformName === "Node.js" %}
+[LeanStorage](storage_overview.html) is a service provided by LeanCloud for storing structured data. You can persist data in the cloud such as users' email addresses and profile pictures.
+
+The Node.js SDK (the `leanengine` module) provides support for cloud functions and hooks required on the server-side. It also needs the JavaScript SDK (the `leancloud-storage` module) to be installed together as peer dependency. Remember to upgrade the JavaScript SDK when upgrading the Node SDK:
+
+```bash
+npm install --save leanengine leancloud-storage
+```
+
+The [API documentation](https://github.com/leancloud/leanengine-node-sdk/blob/master/API.md) and [change logs](https://github.com/leancloud/leanengine-node-sdk/releases) of the Node.js SDK are available on GitHub.
+
+```js
+// Leanengine and leancloud-storage export the same object
+var AV = require('leanengine');
+
+AV.init({
+  appId: process.env.LEANCLOUD_APP_ID || '{{appid}}',
+  appKey: process.env.LEANCLOUD_APP_KEY || '{{appkey}}',
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY || '{{masterkey}}'
+});
+
+// You can use useMasterKey to turn on the masterKey permission in LeanEngine to skip ACL and other permission checks
+AV.Cloud.useMasterKey();
+
+// Use the JavaScript SDK to query data in cloud storage
+new AV.Query('Todo').find().then(function (todos) {
+  console.log(todos);
+}).catch(function (err) {
+  console.log(err);
+});
+```
+
+{% call docs.noteWrap() %}
+If you need to turn off global `masterKey` permissions specifically for certain operations, please refer to [Node.js Cloud Function Guide > Using Master Key](leanengine_cloudfunction_guide-node.html#using-master-key).
+{% endcall %}
+
+You can see the following code in `routes/todo.js` in the sample project:
+
+```js
+var router = require('express').Router();
+var AV = require('leanengine');
+
+// …
+
+// Add a new Todo object
+router.post('/', function (req, res, next) {
+  var content = req.body.content;
+  var todo = new Todo();
+  todo.set('content', content);
+  todo.save().then(function (todo) {
+    res.redirect('/todos');
+  }).catch(next);
+});
+```
+
+The snippet shows how to store a `Todo` object to LeanStorage. See [LeanStorage JavaScript Guide](leanstorage_guide-js.html) for more information.
+{% endif %}
+{% if platformName === "Python" %}
+In LeanEngine, you can use [LeanStorage](storage_overview.html) as the backend database, as well as other features provided by LeanCloud. LeanCloud Python SDK makes it easy for you to use these features.
+
+### Installation
+
+Dependencies will be automatically installed upon deployment if `leancloud` is added into `requirements.txt`. When developing and debugging your project locally, you can run the following command under the project root directory to install dependencies:
+
+```sh
+pip install -r requirements.txt
+```
+
+### Initialization
+
+`wsgi.py` is the first file to be executed, so it is recommended that you initialize the LeanCloud Python SDK in this file:
+
+```python
+import os
+import leancloud
+
+APP_ID = os.environ['LEANCLOUD_APP_ID']              # Obtain App ID from environment variable LEANCLOUD_APP_ID
+APP_KEY = os.environ['LEANCLOUD_APP_KEY']            # Obtain App Key from environment variable LEANCLOUD_APP_KEY
+MASTER_KEY = os.environ['LEANCLOUD_APP_MASTER_KEY']  # Obtain Master Key from environment variable LEANCLOUD_APP_MASTER_KEY
+
+leancloud.init(APP_ID, app_key=APP_KEY, master_key=MASTER_KEY)
+# Set this to be True if you need to access LeanCloud services with Master Key
+leancloud.use_master_key(False)
+```
+
+Now you can use all LeanCloud Python SDK features in your project. See [LeanStorage Python Guide](leanstorage_guide-python.html) for more information.
+{% endif %}
+{% if platformName === "PHP" %}
+LeanEngine uses [LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) which contains the LeanStorage PHP SDK. You can use the APIs provided by it to persist your data. See [LeanStorage PHP Guide](leanstorage_guide-php.html) for more information.
+
+[LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) provides the middleware that supports the [Slim framework](http://www.slimframework.com/) which is used in the example project. You can follow the way it is use in the example project.
+
+If you choose to start from scratch, you need to configure it as follows:
+
+- First, install [`composer`](https://getcomposer.org).
+- Then configure dependency by executing the following command under the project root directory to add the dependency of the [LeanCloud PHP SDK](https://github.com/leancloud/php-sdk):
+
+  ```sh
+  composer require leancloud/leancloud-sdk
+  ```
+
+- Then initialize the middleware by using your App Key:
+
+  ```php
+  use \LeanCloud\Client;
+
+  Client::initialize(
+      getenv("LC_APP_ID"),          // Obtain App ID from environment variable LC_APP_ID
+      getenv("LC_APP_KEY"),         // Obtain App Key from environment variable LC_APP_KEY
+      getenv("LC_APP_MASTER_KEY")   // Obtain Master Key from environment variable LC_APP_MASTER_KEY
+  );
+
+  // Delete the following line if you don't need to use the Master Key
+  Client::useMasterKey(true);
+  ```
+{% endif %}
+{% if platformName === "Java" %}
+LeanEngine uses [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) instead of [LeanStorage Java SDK](https://github.com/leancloud/java-sdk). The former is a superset of the latter with added support for cloud functions and hooks, so you can use any functions available for [LeanStorage](leanstorage_guide-java.html) to store your data.
+
+If you use the example project as the basis, the [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) has already been set up. You can follow the way it is use in the example project.
+
+If you choose to start from scratch, you need to configure it as follows:
+
+- Configure dependencies by adding [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) to `pom.xml`:
+
+  ```xml
+  <dependencies>
+    <dependency>
+      <groupId>cn.leancloud</groupId>
+      <artifactId>leanengine</artifactId>
+      <version>0.1.11</version>
+    </dependency>
+  </dependencies>
+  ```
+
+- Initialize the middleware by using your App Key:
+
+  ```java
+  import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
+  import cn.leancloud.LeanEngine;
+
+  // Obtain App ID from environment variable LEANCLOUD_APP_ID
+  String appId = System.getenv("LEANCLOUD_APP_ID");
+
+  // Obtain App Key from environment variable LEANCLOUD_APP_KEY
+  String appKey = System.getenv("LEANCLOUD_APP_KEY");
+
+  // Obtain Master Key from environment variable LEANCLOUD_APP_MASTER_KEY
+  String appMasterKey = System.getenv("LEANCLOUD_APP_MASTER_KEY");
+
+  LeanEngine.initialize(appId, appKey, appMasterKey);
+
+  // Delete the following line if you don't need to use the Master Key
+  JavaRequestSignImplementation.instance().setUseMasterKey(true);
+  ```
+{% endif %}
+
+## Health Monitoring
+
+While your project is being deployed, LeanEngine's hypervisor will check if it is started successfully every second. The deployment is considered a failure if the check still fails after **30 seconds**. Even after the project is deployed successfully, we still run health checks regularly to ensure that your app is running normally. If the check fails, the LeanEngine hypervisor will automatically restart your app.
+
+The URLs for health monitoring include the index page of your project (`/`) and `/__engine/1/ping` which is handled by the {{platformName}} SDK. As long as **one of them** returns the HTTP status code `200`, the project is considered to be normal. So make sure your program uses the {{platformName}} SDK or **has its index page return `200` as the HTTP status code**. Besides this, in order to support cloud functions and hooks in LeanEngine, the hypervisor will use the URL `/1.1/functions/_ops/metadatas` to communicate with the {{platformName}} SDK. Please make sure to have this URL handled by the {{platformName}} SDK, or **return `404` as the HTTP status code** to indicate that cloud functions and hooks are not used.
+
+{% if platformName === "Node.js" %}
+See [Using LeanStorage](#using-leanstorage) for how to install and use the LeanStorage Node.js SDK.
+{% endif %}
+{% if platformName === "Python" %}
+See [Using LeanStorage](#using-leanstorage) for how to install and use the LeanStorage Python SDK.
+{% endif %}
+{% if platformName === "PHP" %}
+[LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) will automatically handle this URL. Simply add the middleware to the request processing chain:
+
+```php
+$engine = new SlimEngine();
+$app->add($engine);
+```
+
+If you didn't use [LeanCloud PHP SDK](https://github.com/leancloud/php-sdk), you need to handle the URL by yourself:
+
+```php
+// Router health monitoring
+$app->get('/__engine/1/ping', function($req, $res) {
+    // PSR-7 response is immutable
+    $response = $res->withHeader("Content-Type", "application/json");
+    $response->getBody()->write(json_encode(array(
+        "runtime" => "php-" . phpversion(),
+        "version" => "custom"
+    )));
+    return $response;
+});
+
+// List of cloud functions
+app.get('/1.1/_ops/functions/metadatas', function(req, res) {
+    $response = $res->withHeader("Content-Type", "application/json");
+    $response->getBody()->write(json_encode(array(
+        "result" => array()
+    )));
+    return $response;
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+If you didn't use [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk), you need to handle the URL by yourself:
+
+```java
+// Health monitoring
+@WebServlet(name = "LeanEngineHealthServlet", urlPatterns = {"/__engine/1/ping"})
+public class LeanEngineHealthCheckServlet extends HttpServlet {
+
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    resp.setHeader("content-type", "application/json; charset=UTF-8");
+    JSONObject result = new JSONObject();
+    result.put("runtime", System.getProperty("java.version"));
+    result.put("version", "custom");
+    resp.getWriter().write(result.toJSONString());
+  }
+}
+```
+
+```java
+// Cloud function list
+@WebServlet(name = "LeanEngineMetadataServlet", urlPatterns = {"/1.1/functions/_ops/metadatas"})
+public class LeanEngineMetadataServlet extends HttpServlet {
+
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+      IOException {
+    resp.setContentType("application/json; charset=UTF-8");
+    resp.getWriter().write("{\"result\":[]}");
+  }
+}
+```
+{% endif %}
+
+## Session Management
+
+{% if platformName === "Node.js" %}
+### Managing Sessions on the Server Side
+
+If your page is primarily rendered by the server (like using EJS or Pug) and the frontend does not need to use the JavaScript SDK for data manipulation, it is recommended that you use the `CookieSession` middleware to maintain session states with cookies:
+
+```js
+app.use(AV.Cloud.CookieSession({ secret: 'my secret', maxAge: 3600000, fetchUser: true }));
+```
+
+For Koa, a `framework: 'koa'` parameter is required:
+
+```js
+app.use(AV.Cloud.CookieSession({ framework: 'koa', secret: 'my secret', maxAge: 3600000, fetchUser: true }));
+```
+
+{% call docs.alertWrap() %}
+While using `CookieSession`, make sure [CSRF tokens](#csrf-tokens) are enabled to prevent CSRF attacks.
+{% endcall %}
+
+You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `AV.User` in the cookie. When a user opens the application, the SDK will check if the use is logged in. You can obtain the logged in user via `req.currentUser`.
+
+The options supported by `AV.Cloud.CookieSession` include:
+
+- **fetchUser**: Whether or not to automatically `fetch` the currently logged in `AV.User` object (defaults to `false`). If it is set to be `true`, each HTTP request will initiate an API call to `fetch` the user object. If it is set to be `false`, you can only access the `id` (the `objectId` recorded in the `_User` table) and the `sessionToken` attribute of the `req.currentUser` by default. You can manually `fetch` the entire user when needed.
+- **name**: The name of the cookie (defaults to `avos.sess`).
+- **maxAge**: The time before the cookie expires (in milliseconds).
+
+You can easily implement a site with login feature like this:
+
+```js
+// Handle login requests (may come from forms in the login page)
+app.post('/login', function (req, res) {
+  AV.User.logIn(req.body.username, req.body.password).then(function (user) {
+    res.saveCurrentUser(user); // Save current user to cookie
+    res.redirect('/profile'); // Jump to the profile page
+  }, function (error) {
+    // Login failed, jump to login page
+    res.redirect('/login');
+  });
+})
+
+// View profile
+app.get('/profile', function (req, res) {
+  // Determine if the user has logged in
+  if (req.currentUser) {
+    // If the user has already logged in, send the current login user information
+    res.send(req.currentUser);
+  } else {
+    // If not, jump to the login page
+    res.redirect('/login');
+  }
+});
+
+// Log out
+app.get('/logout', function (req, res) {
+  req.currentUser.logOut();
+  res.clearCurrentUser(); // Remove the user from cookie
+  res.redirect('/profile');
+});
+```
+
+### Managing Sessions on the Browser Side
+
+If your page is mainly rendered by the browser (like using Vue, React, or Angular) and uses JavaScript SDK for data operations on the frontend, it is recommended to use `AV.User.login` to log a user in on the frontend.
+
+When the backend needs to do something depending on the status of the current user, the frontend obtains the `sessionToken` through `user.getSessionToken()` and sends it to the backend via HTTP header.
+
+For example, on the frontend:
+
+```js
+AV.User.login(user, pass).then(user => {
+  return fetch('/profile', {
+    headers: {
+      'X-LC-Session': user.getSessionToken()
+    }
+  });
+});
+```
+
+And on the backend:
+
+```js
+app.get('/profile', function (req, res) {
+  //  Query the current user based on sessionToken
+  AV.User.become(req.headers['x-lc-session']).then(user => {
+    res.send(user);
+  }).catch(err => {
+    res.send({ error: err.message });
+  });
+});
+
+app.post('/todos', function (req, res) {
+  var todo = new Todo();
+  // Specify sessionToken when performing data operations
+  todo.save(req.body, { sessionToken: req.headers['x-lc-session'] }).then(() => {
+    res.send(todo);
+  }).catch(err => {
+    res.send({ error: err.message });
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+Python SDK provides a WSGI middleware `leancloud.engine.CookieSessionMiddleware` that manages sessions of users (`leancloud.User`) with cookies. To use the middleware, replace the following line in `wsgi.py`:
+
+```python
+application = engine
+```
+
+with:
+
+```python
+application = leancloud.engine.CookieSessionMiddleware(engine, secret=YOUR_APP_SECRET)
+```
+
+You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `leancloud.User` in the cookie. When a user opens the application, the SDK will check if the use is logged in. You can obtain the logged in user via `leancloud.User.get_current()`.
+
+Other options supported by `leancloud.engine.CookieSessionMiddleware` include:
+
+- **name**: The name of the cookie (defaults to `leancloud:session`).
+- **excluded_paths**: URL paths that do not trigger session token validations. For example, when handling static pages, you can skip validating session tokens, which improves efficiency.
+- **fetch_user**: Whether or not to automatically `fetch` the currently logged in `leancloud.User` object (defaults to `False`). If it is set to be `True`, each HTTP request will initiate an API call to `fetch` the user object. If it is set to be `False`, you can only access the `session_token` attribute of the `leancloud.User.get_current()` by default. You can manually `fetch` the entire user when needed.
+- **expires**: The expiration time of the cookie (see [Werkzeug Documentation](http://werkzeug.pocoo.org/docs/0.12/http/#werkzeug.http.dump_cookie)).
+- **max_age**: The time before the cookie expires (see [Werkzeug Documentation](http://werkzeug.pocoo.org/docs/0.12/http/#werkzeug.http.dump_cookie)).
+{% endif %}
+{% if platformName === "PHP" %}
+LeanEngine provides a module `LeanCloud\Storage\CookieStorage` that uses cookies to manage sessions of users (`User`). You can use it by adding the following code to `app.php`:
+
+```php
+use \LeanCloud\Storage\CookieStorage;
+// Store the session states to a cookie
+Client::setStorage(new CookieStorage(60 * 60 * 24, "/"));
+```
+
+`CookieStorage` allows you to pass in an expiration time in milliseconds, as well as a path as the scope of the cookie. The time before expiration defaults to 7 days.
+
+The current user can be obtained with `User::getCurrentUser()`. You can implement a site with login feature like this:
+
+```php
+$app->get('/login', function($req, $res) {
+  // Render login page
+});
+
+// Handle login requests (may come from forms in the login page)
+$app->post('/login', function($req, $res) {
+    $params = $req->getQueryParams();
+    try {
+        User::logIn($params["username"], $params["password"]);
+        // Jump to the profile page
+        return $res->withRedirect('/profile');
+    } catch (Exception $ex) {
+        // Login failed, jump to login page
+        return $res->withRedirect('/login');
+    }
+});
+
+// View profile
+$app->get('/profile', function($req, $res) {
+    // Determine if the user has logged in
+    $user = User::getCurrentUser();
+    if ($user) {
+        // If the user has already logged in, send the current login user information
+        return $res->getBody()->write($user->getUsername());
+    } else {
+        // If not, jump to the login page
+        return $res->withRedirect('/login');
+    }
+});
+
+// Log out
+$app->get('/logout', function($req, $res) {
+    User::logOut();
+    return $res->redirect("/");
+});
+```
+
+You can implement a simple login page like this to be used with the handlers above:
+
+```html
+<html>
+  <head></head>
+  <body>
+    <form method="post" action="/login">
+      <label>Username</label>
+      <input name="username">
+      <label>Password</label>
+      <input name="password" type="password">
+      <input class="button" type="submit" value="Log in">
+    </form>
+  </body>
+</html>
+```
+{% endif %}
+{% if platformName === "Java" %}
+LeanEngine provides the component `EngineSessionCookie` that can be used to manage sessions of users (`AVUser`) with cookies. Add the following code after initialization if you need to use this component:
+
+```java
+LeanEngine.addSessionCookie(new EngineSessionCookie("my secret", 3600, true));
+```
+
+The following arguments are supported by the constructor of `EngineSessionCookie`:
+
+- **secret**: A string used to create the cookie signature, stored on the server. If you modified it, all the existing cookies will be invalidated, which means that all the sessions will expire.
+- **maxAge**: The time before the cookie expires (in seconds).
+- **fetchUser**: Whether or not to automatically `fetch` the currently logged in `AVUser` object (defaults to `false`). If it is set to be `true`, each HTTP request will initiate an API call to `fetch` the user object. If it is set to be `false`, you can only access the `id` (the `objectId` recorded in the `_User` table) and the `sessionToken` attribute of the `AVUser.getCurrentUser()` by default. You can manually `fetch` the entire user when needed.
+
+You can implement a site with login feature like this:
+
+### Logging in
+
+```java
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+public class LoginServlet extends HttpServlet {
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+      IOException {
+    req.getRequestDispatcher("/login.jsp").forward(req, resp);
+  }
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String username = req.getParameter("username");
+    String passwd = req.getParameter("password");
+    try {
+      AVUser.logIn(username, passwd);
+      resp.sendRedirect("/profile");
+    } catch (AVException e) {
+      resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      resp.setContentType("application/json; charset=UTF-8");
+      JSONObject result = new JSONObject();
+      result.put("code", e.getCode());
+      result.put("error", e.getMessage());
+      resp.getWriter().write(result.toJSONString());
+      e.printStackTrace();
+    }
+  }
+
+}
+```
+
+### Logging out
+
+```java
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
+public class LogoutServlet extends HttpServlet {
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+      IOException {
+    doPost(req, resp);
+  }
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+      IOException {
+    AVUser user = AVUser.getCurrentUser();
+    if (user != null) {
+      user.logOut();
+    }
+    resp.sendRedirect("/profile");
+  }
+
+}
+```
+
+### Profile Page
+
+```java
+@WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
+public class ProfileServlet extends HttpServlet {
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+      IOException {
+    resp.setContentType("application/json; charset=UTF-8");
+    JSONObject result = new JSONObject();
+    if (AVUser.getCurrentUser() != null) {
+      result.put("currentUser", AVUser.getCurrentUser());
+    }
+    resp.getWriter().write(result.toJSONString());
+  }
+
+}
+```
+
+You can implement a simple login page (`login.jsp`) like this to be used with the handlers above:
+
+```html
+<html>
+  <head></head>
+  <body>
+    <form method="post" action="/login">
+      <label>Username</label>
+      <input name="username">
+      <label>Password</label>
+      <input name="password" type="password">
+      <input class="button" type="submit" value="Log in">
+    </form>
+  </body>
+</html>
+```
+{% endif %}
+
+## Implementing Common Features
+
+### Sending HTTP Requests
+
+{% if platformName === "Node.js" %}
+It is recommended that you use [`request`](https://www.npmjs.com/package/request), a third-party module, to send HTTP requests.
+
+To install `request`:
+
+```sh
+npm install request --save
+```
+
+Code example:
+
+```js
+var request = require('request');
+
+request({
+  method: 'POST',
+  url: 'http://www.example.com/create_post',
+  json: {
+    title: 'Some Amazing Title',
+    body: 'Some awesome content.'
+  }
+}, function (err, res, body) {
+  if (err) {
+    console.error('Request failed with response code ' + res.statusCode);
+  } else {
+    console.log(body);
+  }
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+You can use any Python modules to send HTTP requests. The built-in `urllib` would work, but it would be more convenient if you use the third-party module [`requests`](http://www.python-requests.org/).
+
+To install `requests`, add a new line `requests>=2.11.0` into `requirements.txt` and execute `pip install -r requirements.txt` again.
+
+```python
+import requests
+
+response = requests.post('http://www.example.com/create_post', json={
+    'title': 'Some Amazing Title',
+    'body': 'Some awesome content.',
+})
+
+print(response.json())
+```
+{% endif %}
+{% if platformName === "PHP" %}
+LeanEngine PHP environment supports the built-in `curl` module, but we recommend that you use a third party library like `guzzle` to send HTTP requests.
+
+To install `guzzle`:
+
+```sh
+composer require guzzlehttp/guzzle:~6.0
+```
+
+Code example:
+
+```php
+$client = new GuzzleHttp\Client();
+$resp = $client->post("http://www.example.com/create_post", array(
+    "json" => array(
+        "title" => "Some Amazing Title",
+        "body"  => "Some awesome content."
+    )
+));
+```
+{% endif %}
+{% if platformName === "Java" %}
+LeanEngine Java environment supports basic classes including `URL` and `HttpClient`, but we recommend that you use a third party library like `okhttp` to send HTTP requests:
+
+```java
+Request.Builder builder = new Request.Builder();
+builder.url(url).get();
+OkHttpClient client  = new OkHttpClient();
+Call call = client.newCall(builder.build());
+try {
+  Response response = call.execute();
+} catch (Exception e) {
+}
+```
+{% endif %}
+
+### Obtaining Client IP
+
+You can get the client's IP directly from the `x-real-ip` field in the HTTP header:
+
+{% if platformName === "Node.js" %}
+```js
+app.get('/', function (req, res) {
+  var ipAddress = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  console.log(ipAddress);
+  res.send(ipAddress);
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+Flask:
+
+```python
+from flask import Flask
+from flask import request
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    print(request.headers['x-real-ip'])
+    return 'ok'
+```
+
+Django:
+
+According to [Django's Documentation](https://docs.djangoproject.com/el/1.10/ref/request-response/#django.http.HttpRequest.META), the prefix `HTTP_` will be added to third-party headers and `_` will be replaced by `-`. Therefore, you need to access the IP address with `HTTP_X_REAL_IP`.
+
+```python
+def index(request):
+    print(request.META['HTTP_X_REAL_IP'])
+    return render(request, 'index.html', {})
+```
+
+For other frameworks, please refer to their documentations for instructions.
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+$app->get('/', function($req, $res) {
+  error_log($_SERVER['HTTP_X_REAL_IP]); // Print user IP address
+  return $res;
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+EngineRequestContext.getRemoteAddress();
+```
+{% endif %}
+
+### Uploading Files
+
+Websites hosted on LeanEngine can handle file uploads with file-related APIs of LeanCloud {{platformName}} SDK.
+
+Assuming the frontend HTML code looks like this:
 
 ```html
 <form enctype="multipart/form-data" method="post" action="/upload">
@@ -115,187 +1132,558 @@ Assuming the front-end HTML code is like:
 </form>
 ```
 
-{% block upload_file_special_middleware %}{% endblock %}
+{% if platformName === "Node.js" %}
+Configure the app to use the [`multiparty`](https://www.npmjs.com/package/multiparty) middleware: 
 
-Next, define the handler function, build a Form object, and parse req as a parameter, it will save the uploaded file to the temporary directory, and construct the file object:
+```js
+var multiparty = require('multiparty');
+```
+{% endif %}
 
-{% block code_upload_file_sdk_function %}{% endblock %}
+Now define the handler function for uploading files, build a `Form` object, and parse `req` as a parameter. This will save the uploaded file into a temporary directory, and construct the `files` object:
 
-### Session
-{% block custom_session %}
-{{platformName}} Not supported yet
-{% endblock %}
+{% if platformName === "Node.js" %}
+```js
+var fs = require('fs');
+app.post('/upload', function (req, res) {
+  var form = new multiparty.Form();
+  form.parse(req, function (err, fields, files) {
+    var iconFile = files.iconImage[0];
+    if (iconFile.size !== 0) {
+      fs.readFile(iconFile.path, function (err, data) {
+        if (err) {
+          return res.send('Failed to read the file.');
+        }
+        var theFile = new AV.File(iconFile.originalFilename, data);
+        theFile.save().then(function (theFile) {
+          res.send('File uploaded successfully!');
+        }).catch(console.error);
+      });
+    } else {
+      res.send('Please select a file.');
+    }
+  });
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+Flask:
 
-### CSRF Token
-If your LeanEngine application uses cookies as an authentication method (for example, using the SDK's CookieSession middleware); then there is a risk of [CSRF](https://github.com/pillarjs/understanding-csrf) attack. It will allow other sites to forge malicious requests with valid cookies.
+```python
+# app is your Flask instance
 
-CSRF tokens are usually used to defend against CSRF attacks. You need to pass a random string (the CSRF token, which can be passed in the cookie) to the client. The client must include the CSRF token in the request body or in the header. The server verifies that the CSRF Token is correct.
+@app.route('/upload', methods=['POST'])
+def upload():
+    upload_file = request.files['iconImage']
+    f = leancloud.File(upload_file.filename, data=upload_file.stream)
+    print(f.url)
+    return 'File uploaded successfully!'
+```
 
-{% block csrf_token %}{% endblock %}
+For other frameworks, please refer to their documentations for instructions.
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+$app->post("/upload", function($req, $res) {
+    if (isset($_FILES["iconImage"]) && $_FILES["iconImage"]["size"] != 0) {
+        $file = File::createWithLocalFile(
+            $_FILES["iconImage"]["tmp_name"],
+            $_FILES["iconImage"]["type"]
+        );
+        $file->save();
+        $res->getBody()->write("File uploaded successfully!");
+    } else {
+        $res->getBody()->write("Please select a file.");
+    }
+});
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+@WebServlet("/upload")
+@MultipartConfig
+public class UploadServlet extends HttpServlet {
 
-{% endblock %}
+  @Override
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String description = request.getParameter("description"); // Retrieves <input type="text" name="description">
+    Part filePart = request.getPart("iconImage"); // Retrieves <input type="file" name="file">
+    String fileName = filePart.getSubmittedFileName();
+    InputStream fileContent = filePart.getInputStream();
+    // Other logics here
+  }
+}
+```
+{% endif %}
+
+{% if platformName === "Node.js" %}
+### Sessions
+
+If you need to save certain properties in the session, you can add the universal `cookie-session` component. See [`expressjs/cookie-session`](https://github.com/expressjs/cookie-session) for more details. This component can be used together with `AV.Cloud.CookieSession`.
+
+{% call docs.noteWrap() %}
+Keep in mind that `express.session.MemoryStore` of Express cannot work properly on LeanEngine. LeanEngine runs your project on multiple hosts and threads, so in-memory sessions cannot be shared. Therefore, we recommend that you use [`expressjs/cookie-session`](https://github.com/expressjs/cookie-session) middleware to store data attached to each session.
+{% endcall %}
+{% endif %}
+{% if platformName === "Python" %}
+### Sessions
+
+It is recommended that you use the built-in `session` component of the web framework.
+{% endif %}
+{% if platformName === "PHP" %}
+### Sessions
+
+If you need to save certain properties in the session, you can add a universal `CookieStorage`:
+
+```php
+// Enable CookieStorage when the project starts
+Client::setStorage(new CookieStorage());
+
+// Use CookieStorage to store properties in the project
+$cookieStorage = Client::getStorage();
+$cookieStorage->set("key", "val");
+```
+
+{% call docs.noteWrap() %}
+Keep in mind that `$_SESSION` of PHP cannot work properly on LeanEngine. LeanEngine runs your project on multiple hosts and threads, so in-memory sessions cannot be shared. Therefore, we recommend that you use `CookieStorage` to store data attached to each session.
+{% endcall %}
+{% endif %}
+
+### CSRF Tokens
+If your project uses cookies as an authentication method (like the SDK's `CookieSession` middleware), then there is a risk of [CSRF](https://github.com/pillarjs/understanding-csrf) attack which allows other sites to forge malicious requests with valid cookies.
+
+CSRF tokens can be used to defend such attacks. A CSRF token is a random string generated by the server and passed to the client (usually through cookie). When the client makes a request, it must include the same CSRF token in the request body or in the header. The server then verifies if the CSRF token is valid before processing the request.
+
+{% if platformName === "Node.js" %}
+In Express, you can implement CSRF tokens with [csurf](https://github.com/expressjs/csurf) library.
+{% endif %}
 
 ### LeanCache
 
-[LeanCache](http://localhost:9000/leancache_guide.html) is a cache service provided by LeanCloud for high-traffic sites.
+[LeanCache](leancache_guide.html) is a cache service provided by LeanCloud for high-traffic sites.
 
-{% block leancache %}{% endblock %}
+{% if platformName === "Node.js" %}
+To use LeanCache, add `redis` into `package.json` as a dependency:
 
-For more instruction on how to use LeanCache, see the [LeanCache Usage Guide](leancache_guide.html).
+```json
+"dependencies": {
+  // …
+  "redis": "2.2.x",
+  // …
+}
+```
+
+Then create a Redis connection with the following code:
+
+```js
+var client = require('redis').createClient(process.env['REDIS_URL_<Instance Name>']);
+// It is recommended that you add an error event to client. Otherwise, the project may stop running due to network fluctuations or Redis server's master-slave switching.
+client.on('error', function (err) {
+  return console.error('redis err: %s', err);
+});
+```
+{% endif %}
+{% if platformName === "Python" %}
+To use LeanCache, add `redis` into `requirements.txt` as a dependency:
+
+```
+Flask>=0.10.1,<1.0.0
+leancloud>=2.0.0,<3.0.0
+…
+redis>=2.10.5,<3.0.0
+```
+
+Then create a Redis connection with the following code:
+
+```python
+import os
+import redis
+
+r = redis.from_url(os.environ.get("REDIS_URL_<instance_name>"))
+```
+{% endif %}
+
+For more instruction on how to use LeanCache, see [LeanCache Guide](leancache_guide.html).
 
 ### Redirecting to HTTPS
 
+For security consideration, it is recommended that all sites use HTTPS by default. LeanEngine supports such feature with a middleware that forces your website `{{var_app_domain}}.avosapps.us` to be accessed via HTTPS. Simply add the following code to have it enabled:
 
-For security consideration, it is recommended that all sites use HTTPS by default. We provide full support for HTTPS.
+{% if platformName === "Node.js" %}
+Express:
 
-There is a middleware in {{productName}} to force your website `{{var_app_domain}}.leanapp.cn` to be accessed via https. All you have to do is to add it:
+```js
+app.enable('trust proxy');
+app.use(AV.Cloud.HttpsRedirect());
+```
 
-{% block https_redirect %}{% endblock %}
+Koa:
 
-When a user accesses your site with HTTP, she will be redirected to the HTTPS URL.
+```js
+app.proxy = true;
+app.use(AV.Cloud.HttpsRedirect({ framework: 'koa' }));
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import leancloud
 
-{% block extra_examples %}{% endblock %}
+application = get_your_wsgi_func()
 
-## Deploying and publishing
+application = leancloud.HttpsRedirectMiddleware(application)
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+SlimEngine::enableHttpsRedirect();
+$app->add(new SlimEngine());
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+LeanEngine.setHttpsRedirectEnabled(true);
+```
+{% endif %}
 
-### Deploying with the commandline tool
+After your site is deployed to the production environment, all users accessing your website's second-level domain through HTTP will be redirected to HTTPS-enabled URLs.
 
-Run in you project root directory:
+{% if platformName === "Node.js" %}
+### Multithreading
+
+Node.js itself is single-threaded, so if you have LeanEngine instances with 2 or more CPUs, you need to set up multithreading with [`cluster`](https://nodejs.org/api/cluster.html).
+
+To do so, create `server-cluster.js`:
+
+```js
+var cluster = require('cluster');
+
+var workers = process.env.LEANCLOUD_AVAILABLE_CPUS || 1;
+
+if (cluster.isMaster) {
+  for (var i = 0; i < workers; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log('Worker %s died, restarting…', worker.process.pid);
+    cluster.fork();
+  });
+} else {
+  require('./server.js');
+}
+```
+
+Then go to `package.json` and change `scripts.start` to be `node server-cluster.js`:
+
+```json
+"scripts": {
+  "start": "node server-cluster.js"
+}
+```
+
+{% call docs.noteWrap() %}
+Multithreading requires that your program does not maintain global states (such as locks) in memory. We recommend that you perform sufficient tests when switching to a multi-thread or multi-instance structure for the first time.
+{% endcall %}
+{% endif %}
+
+## Deploying and Publishing
+
+### Deploying with Command-Line Interface
+
+Run the following command in you project root directory:
 
 ```sh
 lean deploy
 ```
 
-The command line tool makes it easy to deploy, publish, view application status, view logs, and even support multiple application deployments. Please refer to the [Command Line Tool Guide](leanengine_cli.html) for specific usage.
+The command-line interface makes it easy to deploy projects, publish projects, view project status, and view logs. It allows you to deploy the same project to multiple applications as well. See [Command-Line Interface Guide](leanengine_cli.html) for more instructions.
 
-### Dependency cache
+### Dependency Caching
 
-LeanEngine implements a caching mechanism to speed up the build process. The build process the installs dependencies for your project. For each new build, if the dependencies are not changed, the dependencies installed last time are used. Only the application code is replaced.
+LeanEngine implements a caching mechanism to speed up the build process (the process that installs dependencies for your project). For each new build, if the dependencies are not changed, the dependencies installed in the past will be reused and only the project code will be replaced.
 
-{% block depentencyCache %}{% endblock %}
+{% if platformName === "Node.js" %}
+For example, if a Node.js project is deployed twice in a row and `package.json` is not modified, the cached dependencies will be used directly.
+{% endif %}
 
-If you are encountering problems with installing dependencies, you can enable the "Download latest dependencies" option when deploying from the web console, or add the `--no-cache` option when deploying with the command line tool.
+The cached dependencies may be become ineffective for various of reasons, so it's not guaranteed that every build will make use of them.
+
+If you are encountering problems with installing dependencies, you can enable the "Download latest dependencies" option when deploying on the web console, or add the `--no-cache` option when deploying with the command-line interface.
 
 ```sh
 lean deploy --no-cache
 ```
 
-Dependency caching might fail for a number of reasons. Therefore, it is not guaranteed that the cache is utilized for each eligible build.
+### Deploying from Git Repository
 
-### Deploying from Git repo
+You can also deploy your project from a Git repository. LeanCloud doesn't offer version control services, so you need to push the project to a Git repository of your own choice. Good third-party websites that provide Git hosting services include [GitHub](https://github.com/), [BitBucket](https://bitbucket.org/), and [GitLab](https://about.gitlab.com/).
 
-You can also deploy from your Git repository. You need to push the project to a git repository. Good third-party services that provide Git hosting include [GitHub](https://github.com/), [BitBucket](https://bitbucket.com/), and [Gitlab](http://gitlab.org/).
+After you push your code to a repository accessible from the Internet, please enter the URL of the Git repository (like `https://github.com/<username>/<repoName>.git`) into LeanEngine's settings page on the web console.
 
-After you push your code to a repository accessible from the Internet, please fill in the repo URL in LeanEngine settings in the web console. If it is a public repository and has an HTTPS URL, it is preferred: `https://github.com/<username>/<repoName>.git`.
+If the repository is private, you need to provide a SSH address (<code>git&commat;github.com:&lt;username&gt;/&lt;repoName&gt;.git</code>) instead. You also need to provide the public key generated by LeanEngine as a deploy key to the Git service provider. For example, if you are using GitHub, you can add a deploy key by going to the repository's **Settings** > **Deploy keys** and click on **Add deploy key**.
 
-If the repo is not accessible through HTTPS, you need to fill in the ssh address <code>git&commat;github.com:&lt;USERNAME&gt;/&lt;REPO-NAME&gt;.git</code>. If it is a private repo, you also need to add the deploy key to your repo (shown in LeanEngine settings in the web console) and give it read access. For example, on GitHub you can add deploy keys in the project's Settings => Deploy keys.
+After this, you will be able to deploy your project on the web console. It will deploy the code of the `master` branch by default, but you can specify a branch name, a label, or a specific commit when deploying.
 
-After the setup, you can deploy from the web in the web console.
-By default, it will deploy the code of the master branch. You can also fill in another branch name,a label or a specific commit hash.
+### Staging Environment and Production Environment
 
-### Staging environment and production environment
+By default, you application has a **production environment** for LeanEngine and the corresponding domain is `{{var_app_domain}}.avosapps.us`. There is a **trial instance** in the production environment to run your project.
 
-By default, LeanEngine only has one "production environment" and the corresponding domain name is `{{var_app_domain}}.leanapp.cn`. There is a "trial instance" in the production environment to run the application.
+When the trial instance in the production environment is upgraded to a standard instance, there will be an additional **staging environment** with the corresponding domain `stg-{{var_app_domain}}.avosapps.us`, with both environments accessing the same LeanStorage data. You can test your code by deploying it to the staging environment each time you make a change and publish it to the production environment when ready. If you want to have a test environment with an independent data source, you can create a separate application.
 
-When the trial instance of the production environment is upgraded to standard instance, there will be an additional "staging environment" with the corresponding domain name `stg-{{var_app_domain}}.leanapp.cn`, both environments access the same data. You can test your LeanEngine code with the staging environment. You can deploy each code change to the prepared environment for testing, before publishing to the production environment. If you want to have a test environment with an independent data source, it is recommended to create an application separately.
+{% call docs.noteWrap() %}
+If you encounter the "Application not Found" error when accessing LeanEngine, it is usually because your code hasn't been deployed to the corresponding environment. This may be triggered when you attempt to access the staging environment when there isn't one or try to access the production environment without publishing your project.
+{% endcall %}
 
-<div class="callout callout-info"> If you encounter an "Application not Found" error when accessing LeanEngine, it is usually because code hasn't been deployed to the corresponding environment yet. For example, an application may not have a staging environment, or the application has not yet deployed code to the production environment. </div>
+Sometimes you may need to know the environment the current process is running in (development, staging, or production) and have your project behave differently:
 
-Sometimes you may need to know what environment the current process is running in (development, staging or production) and then have different behaviors:
+{% if platformName === "Node.js" %}
+```js
+var NODE_ENV = process.env.NODE_ENV || 'development';
+if (NODE_ENV === 'development') {
+  // Development environment started by command-line interface
+} else if (NODE_ENV === 'production') {
+  // Production environment
+} else {
+  // Staging environment
+}
+```
+{% call docs.alertWrap() %}
+`NODE_ENV` is a reserved system variable. It becomes `'production'` in production environment and `'staging'` in staging environment. You cannot overwrite it by yourself.
+{% endcall %}
+{% endif %}
+{% if platformName === "Python" %}
+```python
+import os
 
-{% block get_env %}{% endblock %}
+env = os.environ.get('LEANCLOUD_APP_ENV')
+if env == 'development':
+  # Development environment started by command-line interface
+  do_some_thing()
+elif env == 'production':
+  # Production environment
+  do_some_thing()
+elif env == 'staging':
+  # Staging environment
+  do_some_thing()
+```
+{% endif %}
+{% if platformName === "PHP" %}
+```php
+$env = getenv("LEANCLOUD_APP_ENV");
+if ($env === "development") {
+    // Development environment started by command-line interface
+} else if ($env === "production") {
+    // Production environment
+} else {
+    // Staging environment
+}
+```
+{% endif %}
+{% if platformName === "Java" %}
+```java
+String env = System.getenv("LEANCLOUD_APP_ENV");
+if (env.equals("development")) {
+    // Development environment started by command-line interface
+} else if (env.equals("production")) {
+    // Production environment
+} else {
+    // Staging environment
+}
+```
+{% endif %}
 
-Client sdk has methods similiar to `setProduction` , for example [AV.setProduction(production) of JavaScript SDK API](leanengine_cloudfunction_guide-node.html#hash1210911107). If the `production` here is set to `0` ,then the SDK will send requests to the staging environment; if set to `1` , it will send requests to the production environment. The default is `1`.
+In SDK, you can specify the environment where requests from clients are sent to:
 
-## Cloud runtime environment
+```objc
+[AVCloud setProductionMode:YES]; // Production environment (default)
 
-### System level dependencies
+[AVCloud setProductionMode:NO]; // Staging environment
+```
+```js
+AV.setProduction(true); // Production environment (default)
 
-System-level dependencies refer to required programs that are external to the project's programming languages, such as [ffmpeg](https://www.ffmpeg.org/). You can add system dependencies in `leanengine.yaml`:
+AV.setProduction(false); // Staging environment
+```
+```python
+leancloud.use_production(True) # Production environment (default)
+
+leancloud.use_production(False) # Staging environment
+```
+```php
+LeanClient::useProduction(true); // Production environment (default)
+
+LeanClient::useProduction(false); // Staging environment
+```
+```java
+AVCloud.setProductionMode(true); // Production environment (default)
+
+AVCloud.setProductionMode(false); // Staging environment
+```
+
+## Cloud Runtime Environment
+
+### System-Level Dependencies
+
+You can specify system-level dependencies by changing `systemDependencies` of `leanengine.yaml`:
 
 ```yaml
 systemDependencies:
   - imagemagick
 ```
 
-Supported dependencies are:
+LeanEngine supports the following dependencies:
 
-- `ffmpeg` - An audio and video processing tool and library
-- `imagemagick` - An image processing tool and library
-- `fonts-wqy` - Wenquanyi Bitmap song and Wenquanyi Micro black fonts, usually used with phantomjs to display Chinese characters.
-- `phantomjs` - A headless Webkit browser.
+- `ffmpeg`: An audio and video processing tool and library.
+- `imagemagick`: An image processing tool and library.
+- `phantomjs`: A headless WebKit browser (deprecated).
+- `chrome-headless`: A headless Chrome browser (takes more time to be deployed and consumes a lot of CPU and memory; if you use `puppeter`, you need to pass `{executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox', '--disable-setuid-sandbox']}` to `puppeteer.launch`; does not support Java).
+- `node-canvas`: System dependency required for installing `node-canvas` (you still need to install `node-canvas` by yourself).
 
-System-level dependencies are not added by default. Adding system dependencies will slow down the deployment. Please don't add unused dependencies.
+Adding system dependencies will slow down the deployment. Please don't add unused dependencies.
 
+### Environment Variables
 
-###  Environment variables
+LeanEngine provides the following environment variables by default:
 
-The LeanEngine platform provides the following environment variables by default:
+Variable Name | Description
+--- | ---
+`LEANCLOUD_APP_ID` | The App ID of the current application.
+`LEANCLOUD_APP_KEY` | The App Key of the current application.
+`LEANCLOUD_APP_MASTER_KEY`| The Master Key of the current application.
+`LEANCLOUD_APP_ENV` | Current environment: <ul><li>Depending on how you start the local development instance, this variable may not exist or may be set to `development`.</li><li>Staging environment: `stage`.</li><li>Production environment: `production`.</li></ul>
+`LEANCLOUD_APP_PORT` | The port listened by the project. Other ports are not accessible from the public network.
+`LEANCLOUD_API_SERVER` | The URL used to access LeanStorage (looks like `https://api.leancloud.cn`). It is based on the location of the data center used to host the project and may change overtime. You can use it when making requests to LeanStorage or other LeanCloud services with our REST API. Please **do not** use `https://api.leancloud.cn` directly in LeanEngine.
+`LEANCLOUD_AVAILABLE_CPUS` | The number of CPUs available to the LeanEngine instance. It is based on the size of your instance and should be larger than 1 for large instances (like those with 2 CPUs and 1024 MB memory). Please **do not** use the number of CPUs of the operating system directly, or your project may be terminated if excessive threads are opened up.
+`LEANCLOUD_APP_GROUP`| The group this instance belongs to. When using the LeanEngine [Group Management](leanengine_plan.html#group-management) feature, this becomes the name of the group.
+`LEANCLOUD_REGION` | The region where the instance is located at.
 
-Variable name|explanation
----|---
-`LEANCLOUD_APP_ID` | Current App ID
-`LEANCLOUD_APP_KEY` | Current App key
-`LEANCLOUD_APP_MASTER_KEY`|Current master key
-`LEANCLOUD_APP_ENV` | Current application environemnt <ul><li>Depending on how you start the local development instance, this variable may not exist or may be set to `development`</li> </li><li>Staging environment: `stage`</li><li>Production environment: `production`</li></ul>
-`LEANCLOUD_APP_PORT` | Port the application should listen on. Other ports are not accessible externally.
-`LEANCLOUD_API_SERVER` | The URL used to access LeanStorage. This value is different for each application and may change overtime. So use this variable when calling our REST API in LeanEngine. Do not hard-code the URL.
-`LEANCLOUD_AVAILABLE_CPUS` | The number of CPUs available to the LeanEngine instance. Its value depends on the instance type you choose. The application can start a corresponding number of threads or processes based on this value. **Do not** rely on other means to obtain the number of CPU cores, otherwise you may start too many processes and make your application less efficient.
-`LEANCLOUD_APP_GROUP`|The group to which this instance belongs. When using the LeanEngine [Group Management](leanengine_plan.html#Group Management) feature, this is the name of the group.
-`LEANCLOUD_REGION` | Country code of where the instance is located.
+You can also add custom environment variables in your app's [Dashboard > LeanEngine > Settings > Custom Environment Variables](/cloud.html?appid={{appid}}#/conf). Variable names can only contain letters, numbers, and underscores, and can only begin with a letter. The value must be a string. The updated environment variables will take effect after the next deployment.
 
-You can also add custom environment variables at [LeanEngine > Settings > Custom Environment Variables](/dashboard/cloud.html?appid={{appid}}#/conf) on the web console. Variable names should only include letters, numbers, and underscores, and it must begin with a letter. The value is a string. New environment variables will take effect after the next deployment.
+A common practice of using environment variables is to store configurations with them. By doing so, the behavior of your project can be changed by updating environment variables only without touching the code. You can also store secrets keys of third-party services as environment variables so that they are not exposed in the code.
 
-A common practice is to store configuration in environment variables, so that they can be changed without touch the code. You can also store secrets such as API keys of third-party services in environment variables so that they are not exposed in code, especially if it's open-source.
+{% if platformName === "Node.js" %}
+```js
+// Use custom environment variables in LeanEngine Node.js environment
+var MY_CUSTOM_VARIABLE = process.env.MY_CUSTOM_VARIABLE;
+console.log(MY_CUSTOM_VARIABLE);
+```
+{% endif %}
+{% if platformName === "Python" %}
+```python
+# Use custom environment variables in LeanEngine Python Environment
+import os
 
-{% block code_calling_custom_variables %}{% endblock %}
+MY_CUSTOM_VARIABLE = os.environ.get('MY_CUSTOM_VARIABLE')
+print(MY_CUSTOM_VARIABLE)
+```
+{% endif %}
 
 {% call docs.alertWrap() %}
-The environment variables provided by LeanEngine {% if platformName | lower == 'node.js' %}(and the Node.js environment variable `NODE_ENV`){% endif %} cannot be overwritten by custom environment variables.
-
+The environment variables provided by LeanEngine {% if platformName === "Node.js" %}(and the Node.js environment variable `NODE_ENV`){% endif %} cannot be overwritten by custom environment variables.
 {% endcall %}
 
-### Load balancing
+### Load Balancing
 
-On LeanEngine, requests from the clients go through a load balancer before reaching your app. The load balancer handles SSL encryption/decryption, data compression, etc., so you don't have to add HTTPS or gzip-related functionality to your app.
+On LeanEngine, requests from the clients go through a load balancer before they reach to your app. The load balancer handles SSL encryption and decryption, data compression, etc., so you don't have to add HTTPS- or gzip-related functions to your app.
 
-Load balancing also limits the maxium request size to 100MB (including uploading files to LeanEngine), maximum request processing time to 60 seconds, maximum WebSocket idle time to 60 seconds.
+The load balancer also enforce limitations that the maximum size of each request is 100 MB (including uploading files to LeanEngine), the maximum time for processing each request is 60 seconds, and a WebSocket will be disconnected if no data goes through in the past 60 seconds.
 
 ### File System
 
-You can write temporary files to the `/home/leanengine` or `/tmp` directories, up to 1GB in total.
+You can write temporary files into `/home/leanengine` or `/tmp`, up to 1 GB in total.
 
-Each time LeanEngine is deployed, a new container is created. Even when there's no deployments, system maintanence may occasionally replace containers, which means that **you can't treat the local file system as a persistent storage**.
+Each time a project is deployed to LeanEngine, a new container will be created. Even though you don't initiate deployments, the system may also occasionally perform clean-ups. Therefore, **you can't treat the local file system as a persistent storage**.
 
-If the files are large, your code should delete them as soon as possible. If more than 1GB of disk space is used, you may receive "disk quota exceeded" errors. You can redeploy to clear out the files.
+If the files written are relatively large, we recommend that you delete the files after using them. If more than 1 GB of disk space is used, you may receive "Disk quota exceeded" errors. In this situation, you can redeploy your project to clear out the files.
 
-### Log
+### Logs
 
-In the [LeanEngine/Logs](/cloud.html?appid={{appid}}#/log) page of the web console, you can view LeanEngine's deployment and runtime logs and filter logs by levels.
+You can view LeanEngine's deployment and runtime logs at [Dashboard > LeanEngine > App Logs](/cloud.html?appid={{appid}}#/log). The logs can be filtered by levels.
 
-[The command line tool](leanengine_cli.html#View Log) can export logs of the last seven days to local files.
+You can also export the logs of the past seven days to local files with the [command-line interface](leanengine_cli.html#viewing-logs).
 
-Logs written to "standard output" and "standard error" correspond to the log levels `info` and `error` respectively. For example, the following code will write 'hello' at the `info` level:
-{% block loggerExample %}{% endblock %}
+Logs are written to either "Standard Output" or "Standard Error", corresponding to the log levels `info` and `error`. For example, the following code will write `'Hello!'` at the `info` level:
 
-<div class="callout callout-info">Each log line has a maximum of 4096 characters. The characters exceeding the limit are discarded. The maximum log output frequency is 600 lines/minute. Lines exceeding limit are discarded. </div>
+{% if platformName === "Node.js" %}
+```js
+console.log('Hello!'); // info
+console.error('An error occurred!'); // error
+```
+{% endif %}
+{% if platformName === "Python" %}
+Python 2:
 
-{% block loggerExtraDescription %}{% endblock %}
+```python
+import sys
 
-LeanEngine's access log can be exported from [App Console > LeanEngine > Access Log](/cloud.html?appid={{appid}}#/accesslog) on the web console.
+print 'Hello!' # info
+print >> sys.stderr, 'An error occurred!' # error
+```
 
-### Time zone
+Python 3:
+
+```python
+import sys
+
+print('Hello!') # info
+print('An error occurred!', file=sys.stderr) # error
+```
+{% endif %}
+{% if platformName === "PHP" %}
+{# TODO #}
+{% endif %}
+{% if platformName === "Java" %}
+{# TODO #}
+{% endif %}
+
+{% call docs.noteWrap() %}
+Each line of log can contain no more than 4096 characters and the characters exceeding the limit will be discarded. There could be no more than 600 lines of logs output per minute and the lines exceeding the limit will be discarded.
+{% endcall %}
+
+{% if platformName === "Node.js" %}
+You can print out network requests sent by the LeanCloud SDK by setting the environment variable `DEBUG=leancloud:request`. When debugging locally, you can start the program with the following command:
+
+```sh
+env DEBUG=leancloud:request lean up
+```
+
+When a request is sent to LeanCloud, you will see a piece of log like this:
+
+```sh
+leancloud:request request(0) +0ms GET https://{{host}}/1.1/classes/Todo?&where=%7B%7D&order=-createdAt { where: '{}', order: '-createdAt' }
+leancloud:request response(0) +220ms 200 {"results":[{"content":"1","createdAt":"2016-08-09T06:18:13.028Z","updatedAt":"2016-08-09T06:18:13.028Z","objectId":"57a975a55bbb5000643fb690"}]}
+```
+
+We do not recommend that you enable it in the production environment, as a huge number of logs may be printed.
+{% endif %}
+
+LeanEngine's access logs can be exported at [Dashboard > LeanEngine > Access Logs](/cloud.html?appid={{appid}}#/accesslog).
+
+### Time Zones
 
 The time zone used on the server is UTC.
 
-{% block section_timezone %}{% endblock %}
+{% if platformName === "Node.js" %}
+Pay attention to the different methods of the `Date` type in JavaScript. Some of them will return UTC time and some will return local time:
 
-### Public IP addresses
+Function | Time Zone | Output
+--- | --- | ---
+`toISOString` | UTC time | `2015-04-09T03:35:09.678Z`
+`toJSON` (serializing JSON) | UTC time | `2015-04-09T03:35:09.678Z`
+`toUTCString` | UTC time | `Thu, 09 Apr 2015 03:35:09 GMT`
+`getHours` | UTC time | `3`
+`toString` (used by `console.log`) | Local time | `Thu Apr 09 2015 03:35:09 GMT+0000 (UTC)`
+`toLocaleString` | Local time | `Thu Apr 09 2015 03:35:09 GMT+0000 (UTC)`
 
-If you need to configure IP whitelists on third-party services (such as WeChat) and needs to obtain LeanEngine's public IP addresses, please go to [Control Panel > LeanEngine > Settings > Public IPs](/dashboard/ Cloud.html?appid={{appid}}#/conf).
+When constructing a `Date` object, you should pass an object with time zone (like `2011-10-10T14:48:00.000Z` instead of `2011-10-10T14:48:00`) Otherwise, `Date` [will not know how to interpret it](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
+{% endif %}
 
-We will minimize changes to the public IPs but cannot eliminate the possibility of changes. In case of IP-related problems, please double check if the public IPs have changed. We will give advance notice for non-emergency scheduled changes.
+### Public IP Addresses
 
-## Custom domain names
+If you need to configure IP whitelists on third-party services and need to obtain LeanEngine's public IP addresses, please go to [Dashboard > LeanEngine > Settings > Public IP Addresses](/cloud.html?appid={{appid}}#/conf).
 
-We recommend that you register your own domain name and bind it to your LeanEngine production environment. You can bind a custom domain name at [App Console > Account Settings > Domain Binding](/settings.html#/setting/domainbind).
+We will try our best to avoid changing public IP addresses, but cannot eliminate the possibility of making changes. In case of IP-related problems, please double check if the public IP addresses are changed.
+
+## Custom Domains
+
+We recommend that you register your own domain and bind it to your LeanEngine production environment. You can bind a custom domain at [Account Settings > Domain Binding](/settings.html#/setting/domainbind).

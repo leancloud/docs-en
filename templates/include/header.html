@@ -11,25 +11,42 @@
     </div>
 
     <div class="collapse navbar-collapse" id="app-options">
+      <!-- <ul class="nav navbar-nav navbar-app-select">
+        <li>
+          <a href="/dashboard/applist.html" class="nav-logo font-logo" title="LeanCloud Console">LeanCloud</a>
+        </li>
+      </ul> -->
       <div class="navbar-app-actions-wrap">
         <ul class="nav navbar-nav navbar-app-actions">
           {% if basename != "index" %}
           <li class="dropdown dropdown-toggle-app-name">
             <a href="index.html">
-              <!-- <i class="icon icon-dashbd-icon icon-home"></i> -->
-              <div class="name">Docs Home</div>
+              <i class="icon icon-dashbd-icon icon-home"></i>
+              <div class="name">All Docs</div>
             </a>
           </li>
           {% endif %}
+          <li class="dropdown dropdown-toggle-app-name">
+            <a href="sdk_down.html" title="SDK Downloads">
+              <i class="icon icon-dashbd-icon icon-package"></i>
+              <div class="name"><span class="mobile-hide">SDK </span>Downloads</div>
+            </a>
+          </li>
+          <li class="dropdown dropdown-toggle-app-name">
+            <a class="nav-key-6 dropdown-toggle" title="Help" data-toggle="dropdown">
+              <i class="icon icon-dashbd-icon icon-question"></i>
+              <div class="name">Help</div>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="https://www.reddit.com/r/LeanCloud/">Community</a></li>
+              <li><a href="https://medium.com/leancloud">Blog</a></li>
+              <li role="presentation" class="divider"></li>
+              <li><a href="/dashboard/apionline/index.html">API Tools</a></li>
+              <li role="presentation" class="divider"></li>
+              <li><a href="/pricing">Pricing</a></li>
+            </ul>
+          </li>
         </ul>
-        <!-- hide search input on the home page -->
-        {# {% if basename != "index" %}
-          <!-- <form role="search" action="https://newdoc.leanapp.cn/search" method="get">-->
-            <div class="app-search">
-              <input id="site-search" name="q" type="text" class="form-control" placeholder="Search site&hellip;">
-            </div>
-          <!-- </form> -->
-        {% endif %} #}
       </div>
 
       <ul class="nav navbar-nav navbar-user-actions navbar-right" ng-cloak>
@@ -43,18 +60,17 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="/settings.html">Account Settings</a></li>
-            <li><a href="/applist.html">Apps</a></li>
-            <li><a href="/settings.html#/setting/team">Teams</a></li>
-            <li><a href="/bill.html#/bill/general">Finance</a></li>
-            <!-- <li><a href="settings.html#/setting/invite">邀请好友</a></li> -->
-            <li ng-show="user.username" style=""><a ng-click="signout()">Sign Out</a></li>
+            <li><a href="/applist.html">Console</a></li>
+            <li><a href="/settings.html#/setting/team">Team Management</a></li>
+            <li><a href="/bill.html#/bill/general">Billing</a></li>
+            <li ng-show="user.username" style=""><a ng-click="signout()">Sign out</a></li>
           </ul>
         </li>
         <li ng-hide="user.username">
-          <a href="/login.html#/signin">Sign In</a>
+          <a href="/login.html#/signin">Log in</a>
         </li>
         <li ng-hide="user.username">
-          <a href="/login.html#/signup">Sign Up</a>
+          <a href="/login.html#/signup">Sign up</a>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->

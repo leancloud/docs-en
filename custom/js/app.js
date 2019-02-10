@@ -11,8 +11,8 @@ angular.module("app").controller("AppCtrl", ['$scope', '$http', '$timeout', '$co
         $scope.sign_masterkey = "{{sign_masterkey}}";
         $scope.sign_appkey = "{{sign_appkey}}";
         var service = $scope.service || 'api';
-        $scope.domainN1 = '{{first 8 letters of your AppId}}.' + service + '.lncld.net';
-        $scope.domainE1 = '{{first 8 letters of your AppId}}.' + service + '.lncldapi.com';
+        $scope.domainN1 = '{{first 8 letters of your App ID}}.' + service + '.lncld.net';
+        $scope.domainE1 = '{{first 8 letters of your App ID}}.' + service + '.lncldapi.com';
         $rootScope.pageState = {};
         var sdkversion = 'unknown';
         if (typeof $sdk_versions != 'undefined') {
@@ -76,7 +76,7 @@ angular.module("app").controller("AppCtrl", ['$scope', '$http', '$timeout', '$co
         var docVersion = $('html').first().attr('version');
 
         $scope.loginComment = function () {
-            win = openWindow(commentHost + '/users/login', 'Sign In', 600, 500);
+            win = openWindow(commentHost + '/users/login', 'Log in', 600, 500);
             return false
         }
 
