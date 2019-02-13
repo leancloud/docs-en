@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "grunt test --no-comments",
-    "postinstall": "grunt build --no-comments",
     "start": "static dist -p $PORT -a 0.0.0.0",
     "preview": "grunt serve",
     "build": "grunt build --no-comments"
