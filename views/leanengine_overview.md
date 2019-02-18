@@ -1,6 +1,6 @@
 # LeanEngine Overview
 
-LeanEngine is a hosting platform that lets you run server-side programs written in the language of your choice (Node.js, Python, etc.). Simply deploy the server-side logics to the cloud (websites or cloud functions) and LeanEngine will handle load balancing and rolling deployment for you.
+LeanEngine is a hosting platform that lets you run server-side programs written in the language of your choice (Node.js, Python, etc.). Simply deploy the server-side logic to the cloud (websites or cloud functions) and LeanEngine will handle load balancing and rolling deployment for you.
 
 Here is a list of documentations that help you learn about LeanEngine:
 

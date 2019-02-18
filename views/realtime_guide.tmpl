@@ -1032,7 +1032,7 @@ You can also watch for the `MESSAGE` event on the `Conversation` that receives m
 ```js
 var { Event } = require('leancloud-realtime');
 conversation.on(Event.MESSAGE, function messageEventHandler(message) {
-  // Custom logics here
+  // Custom logic here
 });
 ```
 {% endif %}
@@ -1088,7 +1088,7 @@ class MsgHandler extends AVIMTypedMessageHandler<AVIMTypedMessage> {
     }
     @Override
     public void onMessageReceipt(AVIMTypedMessage message, AVIMConversation conversation, AVIMClient client) {
-        // Custom logics here
+        // Custom logic here
     }
 }
 MsgHandler msgHandler = new MsgHandler();
@@ -2128,7 +2128,7 @@ client.ping(['Jerry']);
 
 ## Message Keyword Screening
 
-To abide by the national cyber-security law, our server proactively monitors all messages in group conversations (including temporary conversations and system conversations). It uses a pre-defined dictionary to conduct keyword scanning, which detects and blocks certain keywords or phrases by replacing them with two asterisk symbols (`**`).
+To abide by the national cyber-security law, our server proactively monitors all messages in group conversations (including temporary conversations and system conversations). It uses a predefined dictionary to conduct keyword scanning, which detects and blocks certain keywords or phrases by replacing them with two asterisk symbols (`**`).
 
 Our server supports user-defined dictionary so that you can use it to extend the scope of standard screening to fit your needs. All you need to do is to prepare the dictionary file and upload it to your app's [Dashboard > LeanMessage > RTM > Settings](/messaging.html?appid={{appid}}#/message/realtime/conf).
 

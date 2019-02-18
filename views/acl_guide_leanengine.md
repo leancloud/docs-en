@@ -1,6 +1,6 @@
 # Using ACL in LeanEngine
 
-LeanEngine offers a way for you to define logics on the cloud to perform certain actions when certain events happen. When you need to print logs, verify permissions, or enforce ACL settings on data operations initiated by clients, this could be very helpful. The documentations listed below offer more detailed explanations on such functionality:
+LeanEngine offers a way for you to define logic on the cloud to perform certain actions when certain events happen. When you need to print logs, verify permissions, or enforce ACL settings on data operations initiated by clients, this could be very helpful. The documentations listed below offer more detailed explanations on such functionality:
 
 - [Node.js Cloud Function Guide](leanengine_cloudfunction_guide-node.html){% if platformName === "Node.js" %} (current){% endif %}
 - [Python Cloud Function Guide](leanengine_cloudfunction_guide-python.html){% if platformName === "Python" %} (current){% endif %}

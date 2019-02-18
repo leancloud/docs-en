@@ -3,7 +3,7 @@
 
 # {{platformName}} Web Hosting Guide
 
-Web hosting is a sub-module of LeanEngine that allows you to develop a web application with {{platformName}}. It provides functions including cloud functions, hooks, hosting for static files, and custom routing, with your own domains binded to the service. You can use it to create a landing or download page for your mobile application, develop an admin console or a complete website, or run custom logics that has to be on the server side.
+Web hosting is a sub-module of LeanEngine that allows you to develop a web application with {{platformName}}. It provides functions including cloud functions, hooks, hosting for static files, and custom routing, with your own domains binded to the service. You can use it to create a landing or download page for your mobile application, develop an admin console or a complete website, or run custom logic that has to be on the server side.
 
 If you don't know how to create a LeanEngine project, debug it locally, or deploy it to the cloud, please first read [LeanEngine Quick Start](leanengine_quickstart.html). Other related documents include:
 
@@ -1211,7 +1211,7 @@ public class UploadServlet extends HttpServlet {
     Part filePart = request.getPart("iconImage"); // Retrieves <input type="file" name="file">
     String fileName = filePart.getSubmittedFileName();
     InputStream fileContent = filePart.getInputStream();
-    // Other logics here
+    // Other logic here
   }
 }
 ```

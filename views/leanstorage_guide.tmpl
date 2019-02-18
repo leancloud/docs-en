@@ -286,7 +286,7 @@ Make sure debug logs are turned off before your app is published. Failure to do 
 
 If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [Dashboard > Settings > Security](/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
 
-However, since your app is exposed to the internet, simply setting up whitelist domains can't totally guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
+However, since your app is exposed to the Internet, simply setting up whitelist domains can't totally guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
 
 - [Data and Security](data_security.html)
 - [ACL Guide](acl-guide.html)
@@ -2533,7 +2533,7 @@ Suppose you are building an app that allows multiple users to edit the same file
 
 To solve this problem, we introduced LiveQuery. This tool allows you to subscribe to the `{{ baseQueryClassName }}`s you are interested in. Once subscribed, the cloud will notify clients by generating event messages whenever `{{ baseObjectName }}`s that match the `{{ baseQueryClassName }}` are created or updated, in real-time.
 
-Behind the scene, we use WebSocket connections to have clients and the cloud communicate with each other and maintain the subscription status of clients. In most cases, it isn't necessary to deal with the WebSocket connections directly, so we developed a simple API to help you focus on your business logics rather than technical implementations.
+Behind the scene, we use WebSocket connections to have clients and the cloud communicate with each other and maintain the subscription status of clients. In most cases, it isn't necessary to deal with the WebSocket connections directly, so we developed a simple API to help you focus on your business logic rather than technical implementations.
 
 LiveQuery has both free and paid plans. See [Pricing](https://leancloud.cn/pricing/) to learn about your free quota and upgrade options.
 

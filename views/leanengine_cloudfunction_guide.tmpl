@@ -5,7 +5,7 @@
 
 Cloud function is a sub-module of LeanEngine that allows you to run functions on the cloud in response to the requests made by clients. Before you continue, make sure you have read [LeanEngine Overview](leanengine_overview.html).
 
-When developing your application, you may need to write logics that:
+When developing your application, you may need to write logic that:
 
 - Are shared by multiple platforms (like iOS, Android, and web) and you wish to write them only once.
 - Need to be modified frequently (like the sorting rules of a list) but you don't want to release a new version of client each time you make a change.
@@ -14,7 +14,7 @@ When developing your application, you may need to write logics that:
 - Need to bypass certain restrictions set by ACL.
 - Need to be performed routinely. For example, you may wish to clean up inactive accounts every month.
 
-With cloud function, you can deploy these logics written in any language (JavaScript, Python, PHP, or Java) on the cloud and have LeanEngine run them for you.
+With cloud function, you can deploy these logic written in any language (JavaScript, Python, PHP, or Java) on the cloud and have LeanEngine run them for you.
 
 If you have no idea how to deploy you project to LeanEngine, take a look at [LeanEngine Quick Start](leanengine_quickstart.html).
 
@@ -797,7 +797,7 @@ To prevent such objects from triggering certain hooks, you can call `{% if platf
 // Directly modifying and saving the object will not trigger afterUpdate
 request.object.set('foo', 'bar');
 request.object.save().then(function (obj) {
-  // Your logics here
+  // Your logic here
 });
 
 // Use disableAfterHook if you called fetch on the object
@@ -806,7 +806,7 @@ request.object.fetch().then(function (obj) {
   obj.set('foo', 'bar');
   return obj.save();
 }).then(function (obj) {
-  // Your logics here
+  // Your logic here
 });
 
 // Use disableAfterHook if you constructed the object by yourself
@@ -814,7 +814,7 @@ var obj = AV.Object.createWithoutData('Post', request.object.id);
 obj.disableAfterHook();
 obj.set('foo', 'bar');
 obj.save().then(function (obj) {
-  // Your logics here
+  // Your logic here
 });
 ```
 {% endif %}
