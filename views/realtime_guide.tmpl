@@ -342,7 +342,8 @@ The code below creates a `{{ conversationObjectName }}` between Tom and Jerry wi
 realtime.createIMClient('Tom').then(function (clientTom) {
   return clientTom.createConversation({
     members: ['Jerry'],
-    name:    'Era of Peace'
+    name:    'Era of Peace',
+    unique:  true
   });
 }).then(function (conversation) {
   var CONVERSATION_ID = conversation.id;
@@ -397,7 +398,8 @@ Let's create another `{{ conversationObjectName }}` with more people:
 ```js
 clientTom.createConversation({
   members: ['Bob', 'Harry', 'William'],
-  name:    'Weekend Ice Skating'
+  name:    'Weekend Ice Skating',
+  unique:  true
 });
 ```
 {% endif %}
@@ -498,6 +500,7 @@ clientTom.createConversation({
   members: ['Jerry'],
   type:    'private',
   pinned:  true,
+  unique:  true
 }).then(function (conversation) {
   console.log('Success. id: ' + conversation.id);
 }).catch(console.error.bind(console));
@@ -1118,7 +1121,8 @@ class OperationMessage extends TypedMessage { }
 
 realtime.createIMClient('Tom').then(function (clientTom) {
   return clientTom.createConversation({
-    members: ['Jerry']
+    members: ['Jerry'],
+    unique:  true
   });
 }).then(function (conversation) {
   var message = new OperationMessage();
