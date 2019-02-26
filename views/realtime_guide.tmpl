@@ -420,7 +420,7 @@ NSArray *friends = @[@"Jerry", @"Bob", @"Harry", @"William"];
 {% if platform_name === "Android" %}
 ```java
 avIMClient.createConversation(Arrays.asList("Jerry","Bob","Harry","William"),
-  "Tom & Jerry & friedns", null, false, true,
+  "Tom & Jerry & friends", null, false, true,
   new AVIMConversationCreatedCallback() {
     // code omitted for brevity
 }
@@ -624,7 +624,7 @@ public void chat1() {
       public void done(AVIMClient client, AVIMException e) {
         if (e == null) {
           client.createConversation(Arrays.asList("Jerry", "Spike"),
-            "Tom & Jerry & friedns", null, false, true,
+            "Tom & Jerry & friends", null, false, true,
               new AVIMConversationCreatedCallback() {
                 // omitted for brevity 
               });
@@ -641,7 +641,7 @@ public void chat2() {
       public void done(AVIMClient client, AVIMException e) {
         if (e == null) {
           client.createConversation(Arrays.asList("Jerry", "Spike"),
-            "Tom & Jerry & friedns", null, false, true,
+            "Tom & Jerry & friends", null, false, true,
               new AVIMConversationCreatedCallback() {
                 // omitted for brevity 
               });
@@ -658,7 +658,7 @@ public void chat3() {
       public void done(AVIMClient client, AVIMException e) {
         if (e == null) {
           client.createConversation(Arrays.asList("Jerry", "Spike"),
-            "Tom & Jerry & friedns", null, false, false,
+            "Tom & Jerry & friends", null, false, false,
               new AVIMConversationCreatedCallback() {
                 // omitted for brevity 
               });
