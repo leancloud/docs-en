@@ -749,7 +749,6 @@ AV.Cloud.beforeUpdate('Review', function (request) {
 @engine.before_update('Review')
 def before_hook_object_update(obj):
     # Check the length of comment if it is updated
-    assert obj.updated_keys == ['clientValue']
     if 'comment' not in obj.updated_keys:
         # Skip the check if comment is not updated
         return
@@ -1907,7 +1906,7 @@ If you just want to use cloud functions without setting up a complete Node.js pr
 - Setting up cloud functions on the web console will override the project you deployed with Git or command-line interface.
 - You can only set up cloud functions (including hooks) on the web console. You cannot use other functions of an ordinary Node.js project (like web hosting or routers).
 
-In your app's [Dashboard > LeanEnging > Deploy > Edit Online](/cloud.html?appid={{appid}}#/deploy), you can:
+In your app's [Dashboard > LeanEngine > Deploy > Edit Online](/cloud.html?appid={{appid}}#/deploy), you can:
 
 - **Create functions** by specifying function types, function names, code in the functions, and comments. Click on **Save** to finish creating a function.
 - **Deploy functions** by specifying the environment and clicking on **Deploy**.
