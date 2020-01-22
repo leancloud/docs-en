@@ -2,30 +2,30 @@
 
 ## Request Format
 
-For POST and PUT requests, the body of the requests should be JSON. The Content-Type need configured as `application/json`.
+For POST and PUT requests, the body of the requests should be JSON. The Content-Type needs to be configured as `application/json`.
 
 ## Authentication
 
-Authentication of the request is via the key-value pair included in the HTTP Header, the parameters are as follows:
+Authentication of the request is via the key-value pair included in the HTTP Header. The parameters are as follows:
 
 Key|Value|Meaning|Source
 ---|----|---|---
-`X-LC-Id`|{{appid}}| App Id of the Current Application| Check in Dashboard -> Settings -> App keys
-`X-LC-Key`|{{appkey}}|App key of the Current Application | Check in Dashboard -> Settings -> App keys
+`X-LC-Id`|{{appid}}| App ID of the current application| Check in Dashboard -> Settings -> App keys
+`X-LC-Key`|{{appkey}}|App Key of the current application | Check in Dashboard -> Settings -> App keys
 
 Some administrative interfaces require master key.
 
 ## Relevant Concept
 
-`_Conversation` table includes some built-in fields to define the attributes and participants of the conversations. For One-on-One Chatting/Group Chats, Chat Rooms, Official Accounts and bots, see [LeanMessage Overview - Conversation](./realtime_v2.html#conversation) for more information.
+The `_Conversation` table includes some built-in fields to define the attributes and participants of the conversations. For one-on-one conversations, group chats, chat rooms, official accounts, and bots, see [LeanMessage Overview - Conversation](./realtime_v2.html#conversation) for more information.
 
 ## Architecture
 
-With regard to the concept of "Conversation" , we have categorized it into three subclasses:
+For the concept of "Conversation", we have categorized it into three subclasses:
 
-- One-on-One Chatting/Group Chats, related API is labelled with `rtm/conversations`.
-- Chat Rooms, related API is labelled with `rtm/chatrooms`. In `_Conversation` table, `tr` is set to true to indicate this.
-- Official Accounts and bots, related API is labelled with `rtm/service-conversations`. In `_Conversation` table , `sys` is set to true to indicate this.
+- For one-on-one conversations and group chats, the related API is labeled with `rtm/conversations`.
+- For chat rooms, the related API is labeled with `rtm/chatrooms`. In the `_Conversation` table, `tr` is set to true to indicate this type of conversation.
+- For official accounts and bots, the related API is labeled with `rtm/service-conversations`. In the `_Conversation` table, `sys` is set to true to indicate this.
 
-In addition, the client related requests are labelled with `rtm/clients`.  
-Lastly, some [global APIs](#Global_API) are labelled with `rtm/{function}`, like `rtm/all-conversations` will search for conversations of all types.
+Besides these, there are also client-related requests which are labeled with `rtm/clients`. 
+Lastly, some [global APIs](#Global_API) are labelled with `rtm/{function}`, like `rtm/all-conversations` which will search for conversations of all types.
