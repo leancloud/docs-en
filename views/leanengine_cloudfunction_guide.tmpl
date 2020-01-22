@@ -13,9 +13,9 @@ When developing your application, you may need to write logic that:
 - Need to bypass certain restrictions set by ACL.
 - Need to be performed routinely. For example, you may wish to clean up inactive accounts every month.
 
-With cloud function, you can deploy these logic written in any language (JavaScript, Python, PHP, or Java) on the cloud and have LeanEngine run them for you.
+With cloud function, you can deploy these types of logic written in any language (JavaScript, Python, PHP, or Java) on the cloud and have LeanEngine run them for you.
 
-If you have no idea how to deploy you project to LeanEngine, take a look at [LeanEngine Quick Start](leanengine_quickstart.html).
+If you have no idea how to deploy your project to LeanEngine, take a look at [LeanEngine Quick Start](leanengine_quickstart.html).
 
 ## Other Languages
 
@@ -40,8 +40,8 @@ LeanEngine offers two environments for each app: production environment and stag
 When calling cloud functions outside of LeanEngine instances using SDK, no matter explicitly or implicitly, `X-LC-Prod` is set to be `1` by default, which means that the production environment will be used. For historical reasons, there are some differences between each SDK:
 
 - For Node.js, PHP, and Java SDKs, the production environment will always be used by default.
-- For Python SDK, when debugging locally with lean-cli, the staging environment will be used if it exists, otherwise the production environment will be used.
-- For Java example projects [java-war-getting-started] and [spring-boot-getting-started], when debugging locally with lean-cli, the staging environment will be used if it exists, otherwise the production environment will be used (same as Python SDK).
+- For Python SDK, when debugging locally with lean-cli, the staging environment will be used if it exists. Otherwise, the production environment will be used.
+- For Java example projects [java-war-getting-started] and [spring-boot-getting-started], when debugging locally with lean-cli, the staging environment will be used if it exists. Otherwise, the production environment will be used (same as Python SDK).
 
 [java-war-getting-started]: https://github.com/leancloud/java-war-getting-started/
 [spring-boot-getting-started]: https://github.com/leancloud/spring-boot-getting-started/
@@ -488,7 +488,7 @@ The client will receive `{ "code": 123, "error": "Custom error message." }` from
 
 ### Timeouts
 
-The time limit for a cloud function to be processed is 15 seconds. If the cloud function does not make a response after this, HTTP error `503` will be triggered with error message `The request timed out on the server`. {% if platformName === "Node.js" %}An error log like `LeanEngine: /1.1/functions/<cloudFunc>: function timeout (15000ms)` will be printed on the server side. Keep in mind that even after the client already receives the error message, the function may still be running, but the return value of the function will not be able to be sent to the client and an error log like `Can't set headers after they are sent` will be printed.{% endif %}{% if platformName === "Python" %}{# TODO #}{% endif %}{% if platformName === "PHP" %}An error log like `WARNING: [pool www] child ... exited on signal 9 (SIGKILL) after ... seconds from start` will be printed on the server side.{% endif %}{% if platformName === "Java" %}{# TODO #}{% endif %}
+The time limit for a cloud function to be processed is 15 seconds. If the cloud function does not make a response after this, HTTP error `503` will be triggered with the error message `The request timed out on the server`. {% if platformName === "Node.js" %}An error log like `LeanEngine: /1.1/functions/<cloudFunc>: function timeout (15000ms)` will be printed on the server side. Keep in mind that even after the client already receives the error message, the function may still be running, but the return value of the function will not be able to be sent to the client and an error log like `Can't set headers after they are sent` will be printed.{% endif %}{% if platformName === "Python" %}{# TODO #}{% endif %}{% if platformName === "PHP" %}An error log like `WARNING: [pool www] child ... exited on signal 9 (SIGKILL) after ... seconds from start` will be printed on the server side.{% endif %}{% if platformName === "Java" %}{# TODO #}{% endif %}
 
 {# The best programming language does not have a good async solution.#}
 {% if platformName !== "PHP" %}
@@ -562,12 +562,12 @@ public static string Hello()
 However, this usually does not make sense for before hooks.
 Although asynchronous before hooks will not trigger timeout errors,
 they also cannot interrupt the operation.
-If you cannot optimize execuation time for before hooks,
+If you cannot optimize execution time for before hooks,
 you have to use after hooks instead.
-For example, to filter fake comments, one `beforeSave` hook needs to call a time-consuming third party NLP API,
-which may cause timeout.
+For example, to filter fake comments, one `beforeSave` hook needs to call a time-consuming third-party NLP API,
+which may cause a timeout.
 As a workaround, you can use an `afterSave` hook to call the third party after the comment is saved.
-If that comment turns out to be a fake one, then delete it afterwards. 
+If that comment turns out to be a fake one, then delete it afterward. 
 {% endif %}
 
 {% if platformName === "Python" %}
@@ -620,7 +620,7 @@ When using `engine.register`, make sure each function does not share the same na
 A hook can be **automatically** triggered when certain events happen (like before or after saving or updating an object). Keep in mind that:
 
 - [Importing data](dashboard_guide.html/#importing-data) on the dashboard will not trigger any hooks.
-- [Dead loops](#preventing-dead-loops) may be caused if hooks are not defined properly.
+- [Dead loops](#preventing-dead-loops) may be caused if hooks are not appropriately defined.
 - Hooks cannot be applied to `_Installation` table.
 
 For hooks starting with `before` (including `{% if platformName === "Node.js" %}onLogin{% endif %}{% if platformName === "Python" %}on_login{% endif %}{% if platformName === "PHP" %}onLogin{% endif %}{% if platformName === "Java" %}onLogin{% endif %}`), if an exception occurs inside the function, the data operation will be terminated. Therefore, you can reject certain data operations by having functions throw an error. For hooks starting with `after` (including `{% if platformName === "Node.js" %}onVerified{% endif %}{% if platformName === "Python" %}on_verified{% endif %}{% if platformName === "PHP" %}onVerified{% endif %}{% if platformName === "Java" %}onVerified{% endif %}`), such exception will not terminate the data operation because the operation is already completed before the function is executed.
@@ -2174,7 +2174,7 @@ public static float logTimer throws Exception {
 
 After a timer is created, the default status of it will be `Disabled`. You need to click on <span class="label label-default">Enable</span> to activate the timer. You can see the logs of the timer in [Dashboard > LeanEngine > App logs](https://console.leancloud.app/cloud.html?appid={{appid}}#/log).
 
-You can set up timers with either [cron expressions](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html) or intervals with **seconds** as the unit. For example, to run a function on 8:00 every Monday, use `0 0 8 ? * MON` as the cron expression.
+You can set up timers with either [cron expressions](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html) or intervals with **seconds** as the unit. For example, to run a function at 8:00 every Monday, use `0 0 8 ? * MON` as the cron expression.
 
 You can create up to 6 timers for each of the staging environment and the production environment, which means that you can create 12 timers in total.
 
@@ -2239,7 +2239,7 @@ You can also disable Master Key for a single operation with `useMasterKey: false
 So when should global Master Key be enabled?
 
 - If your cloud functions mainly perform operations for global data, enabling Master Key will make these operations easier to be completed. Make sure to implement permission verification in your program carefully.
-- If your cloud functions mainly perform operations that are related to each single user, disabling Master Key would make your application more secure. Your program can still take in the `sessionToken` from each request for certain operations (like saving objects).
+- If your cloud functions mainly perform operations that are related to every single user, disabling Master Key would make your application more secure. Your program can still take in the `sessionToken` from each request for certain operations (like saving objects).
 {% endif %}
 
 See [ACL Guide](acl-guide.html) and [Using ACL in LeanEngine](acl_guide_leanengine.html) for more information regarding permission settings with LeanEngine.

@@ -70,7 +70,7 @@ After installing the SDK, you can open your project with `<PROJECT_NAME>.xcworks
 
 {% endif %}
 {% if platform_name === "Python" %}
-The easiest way to integrate our SDK in your project is to use `pip`. Run the following command to install it:
+The easiest way to integrate our SDK into your project is to use `pip`. Run the following command to install it:
 
 ```sh
 pip install leancloud
@@ -87,7 +87,7 @@ Depending on the environment you're using, you may need to add `sudo` at the beg
 {% if platform_name === "PHP" %}
 #### composer
 
-The easiest way to integrate our SDK in your project is to use composer. Run the following command to install it:
+The easiest way to integrate our SDK into your project is to use composer. Run the following command to install it:
 
 ```sh
 composer require leancloud/leancloud-sdk
@@ -148,7 +148,7 @@ Clone the repository of the SDK to the root directory of the project:
 git clone "https://github.com/leancloud/objc-sdk.git" leancloud-objc-sdk
 ```
 
-Then checkout the version you wish to use. The versions of the SDK are marked with tags, so you can checkout the latest version with the following command:
+Then check out the version you wish to use. The versions of the SDK are marked with tags so that you can check out the latest version with the following command:
 
 ```sh
 cd leancloud-objc-sdk
@@ -160,7 +160,7 @@ git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
 The following two ways can be used to add the SDK into your project. You may select **any one of them**:
 
 - Add the `xcodeproj` file of the SDK into the project.
-- Compile the SDK into frameworks and add them into the project.
+- Compile the SDK into frameworks and add them to the project.
 
 ##### Integrating `xcodeproj`
 
@@ -172,7 +172,7 @@ Then set up Build Phases for the project. Add the following contents into **Link
 
 !["AVOSCloud.framework from 'AVOSCloud-iOS' target in 'AVOS' project" and "AVOSCloudIM.framework from 'AVOSCloudIM-iOS' target in 'AVOS' project" under "Workspace".](images/quick_start/ios/link-binary.png)
 
-Here we chose `AVOSCloud` and `AVOSCloudIM` as examples of frameworks being used. You can make your own selections according to the platform you are building for and the modules you are actually using.
+Here we chose `AVOSCloud` and `AVOSCloudIM` as examples of frameworks being used. You can make your selections according to the platform you are building for and the modules you are using.
 
 #### Adding System Dependencies
 
@@ -211,7 +211,7 @@ Depending on the platform you're using, there are different ways for you to inst
 
 ##### npm
 
-The easiest way to integrate our SDK in your project is to use npm:
+The easiest way to integrate our SDK into your project is to use npm:
 
 ```bash
 # LeanStorage (including push notification services)
@@ -309,7 +309,7 @@ If you plan to use [LiveQuery](leanstorage_guide-js.html#livequery), use the fol
 
 The way of using `script` to import the SDK works in most scenarios. However, if you have the following needs, you can also use `require('leancloud-storage')` to import the SDK as Node.js modules:
 
-- Using the SDK in main process
+- Using the SDK in the main process
 - Constructing `AV.File` with `Buffer` or `Stream` provided by Node.js
 
 {{ docs.note("`require` and `script` import two different sets of SDK. Each of them needs to be initialized separately and cannot be used interchangeably.") }}
@@ -674,7 +674,7 @@ AVObject *testObject = [AVObject objectWithClassName:@"TestObject"];
 [testObject save];
 ```
 
-Hit `Run` to start debugging. This can be done in either host machine or virtual machine.
+Hit `Run` to start debugging. This can be done in either a host machine or a virtual machine.
 {% endif %}
 {% if platform_name === "Swift" %}
 Then add the following code into your project:

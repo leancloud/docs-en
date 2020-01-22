@@ -2,10 +2,10 @@
 
 # Use Android SDK without appKey
 
-Since 6.1.0, LeanCloud Android SDK supports initialization without appKey,
-if you prefer to avoid exposing appKey in client side. 
+Starting from 6.1.0, LeanCloud Android SDK supports initialization without appKey
+if you wish to avoid exposing appKey on the client side. 
 
-## Prerequirements
+## Prerequisites
 
 - You have already [signed your APK with a certificate][sign-your-app].
 - You have JDK installed in your development environment.
@@ -19,7 +19,7 @@ invoke the following command:
 keytool -list -v -keystore /path/to/keystore/file
 ```
 
-Then fill in the sha256 fingerprint and you Android package name in LeanCloud Dashboard (Settings > Security).
+Then fill in the sha256 fingerprint and your Android package name in LeanCloud Dashboard (Settings > Security).
 
 ## Android SDK Initialization
 
@@ -60,7 +60,7 @@ src/
     └── res
 ```
 
-To reduce APK size, you can remove directories with architects you are not interested.
+To reduce the APK size, you can remove directories containing architects that you are not using.
 
 ### Initialization 
 
@@ -102,7 +102,7 @@ android {
 }
 ```
 
-Then add the following initialization code in the `onCreate` method of the `Application` class:
+Then add the following initialization code into the `onCreate` method of the `Application` class:
 
 ```java
 import cn.leancloud.AVOSCloud;
@@ -133,7 +133,7 @@ Currently, the following LeanEngine runtime SDK versions support android initial
 
 ## Afterword
 
-This new way of Android SDK initialization just avoids exposing appKey at the client side.
+This new way of Android SDK initialization avoids exposing appKey on the client side.
 To fully ensure data security, you still need to utilize ACL to restrict data access permission.
 
 ## FAQ
@@ -142,17 +142,17 @@ To fully ensure data security, you still need to utilize ACL to restrict data ac
 
 Yes.
 If you prefer the old way, you can still use it,
-and you do not need to add native library to your project.
+and you do not need to add the native library to your project.
 
 #### Why the application crashes after switching to the new way?
 
-Probably because you did not add native library to your project.
-Please refer to section [JNI Native Library](#jni-native-library) above.
+This is probably because you did not add the native library to your project.
+Please refer to the section [JNI Native Library](#jni-native-library) above.
 
 #### Why all requests return `{"code":401,"error":"Unauthorized."}` error?
 
-Probably because your apk did not have signing properly configured.
-Please refer to section [Initialization](#initialization) above.
+This is probably because your APK did not have signing properly configured.
+Please refer to the section [Initialization](#initialization) above.
 
 #### Will switching to the new way affect old versions of my Android application?
 
@@ -160,6 +160,6 @@ No.
 
 #### What if I have multiple Android applications sharing one LeanCloud application as their backend?
 
-Currently we do not support configuring multiple pairs of package name and fingerprint for one LeanCloud application.
+Currently we do not support configuring multiple pairs of package names and fingerprints for one LeanCloud application.
 Therefore, if you have multiple Android applications connected to one LeanCloud application as their backend,
 only one Android application can utilize the new way.

@@ -155,9 +155,9 @@ See [How to Install Swift SDK](sdk_setup-swift.html).
 {% if platform_name === "JavaScript" %}
 ## Web Security
 
-If you are using our JavaScript SDK in your browser based application, you must configure **whitelist domains** in your app's [Dashboard > Settings > Security](https://console.leancloud.app/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
+If you are using our JavaScript SDK in your browser-based application, you must configure **whitelist domains** in your app's [Dashboard > Settings > Security](https://console.leancloud.app/app.html?appid={{appid}}#/security) before you deploy it to a production environment. Once set up, our backend will only accept requests sent from domains in the whitelist, which prevents unauthorized usage or access to your cloud data on a certain level.
 
-However, since your app is exposed to the Internet, simply setting up whitelist domains can't totally guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
+However, since your app is exposed to the Internet, merely setting up whitelist domains can't guarantee the security of your app. LeanCloud offers a variety of ways to help you secure your apps as well as the data stored within them. The following articles give you the necessary information you need to know regarding app security.
 
 - [Data and Security](data_security.html)
 - [ACL Guide](acl-guide.html)
@@ -167,7 +167,7 @@ However, since your app is exposed to the Internet, simply setting up whitelist 
 
 ### `{{ baseObjectName }}`
 
-Storing data on LeanCloud is built around `{{ baseObjectName }}`. Each `{{ baseObjectName }}` contains key-value pairs of JSON-compatible data. This data is schema free, which means that you don't need to specify ahead of time what keys exist on each `{{ baseObjectName }}`. Simply set whatever key-value pairs you want, and our backend will store it.
+Storing data on LeanCloud is built around `{{ baseObjectName }}`. Each `{{ baseObjectName }}` contains key-value pairs of JSON-compatible data. This data is schema-free, which means that you don't need to specify ahead of time what keys exist on each `{{ baseObjectName }}`. Simply set whatever key-value pairs you want, and our backend will store it.
 
 For example, the `{{ baseObjectName }}` storing a simple todo item may contain the following data:
 
@@ -393,11 +393,11 @@ let todo = LCObject(className: "Todo")
 ```
 {% endif %}
 
-The constructor takes class name as a parameter so that the cloud knows the class you are using to create the object. A class in LeanCloud is comparable to a table in a relational database. A class name starts with a letter and can only contain numbers, letters, and underscores.
+The constructor takes a class name as a parameter so that the cloud knows the class you are using to create the object. A class in LeanCloud is comparable to a table in a relational database. A class name starts with a letter and can only contain numbers, letters, and underscores.
 
 {% if platform_name === "JavaScript" %}
 {% call docs.noteWrap() %}
-If you keep seeing `Maximum call stack size exceeded` exception in your log, chances are `AV.Object.extend` had been called using the same class name more than once within a loop or a callback. To resolve such issue, either move it out of the loop or the callback to make sure it won't be over-instantiated, or switch to JavaScript SDK 1.4 or higher which handles the problem automatically.
+If you keep seeing `Maximum call stack size exceeded` exception in your log, chances are `AV.Object.extend` had been called using the same class name more than once within a loop or a callback. To resolve the issue, either move it out of the loop or the callback to make sure it won't be over-instantiated or switch to JavaScript SDK 1.4 or higher which handles the problem automatically.
 {% endcall %}
 
 If you're using ES6 in your codebase, you can subclass `AV.Object` with the `extends` keyword. However, when using `extends`, the SDK is not automatically aware of your subclasses. You will need to register the subclasses with the SDK:
@@ -1248,7 +1248,7 @@ todo.save();
 {# Please note that use of `object.set(null)` to remove a field from an object is not recommended and will result in unexpected functionality. #}
 
 {% call docs.alertWrap() %}
-Removing data from the cloud should always be dealt with great caution as it may lead to non-recoverable data loss. We strongly advise that you read [ACL Guide](acl-guide.html) to fully understand the risks. You should also consider implementing class-level, object-level, and field-level permissions for your classes in the cloud to guard against unauthorized data operations.
+Removing data from the cloud should always be dealt with great caution as it may lead to non-recoverable data loss. We strongly advise that you read [ACL Guide](acl-guide.html) to understand the risks thoroughly. You should also consider implementing class-level, object-level, and field-level permissions for your classes in the cloud to guard against unauthorized data operations.
 {% endcall %}
 
 ### Batch Processing
@@ -1648,12 +1648,12 @@ See [Relational Queries](#relational-queries) for instructions on how to query r
 
 #### Many-to-Many Relationships
 
-The easiest way to model many-to-many relationships is to use **arrays**. In most cases, using arrays helps you reduce the number of queries you need to make and leads to a better performance. However, if additional properties need to be attached to the relationships between two classes, using **join tables** would be a better choice. Keep in mind that the additional properties are used to describe the relationships between classes rather than any single class.
+The easiest way to model many-to-many relationships is to use **arrays**. In most cases, using arrays helps you reduce the number of queries you need to make and leads to better performance. However, if additional properties need to be attached to the relationships between two classes, using **join tables** would be a better choice. Keep in mind that the additional properties are used to describe the relationships between classes rather than any single class.
 
 We recommend you to use join tables if the total amount of objects of any class exceeds 100.
 
 {% call docs.noteWrap() %}
-Modeling relationships among data could be a tough work. We have written a dedicated article to address [Data Modeling](relation-guide.html) in greater detail, which we highly recommend you reading.
+Modeling relationships among data could be a tough job. We have written a dedicated article to address [Data Modeling](relation-guide.html) in greater detail, which we highly recommend you to read.
 {% endcall %}
 
 {% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" or platform_name === "Swift" %}
@@ -2527,7 +2527,7 @@ query.whereKey("title", .matchedPattern("{{ regex() | safe }}, option: nil))
 
 {# 2016-12-29 DO NOT USE markdown to rewrite the previous block #}
 
-However, performing queries with regular expressions as constraints can be very expensive, especially for classes with over 100,000 records. {# LeanCloud restricts how many such operations can be run on a particular app at any given time. #} The reason behind is that queries like this can't take advantage of indexes and will lead to exhaustive scanning of the whole dataset to find the matching objects. We recommend that you take a look at our [In-App Searching](#in-app-searching) feature, a full-text search solution we provide to improve your app's searching ability and user experience.
+However, performing queries with regular expressions as constraints can be very expensive, especially for classes with over 100,000 records. {# LeanCloud restricts how many such operations can be run on a particular app at any given time. #} The reason behind this is that queries like this can't take advantage of indexes and will lead to exhaustive scanning of the whole dataset to find the matching objects. We recommend that you take a look at our [In-App Searching](#in-app-searching) feature, a full-text search solution we provide to improve your app's searching ability and user experience.
 
 {% call docs.noteWrap() %}
 If you are facing performance issues with queries, please refer to [Optimizing Performance](#optimizing-performance) for possible workarounds and best practices.
@@ -3087,7 +3087,7 @@ query.whereKey("post.author.firstName", .selected)
 
 #### Caveats about Inner Queries
 
-The backend of LeanCloud is not built on relational databases, which makes it impossible to join tables while querying. For the relational queries mentioned above, what LeanCloud would do is to first perform an inner query (with `100` as default `limit` and `1000` as maximum) and then insert the result from this query into the outer query. If the number of records matching the inner query exceeds the `limit` and the outer query contains other constraints, the amount of the records returned in the end could be zero or less than your expectation since only the records within the `limit` would be inserted into the outer query.
+The backend of LeanCloud is not built on relational databases, which makes it impossible to join tables while querying. For the relational queries mentioned above, what LeanCloud would do is to perform an inner query first (with `100` as default `limit` and `1000` as maximum) and then insert the result from this query into the outer query. If the number of records matching the inner query exceeds the `limit` and the outer query contains other constraints, the amount of the records returned in the end could be zero or less than your expectation since only the records within the `limit` would be inserted into the outer query.
 
 The following actions can be taken to solve the problem:
 
@@ -3468,7 +3468,7 @@ There are several factors that could lead to potential performance issues when y
 - Querying with "not equal to" or "not include" (index will not work)
 - Querying on strings with a wildcard at the beginning of the pattern (index will not work)
 - Using `count` with conditions (all the entries will be gone through)
-- Using `skip` for a great number of entries (all the entries that need to be skipped will be gone through)
+- Using `skip` for a large number of entries (all the entries that need to be skipped will be gone through)
 - Sorting without index (querying and sorting cannot share a composite index unless the conditions used on them are both covered by the same one)
 - Querying without index (the conditions used on the query cannot share a composite index unless all of them are covered by the same one; additional time will be consumed if excessive data falls under the uncovered conditions)
 
@@ -3644,7 +3644,7 @@ liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
 
 ### Event Handling
 
-The following types of data changes can be monitored once subscription is set up:
+The following types of data changes can be monitored once a subscription is set up:
 
 - `create`
 - `update`
@@ -3891,7 +3891,7 @@ There is another scenario when **the user completely kills the app or closes the
 
 ### Caveats about LiveQuery
 
-Given the real-time feature of LiveQuery, developers may find it tempting to use it for instant messaging. As LiveQuery is neither designed nor optimized for completing such tasks, we discourage such use of this tool, let alone there will be additional cost for saving message history and rising challenges of code maintenance. We recommend using [our real-time messaging solution](realtime_v2.html) for this scenario.
+Given the real-time feature of LiveQuery, developers may find it tempting to use it for instant messaging. As LiveQuery is neither designed nor optimized for completing such tasks, we discourage such use of this tool, let alone there will be an additional cost for saving message history and rising challenges of code maintenance. We recommend using [our real-time messaging solution](realtime_v2.html) for this scenario.
 
 {% if platform_name === "Android / Java" %}
 Applications that use LiveQuery without using LeanMessage and other push services
@@ -4633,7 +4633,7 @@ todo.save().then(function (todo) {
 
 ### Chaining Promises Together
 
-Promise allows you to elegantly connect asynchronous requests together according to the order they should be called. If the callback of a `Promise` returns another `Promise`, the callback in the second `then` will not be resolved unless the one in the first `then` is resolved. This is also called **Promise Chain**.
+Promise allows you to connect asynchronous requests elegantly according to the order they should be called. If the callback of a `Promise` returns another `Promise`, the callback in the second `then` will not be resolved unless the one in the first `then` is resolved. This is also called **Promise Chain**.
 
 ```js
 // Add contents to the page following the order of chapters
@@ -4710,7 +4710,7 @@ Further reading on Promises:
 
 ## GeoPoints
 
-LeanCloud allows you to associate real-world latitude and longitude coordinates with an object by adding `{{ geoPointObjectName }}` to the `{{ baseObjectName }}`. By doing so, queries on the proximity of an object to a given point can be performed, allowing you to easily implement functions like looking for users or places nearby.
+LeanCloud allows you to associate real-world latitude and longitude coordinates with an object by adding `{{ geoPointObjectName }}` to the `{{ baseObjectName }}`. By doing so, queries on the proximity of an object to a given point can be performed, allowing you to implement functions like looking for users or places nearby easily.
 
 To associate a point with an object, you need to create the point first. The code below creates `{{geoPointObjectName}}` with `39.9` as `latitude` and `116.4` as `longitude`:
 
@@ -5106,7 +5106,7 @@ assert(user.signUp().isSuccess)
 A new `{{ userObjectName }}` should always be created using `{% if platform_name === "Objective-C" %}signUpInBackground{% endif %}{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Python" %}sign_up{% endif %}{% if platform_name === "PHP" %}signUp{% endif %}{% if platform_name === "Java" %}signUpInBackground{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}` rather than `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}`. Subsequent updates to a user can be done with `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}`.
 {% endcall %}
 
-If the code returns the error `202`, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column, otherwise error `203` or `214` will occur. You may ask a user to sign up with an email address and make the `username` to be the same as the `email`. By doing so, the user can directly [reset their password with email](#resetting-passwords).
+If the code returns the error `202`, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column. Otherwise, error `203` or `214` will occur. You may ask a user to sign up with an email address and make the `username` to be the same as the `email`. By doing so, the user can directly [reset their password with email](#resetting-passwords).
 
 {% call docs.noteWrap() %}
 When creating a user with username and password, the SDK sends the password to the cloud in plaintext through HTTPS and the password will be hashed once it arrives to the cloud. (The cloud has no restrictions on password length and complexity.) We never store passwords in plaintext, nor will we ever transmit passwords back to the client in plaintext. Our hashing algorithm guarantees that the original password cannot be retrieved by [rainbow table](https://en.wikipedia.org/wiki/Rainbow_table) attack and even app developers themselves will not be able to see the password. Keep in mind that **the password should not be hashed by the client, or the [password reset function](#resetting-passwords) will not work**.
@@ -5533,19 +5533,19 @@ _ = LCUser.logIn(mobilePhoneNumber: "+19490008888", verificationCode: "123456") 
 
 #### Sandbox Phone Number
 
-During the development of your application, you may need to test the sign-up or log-in related API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be greatly affected.
+During the development of your application, you may need to test the sign-up or log-in related API intensively with your phone. As there are, however, limits to how quickly messages can be sent into the carrier networks, your testing pace can be significantly affected.
 
 To work around it, you can set up a sandbox phone number in [Dashboard > Messaging > SMS > Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf). LeanCloud will issue a fixed verification code to go with that sandbox phone number. Whenever LeanCloud detects such combination of data, the user will be let right in authenticated without any connections to the carrier networks being made.
 
-On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a fixed combination of phone number and verification code for them to review the app as a normal user. Failure to do so may result in their app being rejected by App Store.
+On a related note, a sandbox phone number also comes in handy for iOS apps that allow users to log in with SMS code. This is because Apple may ask developers to provide a fixed combination of phone number and verification code for them to review the app as a normal user. Failure to do so may result in their app being rejected by the App Store.
 
-For more details regarding limitations of sending and receiving SMS messages, see [SMS Guide](sms-guide.html).
+For more details regarding the limitations of sending and receiving SMS messages, see [SMS Guide](sms-guide.html).
 
 #### Single Device Sign-on
 
-In some scenarios you may want to restrict a user's account to be logged on by no more than one device at a time, that is, when a user logs in to the app on a new device, all the previous sessions on other devices will become invalid. Here's the instruction about how you can implement this feature with LeanCloud:
+In some scenarios you may want to restrict a user's account to be logged on by no more than one device at a time. That is, when a user logs in to the app on a new device, all the previous sessions on other devices will become invalid. Here's the instruction about how you can implement this feature with LeanCloud:
 
-1. Create a new class that keeps track of each user's credentials and their device information.
+1. Create a new class that keeps track of each user's credentials and device information.
 2. Each time when a user logs in on a device, update the device information of this user to be the current device.
 3. When the app running on another device is opened, check if the device matches the one stored in the cloud. If it does not, [log the user out](#current-user).
 
@@ -5901,7 +5901,7 @@ For security reasons, please avoid passing session tokens as a part of URLs in n
 {% endcall %}
 
 {% call docs.noteWrap() %}
-If **Log out the user when password is updated** is checked on in [Dashboard > LeanStorage > Settings](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again, otherwise [`403 (Forbidden)`](error_code.html#_403) will be returned as an error.
+If **Log out the user when password is updated** is checked on in [Dashboard > LeanStorage > Settings](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf), the session token of a user will be reset in the cloud after this user changes the password and the client needs to prompt the user to log in again. Otherwise, [`403 (Forbidden)`](error_code.html#_403) will be returned as an error.
 {% endcall %}
 
 The code below checks if a session token is valid:
@@ -6019,7 +6019,7 @@ _ = LCUser.requestPasswordReset(email: "tom@leancloud.rocks") { (result) in
 ```
 {% endif %}
 
-The code above will check if there is a user in the `_User` table that has the `email` to be the same as the one provided, and will send them a password reset email if so. As mentioned previously, you can make the `username` of each user to be the same as their `email`, or collect the email separately and store it in the `email` field.
+The code above will check if there is a user in the `_User` table that has the `email` to be the same as the one provided and will send them a password reset email if so. As mentioned previously, you can make the `username` of each user to be the same as their `email`, or collect the email separately and store it in the `email` field.
 
 {% call docs.noteWrap() %}
 The content of the password reset email is fully customizable. You can go to your app's [Dashboard > Settings > Email templates](https://console.leancloud.app/app.html?appid={{appid}}#/email) and modify the corresponding template.
@@ -6071,7 +6071,7 @@ _ = LCUser.requestPasswordReset(mobilePhoneNumber: "+19490008888") { (result) in
 ```
 {% endif %}
 
-The code above will check if there is a user in the `_User` table that has the `mobilePhoneNumber` to be the same as the one provided, and will send them a verification code if so.
+The code above will check if there is a user in the `_User` table that has the `mobilePhoneNumber` to be the same as the one provided and will send them a verification code if so.
 
 {% call docs.noteWrap() %}
 By changing the settings in [Dashboard > LeanStorage > Settings](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf), you can restrict the use of the mobile phone number for the above flow only if the `mobilePhoneVerified` field is `true`.
@@ -6303,7 +6303,7 @@ _ = book.save { result in
 
 The `{{ userObjectName }}` class is secured by default. You are not able to invoke any save- or delete-related methods unless the `{{ userObjectName }}` was obtained using an authenticated method like `{% if platform_name === "Objective-C" %}logInWithUsername{% endif %}{% if platform_name === "JavaScript" %}logIn{% endif %}{% if platform_name === "Python" %}login{% endif %}{% if platform_name === "PHP" %}logIn{% endif %}{% if platform_name === "Java" %}logIn{% endif %}{% if platform_name === "Swift" %}logIn{% endif %}` or `{% if platform_name === "Objective-C" %}signUpInBackground{% endif %}{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Python" %}sign_up{% endif %}{% if platform_name === "PHP" %}signUp{% endif %}{% if platform_name === "Java" %}signUpInBackground{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}`. This ensures that each user can only update their own data.
 
-The reason behind is that most data stored in `{{ userObjectName }}` can be very personal and sensitive, such as mobile phone number, social network account ID, etc. Even the app's owner should avoid tampering with these data for the sake of user's privacy.
+The reason behind this is that most data stored in `{{ userObjectName }}` can be very personal and sensitive, such as mobile phone number, social network account ID, etc. Even the app's owner should avoid tampering with these data for the sake of user's privacy.
 
 The code below illustrates this security policy:
 
@@ -6476,7 +6476,7 @@ The `{{ userObjectName }}` obtained from `{% if platform_name === "Objective-C" 
 
 To check if `{{ userObjectName }}` is authenticated, you can invoke the `{% if platform_name === "Objective-C" %}isAuthenticatedWithSessionToken{% endif %}{% if platform_name === "JavaScript" %}isAuthenticated{% endif %}{% if platform_name === "Python" %}is_authenticated{% endif %}{% if platform_name === "PHP" %}isAuthenticated{% endif %}{% if platform_name === "Java" %}isAuthenticated{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}` method. You do not need to check if `{{ userObjectName }}` is authenticated if it is obtained via an authenticated method.
 
-As a reminder, the user's password can be set when signing up but cannot be modified and saved to the cloud afterwards unless the user requests it to be [reset](#resetting-passwords). It will not be cached on the client and will show as `null` when being retrieved from the cloud after the user is logged in.
+As a reminder, the user's password can be set when signing up but cannot be modified and saved to the cloud afterward unless the user requests it to be [reset](#resetting-passwords). It will not be cached on the client and will show as `null` when being retrieved from the cloud after the user is logged in.
 
 ### Security of Other Objects
 
@@ -6577,7 +6577,7 @@ If the `authData` is not linked to any account, you will instead receive the sta
 }
 ```
 
-The `authData` field won't be returned to the client unless it is owned by the current user.
+The `authData` field won't be returned to the client unless the current user owns it.
 
 To ensure that each `{{ userObjectName }}` is linked to each service account only once, a unique index needs to be created for the `authData.<SERVICE_NAME>.uid` key in the `_User` class.
 
@@ -6784,7 +6784,7 @@ LeanStorage JavaScript SDK can be used in a WebView like PhoneGap, Cordova, WeCh
 
 ### Android WebView
 
-If you are using Android WebView, the following configurations need to be done when creating WebView in you Native code.
+If you are using Android WebView, the following configurations need to be done when creating WebView in your Native code.
 
 1. Our JS SDK uses `window.localStorage` which means that `localStorage` of WebView needs to be enabled:
 

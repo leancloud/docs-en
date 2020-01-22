@@ -6,7 +6,7 @@
 
 There are plenty of scenarios in which your app may need to send text messages to your users:
 
-- User verification: When a user attempts to log in or change password, a text message containing verification code can be sent to the user to ensure the security of the account.
+- User verification: When a user attempts to log in or change their password, a text message containing verification code can be sent to the user to ensure the security of the account.
 - Operation verification: For apps demanding high security levels (like banking apps), when a user performs sensitive operations like transferring money or making payments, a verification code can be helpful to confirm if the user themself is performing the operation.
 - Notifications and marketing: Merchants may send users notifications containing status updates regarding their orders, or campaigns regarding new products and promotions.
 
@@ -238,7 +238,7 @@ It is becoming quite common that apps rely on SMS for signing up, logging in, an
   ```
 
 3. **The user receives the text message and enters the code**  
-  Before continuing, we suggest that you implement verification on the client side to check if the code entered is in valid format (has valid length and does not contain invalid characters). This helps your app avoid making unnecessary requests to the server and could potentially enhance the user experience.
+  Before continuing, we suggest that you implement verification on the client side to check if the code entered is in a valid format (has valid length and does not contain invalid characters). This helps your app avoid making unnecessary requests to the server and could potentially enhance the user experience.
   
 4. **Call API to check if the code is valid**  
   Please pay attention to the sequence of the parameters being passed into the function. Here we assume the verification code is "123456":
@@ -565,7 +565,7 @@ The actual text message received by the user would look like this:
 
 ### Template Variables
 
-A template can contain **custom variables** which gets passed in as parameters when you are calling API to send text messages. The syntax used is [Handlebars](https://handlebarsjs.com).
+A template can contain **custom variables** which get passed in as parameters when you are calling API to send text messages. The syntax used is [Handlebars](https://handlebarsjs.com).
 
 {# {{ docs.alert("自定义变量的值不允许包含实心括号 `【】`。") }} #}
 
@@ -583,9 +583,9 @@ Welcome to {{ docs.mustache("{name}") }}! Your verification code is {{ docs.must
 
 ## Preventing Abuse with CAPTCHA
 
-While SMS allows developers to offer better experience to their customers, it could also get abused by people with bad intentions which not only causes financial loss but also brings negative impact to the reputation of their apps. Hackers may gather a list of websites that allow users to trigger text messages without going through CAPTCHA and use programs to automatically send text messages using these sites. Here are some possible consequences:
+While SMS allows developers to offer a better experience to their customers, it could also get abused by people with bad intentions, which not only causes financial loss but also brings a negative impact to the reputation of their apps. Hackers may gather a list of websites that allow users to trigger text messages without going through CAPTCHA and use programs to automatically send text messages using these sites. Here are some possible consequences:
 
-- To website owners, their sites will constantly receive requests to send out text messages and they will have to pay more for that;
+- To website owners, their sites will continuously receive requests to send out text messages and they will have to pay more for that;
 - To users of phone numbers, they will receive tons of irrelevant text messages containing verification codes.
 
 To prevent such abuse, CAPTCHA can be used to filter out requests that are not made by humans. You might have seen something like this in many other websites which asks you to enter the text appearing in an image:
@@ -612,7 +612,7 @@ App server->User (browser): 12. Return result of operation
 ```
 
 1. The user opens the sign-up or log-in page and request for CAPTCHA from LeanCloud.
-2. The user fills in their personal information including the text in the CAPTCHA image and click on a button to verify the input.
+2. The user fills in their personal information, including the text in the CAPTCHA image, and clicks on a button to verify the input.
 3. After LeanCloud verifies that the input is correct, it sends a verification code to the number.
 4. The user submits the form and the app sends the verification code entered by the user to LeanCloud for further verification.
 5. LeanCloud returns if the verification code is correct or not. If it is correct, the user completes signing up or logging in.
@@ -621,7 +621,7 @@ App server->User (browser): 12. Return result of operation
 
 To enable CAPTCHA for SMS verification codes, go to your app's [Dashboard > Settings > Security](https://console.leancloud.app/app.html?appid={{appid}}#/security) and turn on **CAPTCHA**.
 
-If you wish CAPTCHA to be enabled for all types of text messages sent out from your app, go to [Dashboard > Messaging > SMS > Settings > SMS Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf) and enable **Require CAPTCHA before sending messages**. Once enabled, any request for sending text message without going through CAPTCHA will receive an error.
+If you wish CAPTCHA to be enabled for all types of text messages sent out from your app, go to [Dashboard > Messaging > SMS > Settings > SMS Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf) and enable **Require CAPTCHA before sending messages**. Once enabled, any request for sending a text message without going through CAPTCHA will receive an error.
 
 LeanCloud's CAPTCHA service can only provide a minimum level of abuse prevention. You are free to add third-party CAPTCHA services to your website.
 
@@ -963,7 +963,7 @@ cloud.request_sms_code("+19490008888",
 
 ## International Text Messages
 
-To send text messages to international users, simply add the country code at the beginning of the number. For example, `+1` is for US or Canada. Make sure to turn on **Allow international numbers** in your app's [SMS Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf). If no country code is provided, `+86` (China) will be used by default.
+To send text messages to international users, simply add the country code at the beginning of the number. For example, `+1` is for the US or Canada. Make sure to turn on **Allow international numbers** in your app's [SMS Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf). If no country code is provided, `+86` (China) will be used by default.
 
 For a list of countries and regions that LeanCloud can reach out through SMS, please refer to the [Pricing](https://leancloud.app/pricing/) page on our website.
 
@@ -982,8 +982,8 @@ You can find the following settings in your app's [Dashboard > LeanStorage > Set
 - Disabled: Whether a user's phone number is verified will not affect the methods this user can use to log in.
 
 {{ include.checkbox() }}**Allow users with unverified phone numbers to reset passwords with SMS** 
-- Enabled: Allow an `AVUser` with unverified number to reset password with SMS verification code.
-- Disabled: An `AVUser` must have their phone number verified (`mobilePhoneVerified` being `true`) before they can reset password with SMS verification code.
+- Enabled: Allow an `AVUser` with unverified number to reset their password with SMS verification code.
+- Disabled: An `AVUser` must have their phone number verified (`mobilePhoneVerified` being `true`) before they can reset their password with SMS verification code.
 
 {{ include.checkbox() }}**Allow users with verified phone numbers to login with SMS**
 - Enabled: An `AVUser` can log in with **phone number and verification code**.

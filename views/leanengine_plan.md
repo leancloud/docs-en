@@ -16,13 +16,13 @@ You can purchase standard instances for projects that demand high availability. 
 
 **Staging Environment**<br>A trial instance will be provided in the staging environment so you can test your project before having it published.
 
-**Increased Availability**<br>Using 2 or more instances not only increases the computing power of your application, but also enables *load balancing* and *disaster recovery* as different instances of an application will be running on different servers. If one of these instances runs into error or the server containing that instance encounters hardware failures, failover will be performed automatically so that further requests will be diverted to other instances.
+**Increased Availability**<br>Using 2 or more instances not only increases the computing power of your application but also enables *load balancing* and *disaster recovery* as different instances of an application will be running on different servers. If one of these instances runs into error or the server containing that instance encounters hardware failures, failover will be performed automatically so that further requests will be diverted to other instances.
 
 {% call docs.noteWrap() %}
-If you have only one instance and the server containing that instance runs into error, we will still migrate your instance to another server within several minutes. However, your application will not be able to process requests while migration is in process. {{ docs.alertInline("If your application demands high availability, we recommend that you enable 2 or more instances for it.") }}
+If you have only one instance and the server containing that instance runs into an error, we will still migrate your instance to another server within several minutes. However, your application will not be able to process requests while the migration is in process. {{ docs.alertInline("If your application demands high availability, we recommend that you enable 2 or more instances for it.") }}
 {% endcall %}
 
-**Rolling Deployment**<br>When deploying your project, the system will first open up new instances to run the new version of it. The ones running the old version will not be shut down until the new instances are started properly.
+**Rolling Deployment**<br>When deploying your project, the system will first open up new instances to run the newer version of it. The ones running the older version will not be shut down until the new instances are properly started.
 
 **Group Management**<br>You can create multiple groups of instances with different domains assigned to each of them. All of these groups can access the same data in LeanStorage. See [Group Management](#group-management).
 
@@ -61,7 +61,7 @@ You can create combinations of basic instances according to your needs. For exam
 
 ### Upgrading to Standard Instances
 
-You can go to your app's [Dashboard > LeanEngine > Instances](https://console.leancloud.app/cloud.html?appid={{appid}}#/leannode) and click on **Upgrade to standard** to have your trial instance upgraded to standard instance.
+You can go to your app's [Dashboard > LeanEngine > Instances](https://console.leancloud.app/cloud.html?appid={{appid}}#/leannode) and click on **Upgrade to standard** to have your trial instance upgraded to a standard instance.
 
 ### Creating and Deleting Instances
 
@@ -69,7 +69,7 @@ After upgrading to standard instance, you can create more instances by clicking 
 
 To delete an instance, click on the gear icon on the top-right corner of the instance and then click on **Delete**. The data in your application will not be affected, but the application's ability to handle concurrent requests will be impaired.
 
-You can increase the capacity and availability of your application by increasing the number of instances, but it doesn't mean that you should create as more instances as you can. For example, using more than 8 instances will tremendously increase the time needed for each deployment (since more instances need to be restarted). We recommend that you have **2 to 4** instances for each application.
+You can increase the capacity and availability of your application by increasing the number of instances, but it doesn't mean that you should create as many instances as you can. For example, using more than 8 instances will tremendously increase the time needed for each deployment (since more instances need to be restarted). We recommend that you have **2 to 4** instances for each application.
 
 - For an application with low stress, we recommend that you use 2 instances with 0.5 CPU and 256 MB memory for each. This helps you increase the availability of your application.
 - For an application with high stress, we recommend that you use 4 to 6 instances with 4 CPU and 2 GB memory for each. This helps you avoid creating too many instances.
@@ -88,15 +88,15 @@ We recommend that you increase the sizes of your instances when:
 See [Usage Data](#usage-data) to learn about how you can view the usage of your application.
 
 {% call docs.noteWrap() %}
-**Utilizing Large-Size Instances**<br>For a Node.js application, a thread can make use of at most 100% CPU and 1.5 GB memory by default. If an instance has a size way larger than this, the instance may not be totally utilized. You may consider implementing [multithreading](leanengine_webhosting_guide-node.html#multithreading) with `cluster`.
+**Utilizing Large-Size Instances**<br>For a Node.js application, a thread can make use of at most 100% CPU and 1.5 GB memory by default. If an instance has a size way larger than this, the instance may not be fully utilized. You may consider implementing [multithreading](leanengine_webhosting_guide-node.html#multithreading) with `cluster`.
 {% endcall %}
 
 ### Usage Data
 
 You can view the usage data of your application on your app's [Dashboard > LeanEngine > Statistics](https://console.leancloud.app/cloud.html?appid={{appid}}#/stat).
 
-- **CPU**<br>The graph shows the application's CPU usage within a period of time. If the CPU usage approaches the limit, the response time of the application may be increased.
-- **Memory**<br>The graph shows the application's memory usage within a period of time. If the memory usage approaches the limit, the thread of the application (like Node.js thread or Python thread) may be restarted due to OOM and the application will become unavailable in this period of time. If you see the line in the graph *frequently approaches the top and suddenly drops to the bottom*, it means that the thread has been restarted due to this reason.
+- **CPU**<br>The graph shows the application's CPU usage within a period. If the CPU usage approaches the limit, the response time of the application may be increased.
+- **Memory**<br>The graph shows the application's memory usage within a period. If the memory usage approaches the limit, the thread of the application (like Node.js thread or Python thread) may be restarted due to OOM and the application will become unavailable in this period. If you see the line in the graph *frequently approaches the top and suddenly drops to the bottom*, it means that the thread has been restarted due to this reason.
 - **Response time**<br>If the line approaches the top, it means that the CPU usage is approaching the limit.
 - **Summary** <span class="text-muted">(in dropdown menu)</span><br>The total usage of all instances.
 - **Details** <span class="text-muted">(in dropdown menu)</span><br>The usage of each instance.
@@ -106,12 +106,12 @@ You can view the usage data of your application on your app's [Dashboard > LeanE
 You can create multiple groups of instances with different domains assigned to each of them. All of these groups can access the same data in LeanStorage. Common scenarios include:
 
 - Having sites for users and administrators split into different projects with different domains assigned to each of them.
-- Having edge systems separated out from the main system so that the problems occurring on edge systems won't affect the main system.
+- Having edge systems separated from the main system so that the problems occurring on edge systems won't affect the main system.
 - Having cloud functions and the main website written in different languages. For example, you can write cloud functions in Node.js and the main website in PHP.
 
-Each application will have a primary group which handles cloud functions, hooks, and scheduled tasks. Other groups will be treated as secondary groups which **do not support defining cloud functions (including hooks and scheduled tasks) and can only offer web hosting with second-level domains or custom domains binded**. You can change the primary group at any time through the web console.
+Each application will have a primary group that handles cloud functions, hooks, and scheduled tasks. Other groups will be treated as secondary groups which **do not support defining cloud functions (including hooks and scheduled tasks) and can only offer web hosting with second-level domains or custom domains bound**. You can change the primary group at any time through the web console.
 
-Each group has its own staging environment and second-level domain. Configurations like environment variables and Git repositories are also independent. You can deploy your project to a group without affecting other ones. The methods introduced in [Managing Instances](#managing-instances) can be used to manage instances inside each group as well. If a group doesn't have any instances in it, it won't be able to handle requests. If a group has multiple instances, it will also gain the ability of load balancing and have its availability increased.
+Each group has its own staging environment and second-level domain. Configurations like environment variables and Git repositories are also independent. You can deploy your project to a group without affecting the other ones. The methods introduced in [Managing Instances](#managing-instances) can be used to manage instances inside each group as well. If a group doesn't have any instances in it, it won't be able to handle requests. If a group has multiple instances, it will also gain the ability of load balancing and have its availability increased.
 
 See [Pricing for Group Management](#pricing-for-group-management) for pricing information.
 
@@ -121,7 +121,7 @@ You can create, delete, or change primary groups by going to your app's [Dashboa
 
 After selecting a group, you will be able to change its settings like Git repository, second-level domain, and environment variables. When a group is first created, it has no instances in it and you can only create a standard instance in its production environment. A staging environment will be provided with a free trial instance if you have at least one instance under the production environment, and it will be deleted if you delete all other instances in the group. A group can be deleted only if it has no instances in it.
 
-If you are managing applications with multiple groups using command-line interface (CLI), make sure the version of it is `0.7.1` or above. You can check the version of your CLI installed by running `$ lean --version`. See [Command-Line Interface Guide](leanengine_cli.html) for more instructions on CLI.
+If you are managing applications with multiple groups using the command-line interface (CLI), make sure the version of it is `0.7.1` or above. You can check the version of your CLI installed by running `$ lean --version`. See [Command-Line Interface Guide](leanengine_cli.html) for more instructions on CLI.
 
 ## Pricing
 

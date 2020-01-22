@@ -43,7 +43,7 @@ If the CLI is installed with Homebrew, run the following command to upgrade:
 brew upgrade
 ```
 
-Otherwise, refer to the instructions mentioned earlier to download the latest version of the file and overwrite the existing version in your computer.
+Otherwise, refer to the instructions mentioned earlier to download the latest version of the file and overwrite the existing version on your computer.
 
 ## Usage
 
@@ -202,7 +202,7 @@ You can specify the port your project uses with `$ lean up --port new-port-numbe
 Attach `-h` in the end of any command of the CLI to get help information (like `$ lean up -h`).
 {% endcall %}
 
-Beside using the CLI, you can also run a project **natively** by using commands like `node server.js` or `python wsgi.py`, which helps you better integrate LeanEngine into your existing workflows and IDEs. Keep in mind that projects created with CLI depend on several environment variables, so make sure they are configured correctly.
+Besides using the CLI, you can also run a project **natively** by using commands like `node server.js` or `python wsgi.py`, which helps you better integrate LeanEngine into your existing workflows and IDEs. Keep in mind that projects created with CLI depend on several environment variables, so make sure they are configured correctly.
 
 You can get a list of environment variables mentioned above by running `$ lean env`. By setting them up manually in the terminal, you will not be required to run your project with the CLI anymore. If your shell supports `sh`, you can run `eval $(lean env)` to get this done.
 
@@ -331,9 +331,9 @@ web1  2019-11-20 17:17:23  Node app is running on port: 3000
       2019-11-20 17:17:23  Deploy finished: 1 instances deployed
 ```
 
-The command will return 30 entities by default, with the latest ones on the bottom.
+The command will return 30 entries by default, with the latest ones on the bottom.
 
-You can specify the amount of entities returned by using the `-l` option. For example, to return the latest 100 entities:
+You can specify the number of entries returned by using the `-l` option. For example, to return the latest 100 entries:
 
 ```sh
 $ lean logs -l 100
@@ -444,7 +444,7 @@ You can also run `$ lean switch the-id-of-another-app` to quickly switch to anot
 
 ## Uploading Files
 
-You can use `$ lean upload` to upload a file or all the files in a directory (including those in sub-directories) to the cloud:
+You can use `$ lean upload` to upload a file or all the files in a directory (including those in subdirectories) to the cloud:
 
 ```sh
 $ lean upload public/index.html

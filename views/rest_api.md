@@ -18,7 +18,7 @@ The current API version is `1.1`.
 
 This guide provides curl command line examples.
 You may need to modify some syntax if using cmd.exe on Windows.
-For example, `\` in curl examples means to be continued on next line, but cmd.exe will consider it as path separator.
+For example, `\` in curl examples means to be continued on the next line, but cmd.exe will consider it as path separator.
 Therefore, we recommend you to use [Postman] for testing on Windows.
 
 [Postman]: https://www.getpostman.com/
@@ -413,7 +413,7 @@ Postman can [import curl commands][import-curl] directly and automatically [gene
 
 The request body should be JSON, and the `Content-Type` should be `application/json` accordingly.
 
-`X-LC-Id` and `X-LC-Key` http headers are used for authentication.
+`X-LC-Id` and `X-LC-Key` HTTP headers are used for authentication.
 
 ```sh
 curl -X PUT \
@@ -432,7 +432,7 @@ A `,master` postfix is used to distinguish Master Key and App Key, e.g.:
 X-LC-Key: {{masterkey}},master
 ```
 
-Cross-origin resource sharing is supported, so you can use these headers with XMLHttpRequest in JavaScript.
+Cross-origin resource sharing is supported so that you can use these headers with XMLHttpRequest in JavaScript.
 
 #### X-LC-Sign
 
@@ -451,9 +451,9 @@ The value of `X-LC-Sign` is a string `sign,timestamp[,master]`:
 
 | Name       | Optionality   | Description                                       |
 | --------- | ---- | ---------------------------------------- |
-| sign      | required   | concat timestamp and App Key (or Master Key), then calculate its MD5 hash value |
-| timestamp | required   | unix timestamp of current request, accurate to **milliseconds**  |
-| master    | optional   | use this postfix to indicate Master Key is used |
+| sign      | required   | Concat timestamp and App Key (or Master Key), then calculate its MD5 hash value. |
+| timestamp | required   | Unix timestamp of the current request, accurate to **milliseconds**.  |
+| master    | optional   | Use this postfix to indicate Master Key is used. |
 
 For example, given the following application:
 
@@ -505,14 +505,14 @@ For example, given the following application:
 
 #### Specify hook invocation environment
 
-Requests may trigger [hooks](leanengine_cloudfunction_guide-node.html#Hooking), and you can use `X-LC-Prod` http header to specify the invocation environment:
+Requests may trigger [hooks](leanengine_cloudfunction_guide-node.html#Hooking), and you can use `X-LC-Prod` HTTP header to specify the invocation environment:
 
 | X-LC-Prod Value | Environment |
 | - | - |
 | 0 | stage |
 | 1 | production |
 
-If you do not specify the `X-LC-Prod` http header, LeanCloud will invoke the hook in production environment.
+If you do not specify the `X-LC-Prod` HTTP header, LeanCloud will invoke the hook in the production environment.
 
 ### Response Format
 
@@ -522,8 +522,8 @@ HTTP status code is used to indicate whether a request succeeded or failed.
 A 2xx status code indicates success, and a 4xx/5xx status code indicates an error is encountered.
 When an error is encountered, the response body is a JSON object with two fields: `code` and `error`,
 where `code` is the error code (integer) and `error` is a brief error message (string).
-The `code` may be identical to the http status code,
-but usually it is a customized error code more specific than the http status code.
+The `code` may be identical to the HTTP status code,
+but usually it is a customized error code more specific than the HTTP status code.
 For example, if you try to save an object with an invalid key name:
 
 ```json
@@ -541,7 +541,7 @@ For example, if you try to save an object with an invalid key name:
 LeanStorage is built around objects.
 Each object is consist of several key-value pairs,
 where values are in a JSON compatible format.
-Objects are schemaless, thus you do not need to allocate keys at the beginning.
+Objects are schemaless, so you do not need to allocate keys at the beginning.
 You only need to set key-value pairs as you wish and when needed.
 
 For example, if you are implementing a Twitter-like social App, and a tweet may contain the following attributes (key-value pairs):
@@ -561,7 +561,7 @@ Each object belongs to a class (table in traditional database terms).
 We recommend to use `CapitalizedWords` to name your classes, and `mixedCases` to name your attributes.
 This naming style helps to improve code readability.
 
-Each time when an objects is saved to the cloud, a unique `objectId` will be assigned to it.
+Each time when an object is saved to the cloud, a unique `objectId` will be assigned to it.
 `createdAt` and `updatedAt` will also be filled in by the cloud which indicate the time the object is created and updated.
 These attributes are preserved, and you cannot modify them yourself.
 For example, the object above could look like this when retrieved:
@@ -577,7 +577,7 @@ For example, the object above could look like this when retrieved:
 }
 ```
 
-`createdAt` and `updatedAt` are strings whose content is a UTC timestamps in ISO 8601 format with millisecond precision `YYYY-MM-DDTHH:MM:SS.MMMZ`.
+`createdAt` and `updatedAt` are strings whose content is a UTC timestamp in ISO 8601 format with millisecond precision `YYYY-MM-DDTHH:MM:SS.MMMZ`.
 `objectId` is a string unique in the class,
 like the primary key of a relational database.
 
@@ -594,7 +594,7 @@ Users (the built-in `_User` class) have a special endpoint:
 https://{{host}}/1.1/users
 ```
 
-Object specific operations use nested URLs under the class.
+Object-specific operations use nested URLs under the class.
 For example:
 
 ```
@@ -621,7 +621,7 @@ Status: 201 Created
 Location: https://{{host}}/1.1/classes/Post/558e20cbe4b060308e3eb36c
 ```
 
-And the response body is a JSON object with `objectedId` and `createdAt` key-value pairs:
+And the response body is a JSON object with `objectId` and `createdAt` key-value pairs:
 
 ```json
 {
@@ -668,7 +668,7 @@ The response body is a JSON object containing all attributes you specified above
 }
 ```
 
-To fetch other objects this object points to, specify them in `include` parameter:
+To fetch the other objects this object points to, specify them in `include` parameter:
 
 ```sh
 curl -X GET \
@@ -694,7 +694,7 @@ If LeanCloud cannot find the object according to the  `objectId` you specified, 
 {}
 ```
 
-Some built-in classes (class names with leading underscore) may return different result when object does not exist.
+Some built-in classes (class names with a leading underscore) may return a different result when an object does not exist.
 For example:
 
 ```sh
@@ -732,7 +732,7 @@ curl -X PUT \
   https://{{host}}/1.1/classes/Post/<objectId>
 ```
 
-If update succeed, `updatedAt` will be returned:
+If the update succeeds, `updatedAt` will be returned:
 
 ```json
 {
@@ -745,7 +745,7 @@ which will return all updated attributes.
 
 #### Counter
 
-LeanCloud provides an `Increment` atomic operator to increase a counter like attribute.
+LeanCloud provides an `Increment` atomic operator to increase a counter-like attribute.
 
 ```sh
 curl -X PUT \
@@ -756,8 +756,8 @@ curl -X PUT \
   https://{{host}}/1.1/classes/Post/<objectId>
 ```
 
-There is also an `Decrement` operator.
-`Decrement` a positive number is equivalent to `Increment` a negative number.
+There is also a `Decrement` operator.
+`Decrement`ing a positive number is equivalent to `Increment`ing a negative number.
 
 #### Bitwise Operators
 
@@ -814,7 +814,7 @@ curl -X PUT \
 Here `%7B%22balance%22%3A%7B%22%24gte%22%3A%2030%7D%7D` is the URL-encoded condition `{"balance":{"$gte": 30}}`.
 Refer to [Queries](#Queries) for more examples.
 
-If the condition is not met, the update will not be performed, and you will receive an `305` error:
+If the condition is not met, the update will not be performed, and you will receive a `305` error:
 
 ```json
 {
@@ -849,7 +849,7 @@ curl -X PUT \
 
 #### Conditional Delete
 
-Similar to conditional updates, we pass an URL-encoded `where` parameter to the `DELETE` request.
+Similar to conditional updates, we pass a URL-encoded `where` parameter to the `DELETE` request.
 
 ```sh
 curl -X DELETE \
@@ -859,7 +859,7 @@ curl -X DELETE \
   "https://{{host}}/1.1/classes/Post/<objectId>?where=%7B%22clicks%22%3A%200%7D" # {"clicks": 0}
 ```
 
-Again, if the condition is not met, the update will not be performed, and you will receive an `305` error: 
+Again, if the condition is not met, the update will not be performed, and you will receive a `305` error: 
 
 ```json
 {
@@ -870,10 +870,10 @@ Again, if the condition is not met, the update will not be performed, and you wi
 
 ### Iterate over Objects
 
-For classes with moderate amount of objects, we can iterate over all objects in the class via queries (with `skip` and `limit`).
-However, for classes with large amount of objects, `skip` is inefficient.
-Thus LeanCloud provides an `scan` endpoint to iterate over objects of a class efficiently.
-By default `scan` returns 100 results in ascending order by `objectId`.
+For classes with a moderate number of objects, we can iterate over all objects in the class via queries (with `skip` and `limit`).
+However, for classes with a large number of objects, `skip` is inefficient.
+Therefore, LeanCloud provides a `scan` endpoint to iterate over objects of a class efficiently.
+By default, `scan` returns 100 results in ascending order by `objectId`.
 You can ask LeanCloud to return up to 1000 results via specifying the `limit` parameter.
 
 ```sh
@@ -885,7 +885,7 @@ curl -X GET \
    https://{{host}}/1.1/scan/classes/Article
 ```
 
-LeanCloud will return an `results` array and a `cursor`.
+LeanCloud will return a `results` array and a `cursor`.
 
 ```json
 {
@@ -916,8 +916,8 @@ curl -X GET \
    https://{{host}}/1.1/scan/classes/Article
 ```
 
-Each `cursor` must be consumed in 10 minutes.
-After 10 minutes it becomes invalid.
+Each `cursor` must be consumed within 10 minutes.
+It becomes invalid after 10 minutes.
 
 You can also specify `where` conditions for filtering:
 
@@ -932,7 +932,7 @@ curl -X GET \
 ```
 
 As mentioned above, by default the results are in ascending order by `objectId`.
-To return results ordered by other attribute,
+To return results ordered by another attribute,
 pass that attribute as the `scan_key` parameter.
 
 ```sh
@@ -945,7 +945,7 @@ curl -X GET \
    https://{{host}}/1.1/scan/classes/Article
 ```
 
-To return results in descending order, prefix a minus sign (`-`) to the value of the `scan_key`, e.g. `-score`.
+To return results in descending order, prefix a minus sign (`-`) to the value of the `scan_key`, e.g., `-score`.
 
 The value of the `scan_key` passed must be strictly monotonous, and it cannot be used in where conditions.
 
@@ -988,7 +988,7 @@ The wrapped operations will be performed according to the order given in the `re
 And the response body will also be an array,
 with corresponding length and order.
 Each member of the results array will be a JSON object with one and only one key, and that key will be either `success` or `error`.
-The value of `success` or `error` will be the response to the corresponding single request on success or failure respectively.  
+The value of `success` or `error` will be the response to the corresponding single request on success or failure respectively.
 
 ```
 [
@@ -1007,7 +1007,7 @@ The value of `success` or `error` will be the response to the corresponding sing
 ]
 ```
 
-Be aware that the http status `200` returned by a batch request only means LeanCloud had received and performed the operations.
+Be aware that the HTTP status `200` returned by a batch request only means LeanCloud had received and performed the operations.
 It does not mean all operations within the batch request succeeded.
 
 Besides `POST` requests in the above example,
@@ -1036,7 +1036,7 @@ curl -X POST \
   https://{{host}}/1.1/batch
 ```
 
-Batch requests can also be used to replaces requests with very long URLs (usually constructed via very complex queries or conditions), to bypass the limit on URL length enforced by service side or client side.
+Batch requests can also be used to replace requests with very long URLs (usually constructed with very complex queries or conditions) to bypass the limit on URL length enforced by the server side or the client side.
 
 ### Advanced Data Types
 
@@ -1053,7 +1053,7 @@ These advanced data types are encoded as a JSON object with a `__type` key.
 }
 ```
 
-As mentioned above, built-in date attributes `createdAt` and `updatedAt` are UTC timestamp strings, not enclosed in an JSON object.
+As mentioned above, built-in date attributes `createdAt` and `updatedAt` are UTC timestamp strings. They are not enclosed in a JSON object.
 
 **Byte** contains a `base64` key, whose value is a MIME base64 string (no whitespace characters).
 
@@ -1074,10 +1074,10 @@ As mentioned above, built-in date attributes `createdAt` and `updatedAt` are UTC
 }
 ```
 
-Pointers to users contains a `className` of `_User`.
-The leading underscore indicates the `_User` class is built-in.
-Similar, pointers to roles and installations contain a `className` of `_Role` or `_Installation` respectively.
-However, a pointer to a file is special:
+A pointer to a user contains a `className` of `_User`.
+The leading underscore indicates that the `_User` class is built-in.
+Similarly, pointers to roles and installations contain a `className` of `_Role` or `_Installation` respectively.
+However, a pointer to a file is a special case:
 
 ```json
 {
@@ -1096,7 +1096,7 @@ However, a pointer to a file is special:
 }
 ```
 
-We may add more advanced data types in future, thus you should not use the `__type` on your own JSON objects.
+We may add more advanced data types in the future, so you should not use `__type` on your own JSON objects.
 
 ## Queries
 
@@ -1139,10 +1139,10 @@ whose value is an array of objects:
 
 ### Query Constraints
 
-The `where` parameter applies query constraints.
+The `where` parameter is used to apply query constraints.
 It should be encoded as JSON first, then URL encoded.
 
-The simplest form of `where` parameter is a key value pair (exact match).
+The simplest form of `where` parameter is a key-value pair (exact match).
 For example, to query posts published by LeanCloud:
 
 
@@ -1233,7 +1233,7 @@ curl -X GET \
   https://{{host}}/1.1/classes/Post
 ```
 
-Suppose we use `_Followee` and `_Follower` classes for following relationship, then we can query posts published by someone followed by current user like this:
+Suppose we use `_Followee` and `_Follower` classes for the following relationship, then we can query posts published by someone followed by the current user like this:
 
 ```sh
 curl -X GET \
@@ -1265,10 +1265,10 @@ Other parameters:
 
 Parameter | Description
 - | -
-order | order by, prefix `-` for descending
-limit | the number of returned objects, default 100, max 1000
-skip | for pagination
-keys | only return specified keys, prefix `-` for not including
+order | Order by. Prefix `-` for descending.
+limit | The number of returned objects. Defaults to 100 and the max is 1000.
+skip | Used for pagination.
+keys | Only return specified keys. Prefix `-` for not including.
 
 To query posts ordered by creation time:
 
@@ -1324,7 +1324,7 @@ curl -X GET \
 
 Note that returned objects will always contain preserved attributes such as `objectId`, `createdAt`, and `updatedAt`.
 
-If you do not care about post author:
+If you do not care about the post author:
 
 ```sh
 curl -X GET \
@@ -1335,7 +1335,7 @@ curl -X GET \
   https://{{host}}/1.1/classes/Post
 ```
 
-The parameters mentioned above can be combined with each other.
+The parameters mentioned above can be combined.
 
 ### Regex Queries
 
@@ -1402,7 +1402,7 @@ curl -X GET \
 ```
 
 Be aware that the `limit` parameter (default 100, max 1000) also applies to inner queries.
-Thus you may need to deliberately construct queries to get expected result.
+Thus you may need to construct queries to get expected result deliberately.
 Refer to [Caveats about Inner Queries](leanstorage_guide-js.html#Caveats_about_Inner_Queries) for more details.
 
 To include pointed objects in one query, use `include` parameter.
@@ -1443,7 +1443,7 @@ With the `include=post` parameter, the post attribute will be dereferenced:
 }
 ```
 
-You can use dot (`.`) for multi-level dereference:
+You can use dots (`.`) for multi-level dereference:
 
 ```sh
 curl -X GET \
@@ -1462,7 +1462,7 @@ And you can use comma (`,`) to separate multiple pointers to `include`.
 
 We have briefly described GeoPoint in the [Advanced Data Types](#Advanced_Data_Types) section above.
 
-Currently there are one limit on GeoPoints: every class can only contain one GeoPoint attribute.
+There is currently one limit on GeoPoints: every class can only contain one GeoPoint attribute.
 Also, be aware that the range of `latitude` is `[-90.0, 90.0]`, and the range of `longitude` is `[-180.0, 180.0]`.
 
 To query near objects, you can use the `$nearSphere` operator.
@@ -1583,13 +1583,13 @@ Similarly, you can use `$and` operator to query objects matching all subqueries.
 --data-urlencode 'where={"$and":[{"price": {"$ne":0}},{"price":{"$exists":true}}]}' \
 ```
 
-Be aware that non-filtering constrains such as `limit`, `skip`, `order`, `include` are not allowed in subqueries of a compound query.
+Be aware that non-filtering constraints such as `limit`, `skip`, `order`, and `include` are not allowed in subqueries of a compound query.
 
 ## Users
 
 With users API, you can build an account system for your application quickly and conveniently.
 
-Basically, users (the `_User` class) are similar to other classes, for example, `_User` is also schema free.
+Users (the `_User` class) share many traits with other classes. For example, `_User` is schema-free as well.
 However, all user objects must have `username` and `password` attributes. `password` will be encrypted automatically.
 `username` and `email` (if available) attributes must be unique (case sensitive).
 
@@ -1606,8 +1606,7 @@ curl -X POST \
   https://{{host}}/1.1/users
 ```
 
-As mentioned above, `username` and `password` are required,
-and `password` will be stored in encrypted form and LeanCloud will never return its value to client side.
+As mentioned above, `username` and `password` are required. `password` will be stored in encrypted form, and LeanCloud will never return its value to the client side.
 
 You may add any extra custom attributes.
 `region` in the above is just an example.
@@ -1634,11 +1633,11 @@ It never changes, unless:
 
 - the user forgets the password and resets it via email;
 - the user modifies the password, and the developer enabled "Log out the user when password is updated" in dashboard;
-- the `refreshSessionToken` api is invoked.
+- the `refreshSessionToken` API is invoked.
 
 Logged in users will encounter a `403 Forbidden` permission error when invoking related APIs after the `sessionToken` refreshed.
 
-LeanCloud can verify user's email address automatically.
+LeanCloud can verify a user's email address automatically.
 To enable this feature, access "Dashboard > LeanStorage > User > Setting", and select "Send verification emails when users register or change email addresses from clients".
 
 The `emailVerified` of `_User` will be set to `true` once the new user clicked the verification link in the email.
@@ -1710,7 +1709,7 @@ If succeed, new `sessionToken` will be returned, with user information:
 #### Locking Users
 
 Seven consecutive failed login attempts for a user within 15 minutes will trigger a lock.
-After that LeanCloud will return the following error:
+After that, LeanCloud will return the following error:
 
 ```json
 {
@@ -1719,10 +1718,10 @@ After that LeanCloud will return the following error:
 }
 ```
 
-LeanCloud will release this lock automatically in 15 minutes after last login failure.
+LeanCloud will release this lock automatically in 15 minutes after the last login failure.
 Developers cannot adjust this behavior via SDK or REST API.
-During the locking period, the user is not allowed to login,
-even if they provide correct password.
+During the locking period, the user is not allowed to log in,
+even if they provide the correct password.
 This restriction also applies to SDK and LeanEngine.
 
 {# TODO
@@ -1834,7 +1833,7 @@ whose value is the user's `sessionToken`.
 If succeed, `updatedAt` will be returned.
 This is the same as [Updating Objects](#Updating_Objects).
 
-If you want to update `username`, then you have to ensure that the new value of `username` must not be conflict with other existing users.
+If you want to update `username`, then you have to ensure that the new value of `username` must not conflict with other existing users.
 
 If you want to update `password` after verifying the old password,
 then you can use `PUT /1.1/users/:objectId/updatePassword` instead.
@@ -1853,9 +1852,9 @@ Note this API still requires the `X-LC-Session` header.
 
 ### Querying Users
 
-You can query users like [querying regular objects](#Queries), just send `GET` requests to `/1.1/users`.
+You can query users like [how you query regular objects](#Queries) by sending `GET` requests to `/1.1/users`.
 
-However, for security concerns, all queries on users will be rejected by LeanCloud, unless you use master key or have properly configured the `_User` class's ACL settings (in Dashboard > LeanStorage > _User > Permission).
+However, for security concerns, all queries on users will be rejected by LeanCloud unless you use master key or have properly configured the `_User` class's ACL settings (in Dashboard > LeanStorage > _User > Permission).
 
 ### Deleting Users
 
@@ -1869,15 +1868,15 @@ curl -X DELETE \
   https://{{host}}/1.1/users/55a47496e4b05001a7732c5f
 ```
 
-The `X-LC-Session` HTTP header is used for authenticate this request.
+The `X-LC-Session` HTTP header is used for authenticating this request.
 
 ### Linking Users
 
-To support users to use third party accounts to log in your application, you can use the `authData` attribute of user.
+To allow users to use third-party accounts to log in to your application, you can use the `authData` attribute of users.
 
-`authData` is a JSON object, whose schema may be different for different services.
+`authData` is a JSON object whose schema may be different for different services.
 
-The simplest form of `authData` is as following:
+The simplest form of `authData` is as follows:
 
 ```json
 {
@@ -1906,7 +1905,7 @@ The `authData` for an arbitrary platform:
 
 `authData` can have other additional keys, but it must contain both `uid` and `access_token`.
 Often you need to verify `authData` yourself (except for certain platforms, see below).
-Also, to avoid binding a third party account to multiple users, you need to create a unique index for `authData.platform_name.uid` in Dashboard (LeanStorage > `_User`).
+Also, to avoid binding a third-party account to multiple users, you need to create a unique index for `authData.platform_name.uid` in Dashboard (LeanStorage > `_User`).
 
 LeanCloud has built-in support for some popular social networks in China, such as [Weibo](http://weibo.com/), [WeChat](https://www.wechat.com/en) (*weixin* in Chinese pinyin), and [QQ](https://imqq.com/English1033.html):
 
@@ -1942,7 +1941,7 @@ LeanCloud has built-in support for some popular social networks in China, such a
 }
 ```
 
-LeanCloud will automatically verify access token for these platforms, and will also create unique index for these platforms.
+LeanCloud will automatically verify access token for these platforms and will also create a unique index for each of these platforms.
 
 In Weibo, WeChat, and QQ, a user's `openid` will be different for different applications.
 If you have multiple applications, you may want to link them across all your applications.
@@ -1972,11 +1971,11 @@ curl -X POST \
 ```
 
 As mentioned above, LeanCloud will verify `access_token` for QQ accounts.
-If the verification succeed, LeanCloud will return `200 OK` or `201 Created` depending on if there is an existing user linking this QQ account.
-In both cases the user URL will also be returned in the `Location` HTTP header.
+If the verification succeeds, LeanCloud will return `200 OK` or `201 Created` depending on if there is an existing user linking this QQ account.
+In both cases, the user URL will also be returned in the `Location` HTTP header.
 
-The response body will be a JSON object, whose content is similar to the one returned when creating or logging in a regular user.
-For new users, LeanCloud will automatically assign a random username, e.g. `ec9m07bo32cko6soqtvn6bko5`.
+The response body will be a JSON object whose content is similar to the one returned when creating or logging in a regular user.
+For new users, LeanCloud will automatically assign a random username, e.g., `ec9m07bo32cko6soqtvn6bko5`.
 
 #### UnionID
 
@@ -2060,9 +2059,9 @@ And the `authData` stored on LeanCloud will be something like:
 
 The `_weixin_unionid` key is automatically created by LeanCloud.
 
-#### Linking a Third Party Account
+#### Linking a Third-Party Account
 
-To link a third party account to an existing user,
+To link a third-party account to an existing user,
 just update this user's `authData` attribute.
 
 ```sh
@@ -2084,9 +2083,9 @@ curl -X PUT \
   https://{{host}}/1.1/users/55a47496e4b05001a7732c5f
 ```
 
-This user can be authenticated via matching `authData` afterwards.
+This user can be authenticated via matching `authData` afterward.
 
-#### Unlinking a Third Party Account
+#### Unlinking a Third-Party Account
 
 Similarly, to unlink a user from a third party account,
 just delete the platform in their `authData` attribute.
@@ -2105,7 +2104,7 @@ curl -X PUT \
 
 Role is an abstraction to control data access based on ACL.
 Roles are objects containing users and other roles.
-For example, moderators and administrators are common roles in application.
+For example, moderators and administrators are common roles in an application.
 
 LeanCloud has a preserved class `_Role` for roles.
 Roles have some specific attributes:
@@ -2176,10 +2175,10 @@ curl -X POST \
   https://{{host}}/1.1/roles
 ```
 
-You may noticed that there is a new operator `AddRelation` we have not seen before.
+You may have noticed that there is a new operator `AddRelation` we have not seen before.
 This operator adds a relation to an object.
-The actual implementation of relation is quite complex for performance issues.
-But conceptually you can consider them as arrays of pointers, and they are only used in roles.
+The actual implementation of relation is quite complicated for performance issues,
+but conceptually you can consider them as arrays of pointers, and they are only used in roles.
 
 ### Retrieving Roles
 
@@ -2296,7 +2295,7 @@ Roles make maintaining ACL easier.
 For example, to set an ACL of an object with the following permissions:
 
 - It can be read by `Staff`s.
-- It can only be write by `Manager`s and its creator.
+- It can only be written by `Manager`s and its creator.
 
 ```json
 {
@@ -2315,7 +2314,7 @@ For example, to set an ACL of an object with the following permissions:
 The creator belongs to the `Staff` role, and the `Manager` role is a child role of the `Staff` role.
 Therefore, since they will inherit read permissions, we did not grant them the read permission manually.
 
-Let's look at anther example of permission inherence among roles.
+Let's look at another example of permission inherence among roles.
 In UGC applications such as forums, `Administrators` typically have all the permissions of `Moderators`.
 Thus `Administrators` should be a child role of `Moderators`.
 
@@ -2343,7 +2342,7 @@ curl -X PUT \
 
 ### Associating with Objects
 
-As mentioned above, files can be considered as a special form of pointer.
+As mentioned above, files can be considered as a special form of pointers.
 To associate a file object with an object, we just pass the file object `{"id": "objectId of the file", "__type": "File"}` to an attribute of that file.
 For example, to create a `Staff` object with a photo:
 
@@ -2375,7 +2374,7 @@ curl -X DELETE \
 
 ## Schema
 
-You can use REST API to fetch data schema of your application.
+You can use REST API to fetch the data schema of your application.
 For security concerns, master key is required to fetch data schema.
 
 To fetch the schema of all classes:
@@ -2414,4 +2413,4 @@ curl -X GET \
    https://{{host}}/1.1/schemas/_User
 ```
 
-Data schema can be used with tools such as code generation, and internal management interface.
+Data schema can be used with tools such as code generators and internal management interfaces.

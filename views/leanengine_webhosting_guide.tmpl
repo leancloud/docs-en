@@ -3,7 +3,7 @@
 
 # {{platformName}} Web Hosting Guide
 
-Web hosting is a sub-module of LeanEngine that allows you to develop a web application with {{platformName}}. It provides functions including cloud functions, hooks, hosting for static files, and custom routing, with your own domains binded to the service. You can use it to create a landing or download page for your mobile application, develop an admin console or a complete website, or run custom logic that has to be on the server side.
+Web hosting is a sub-module of LeanEngine that allows you to develop a web application with {{platformName}}. It provides functions including cloud functions, hooks, hosting for static files, and custom routing, with your own domains bound to the service. You can use it to create a landing or download page for your mobile application, develop an admin console or a complete website, or run custom logic that has to be on the server side.
 
 If you don't know how to create a LeanEngine project, debug it locally, or deploy it to the cloud, please first read [LeanEngine Quick Start](leanengine_quickstart.html). Other related documents include:
 
@@ -73,7 +73,7 @@ composer install
 
 ### Running and Debugging Locally
 
-After all dependencies are installed, you can use our command-line interface in the project root directory to start a development server:
+Once all dependencies are installed, you can use our command-line interface in the project root directory to start a development server:
 
 ```sh
 lean up
@@ -104,7 +104,7 @@ If no request has been made to your app within the past 30 days and you haven't 
 ## Project Skeleton
 
 {% if platformName === "Node.js" %}
-Take the example project as an example, in the project root directory we see a `package.json` file. Keep in mind that **all Node.js projects must contain a `package.json` in order to be correctly recognized by LeanEngine**.
+Take the example project as an example. In the project root directory, we see a `package.json` file. Keep in mind that **all Node.js projects must contain a `package.json` in order to be correctly recognized by LeanEngine**.
 
 ### `package.json`
 
@@ -169,7 +169,7 @@ After deployment, LeanEngine will automatically install dependencies specified i
 pip install -r requirements.txt
 ```
 
-When deploying you project to the production environment, it is advisable to specify the exact versions (`foo==1.0.0`) of dependencies to avoid compatibility issues.
+When deploying your project to the production environment, it is advisable to specify the exact versions (`foo==1.0.0`) of dependencies to avoid compatibility issues.
 
 ### Specifying a Python Version
 
@@ -197,9 +197,9 @@ LeanEngine provides PHP 5.6 by default. If you need a specified version of PHP, 
 }
 ```
 
-LeanEngine supports version `5.6`, `7.0`, `7.1`, `7.2`, `7.3`, and `7.4` at this time. We will keep adding supports for new versions released in future.
+LeanEngine supports version `5.6`, `7.0`, `7.1`, `7.2`, `7.3`, and `7.4` at this time. We will keep adding supports for new versions released in the future.
 
-LeanEngine PHP does not depend on any third-party frameworks, so you may use any frameworks you are familiar with for your project, or choose not to use one. Make sure you project can be started by running `public/index.php`.
+LeanEngine PHP does not depend on any third-party frameworks, so you may use any frameworks you are familiar with for your project or choose not to use one. Make sure your project can be started by running `public/index.php`.
 
 By default, a PHP-FPM Worker is assigned to every 64 MB memory of a PHP project. You can change the setting in "Custom environment variables" of LeanEngine's settings page by adding an environment variable with `PHP_WORKERS` as the name and a number as the value. Keep in mind that if the value is too low, there may be insufficient Workers for new requests, and if the value is too high, requests may not be successfully processed due to low memory space.
 
@@ -218,7 +218,7 @@ We recommend that you use an example project as a starting point since you don't
 - [`java-war-getting-started`](https://github.com/leancloud/java-war-getting-started): a minimal project that integrates the LeanCloud SDK and creates a WAR file to run as a servlet.
 - [`spring-boot-getting-started`](https://github.com/leancloud/spring-boot-getting-started): a minimal project using the [Spring Boot](https://projects.spring.io/spring-boot/) framework that creates a JAR file.
 
-Java runtime requires more memory, hence we recommend:
+Java runtime requires more memory, so we recommend:
 
 - A project based on [example project](https://github.com/leancloud/java-war-getting-started) should use instances with at least 512 MB memory.
 - A project based on [Spring Boot](https://projects.spring.io/spring-boot/) should use instances with at least 1 GB memory.
@@ -272,7 +272,7 @@ mvn jetty:run
 
 #### Launching WAR Projects with Eclipse
 
-First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right click the project in the **Package Explorer** window and select **Run As** > **Maven Build…**. On the **Main** tab, set **Goals** to be `jetty:run`. Add the following environment variables on the **Environment** tab:
+First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right-click the project in the **Package Explorer** window and select **Run As** > **Maven Build…**. On the **Main** tab, set **Goals** to be `jetty:run`. Add the following environment variables on the **Environment** tab:
 
 Name | Value
 --- | ---
@@ -307,7 +307,7 @@ java -jar target/{zipped jar file}
 
 #### Launching JAR Projects with Eclipse
 
-First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right click the project in the **Package Explorer** window, select **Run As** > **Run Configurations…**, select `Application`, and set `Main class:` (`cn.leancloud.demo.todo.Application` for the sample project). Add the following environment variables on the **Environment** tab:
+First, confirm that the Maven plugin has been installed in Eclipse. Then import the project into Eclipse as a **Maven Project**. Right-click the project in the **Package Explorer** window, select **Run As** > **Run Configurations…**, select `Application`, and set `Main class:` (`cn.leancloud.demo.todo.Application` for the sample project). Add the following environment variables on the **Environment** tab:
 
 Name | Value
 --- | ---
@@ -456,9 +456,9 @@ LeanEngine Java depends on Servlet 3.1.0. You can use any web frameworks based o
 ## Using LeanStorage
 
 {% if platformName === "Node.js" %}
-[LeanStorage](storage_overview.html) is a service provided by LeanCloud for storing structured data. You can persist data in the cloud such as users' email addresses and profile pictures.
+[LeanStorage](storage_overview.html) is a service provided by LeanCloud for storing structured data. You can persist data such as users' email addresses and profile pictures in the cloud.
 
-The Node.js SDK (the `leanengine` module) provides support for cloud functions and hooks required on the server-side. It also needs the JavaScript SDK (the `leancloud-storage` module) to be installed together as peer dependency. Remember to upgrade the JavaScript SDK when upgrading the Node SDK:
+The Node.js SDK (the `leanengine` module) provides support for cloud functions and hooks required on the server-side. It also needs the JavaScript SDK (the `leancloud-storage` module) to be installed together as a peer dependency. Remember to upgrade the JavaScript SDK when upgrading the Node SDK:
 
 ```bash
 npm install --save leanengine leancloud-storage
@@ -545,7 +545,7 @@ Now you can use all LeanCloud Python SDK features in your project. See [LeanStor
 {% if platformName === "PHP" %}
 LeanEngine uses [LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) which contains the LeanStorage PHP SDK. You can use the APIs provided by it to persist your data. See [LeanStorage PHP Guide](leanstorage_guide-php.html) for more information.
 
-[LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) provides the middleware that supports the [Slim framework](http://www.slimframework.com/) which is used in the example project. You can follow the way it is use in the example project.
+[LeanCloud PHP SDK](https://github.com/leancloud/php-sdk) provides the middleware that supports the [Slim framework](http://www.slimframework.com/) which is used in the example project. You can follow the way it is used in the example project.
 
 If you choose to start from scratch, you need to configure it as follows:
 
@@ -574,7 +574,7 @@ If you choose to start from scratch, you need to configure it as follows:
 {% if platformName === "Java" %}
 LeanEngine uses [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) instead of [LeanStorage Java SDK](https://github.com/leancloud/java-sdk). The former is a superset of the latter with added support for cloud functions and hooks, so you can use any functions available for [LeanStorage](leanstorage_guide-java.html) to store your data.
 
-If you use the example project as the basis, the [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) has already been set up. You can follow the way it is use in the example project.
+If you use the example project as the basis, the [LeanEngine Java SDK](https://github.com/leancloud/leanengine-java-sdk) has already been set up. You can follow the way it is used in the example project.
 
 If you choose to start from scratch, you need to configure it as follows:
 
@@ -616,7 +616,7 @@ If you choose to start from scratch, you need to configure it as follows:
 
 While your project is being deployed, LeanEngine's hypervisor will check if it is started successfully every second. The deployment is considered a failure if the check still fails after **30 seconds**. Even after the project is deployed successfully, we still run health checks regularly to ensure that your app is running normally. If the check fails, the LeanEngine hypervisor will automatically restart your app.
 
-The URLs for health monitoring include the index page of your project (`/`) and `/__engine/1/ping` which is handled by the {{platformName}} SDK. As long as **one of them** returns the HTTP status code `200`, the project is considered to be normal. So make sure your program uses the {{platformName}} SDK or **has its index page return `200` as the HTTP status code**. Besides this, in order to support cloud functions and hooks in LeanEngine, the hypervisor will use the URL `/1.1/functions/_ops/metadatas` to communicate with the {{platformName}} SDK. Please make sure to have this URL handled by the {{platformName}} SDK, or **return `404` as the HTTP status code** to indicate that cloud functions and hooks are not used.
+The URLs for health monitoring include the index page of your project (`/`) and `/__engine/1/ping` which is handled by the {{platformName}} SDK. As long as **one of them** returns the HTTP status code `200`, the project is considered to be normal. So make sure your program uses the {{platformName}} SDK or **has its index page return `200` as the HTTP status code**. Besides this, in order to support cloud functions and hooks in LeanEngine, the hypervisor will use the URL `/1.1/functions/_ops/metadatas` to communicate with the {{platformName}} SDK. Please make sure to have this URL handled by the {{platformName}} SDK or **return `404` as the HTTP status code** to indicate that cloud functions and hooks are not used.
 
 {% if platformName === "Node.js" %}
 See [Using LeanStorage](#using-leanstorage) for how to install and use the LeanStorage Node.js SDK.
@@ -714,7 +714,7 @@ app.use(AV.Cloud.CookieSession({ framework: 'koa', secret: 'my secret', maxAge: 
 While using `CookieSession`, make sure [CSRF tokens](#csrf-tokens) are enabled to prevent CSRF attacks.
 {% endcall %}
 
-You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `AV.User` in the cookie. When a user opens the application, the SDK will check if the use is logged in. You can obtain the logged in user via `req.currentUser`.
+You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `AV.User` in the cookie. When a user opens the application, the SDK will check if the user is logged in. You can obtain the logged-in user via `req.currentUser`.
 
 The options supported by `AV.Cloud.CookieSession` include:
 
@@ -810,7 +810,7 @@ with:
 application = leancloud.engine.CookieSessionMiddleware(engine, secret=YOUR_APP_SECRET)
 ```
 
-You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `leancloud.User` in the cookie. When a user opens the application, the SDK will check if the use is logged in. You can obtain the logged in user via `leancloud.User.get_current()`.
+You need to pass in a `secret` which is used to sign the cookie (required). The middleware will record the login status of `leancloud.User` in the cookie. When a user opens the application, the SDK will check if the user is logged in. You can obtain the logged-in user via `leancloud.User.get_current()`.
 
 Other options supported by `leancloud.engine.CookieSessionMiddleware` include:
 
@@ -1272,7 +1272,7 @@ Keep in mind that `$_SESSION` of PHP cannot work properly on LeanEngine. LeanEng
 
 If your project uses cookies as an authentication method (like the SDK's `CookieSession` middleware), then there is a risk of [CSRF](https://github.com/pillarjs/understanding-csrf) attack which allows other sites to forge malicious requests with valid cookies.
 
-CSRF tokens can be used to defend such attacks. A CSRF token is a random string generated by the server and passed to the client (usually through cookie). When the client makes a request, it must include the same CSRF token in the request body or in the header. The server then verifies if the CSRF token is valid before processing the request.
+CSRF tokens can be used to defend such attacks. A CSRF token is a random string generated by the server and passed to the client (usually through cookie). When the client makes a request, it must include the same CSRF token in the request body or the header. The server then verifies if the CSRF token is valid before processing the request.
 
 {% if platformName === "Node.js" %}
 In Express, you can implement CSRF tokens with [csurf](https://github.com/expressjs/csurf) library.
@@ -1412,7 +1412,7 @@ Multithreading requires that your program does not maintain global states (such 
 
 ### Deploying with Command-Line Interface
 
-Run the following command in you project root directory:
+Run the following command in your project root directory:
 
 ```sh
 lean deploy
@@ -1428,7 +1428,7 @@ LeanEngine implements a caching mechanism to speed up the build process (the pro
 For example, if a Node.js project is deployed twice in a row and `package.json` is not modified, the cached dependencies will be used directly.
 {% endif %}
 
-The cached dependencies may become ineffective for various of reasons, so it's not guaranteed that every build will make use of them.
+The cached dependencies may become ineffective for various reasons, so it's not guaranteed that every build will make use of them.
 
 If you are encountering problems with installing dependencies, you can enable the "Download latest dependencies" option when deploying on the web console, or add the `--no-cache` option when deploying with the command-line interface.
 
@@ -1460,7 +1460,7 @@ For example, if you are using GitHub, you can go to your repository's **Settings
 
 By default, you application has a **production environment** for LeanEngine and the corresponding domain is `{{var_app_domain}}.{{engineDomain}}`. There is a **trial instance** in the production environment to run your project.
 
-When the trial instance in the production environment is upgraded to a standard instance, there will be an additional **staging environment** with the corresponding domain `stg-{{var_app_domain}}.{{engineDomain}}`, with both environments accessing the same LeanStorage data. You can test your code by deploying it to the staging environment each time you make a change and publish it to the production environment when ready. If you want to have a test environment with an independent data source, you can create a separate application.
+When the trial instance in the production environment is upgraded to a standard instance, there will be a new **staging environment** with the corresponding domain `stg-{{var_app_domain}}.{{engineDomain}}`, with both environments accessing the same LeanStorage data. You can test your code by deploying it to the staging environment each time you make a change and publish it to the production environment when ready. If you want to have a test environment with an independent data source, you can create a separate application.
 
 {% call docs.noteWrap() %}
 If you encounter the "Application not Found" error when accessing LeanEngine, it is usually because your code hasn't been deployed to the corresponding environment. This may be triggered when you attempt to access the staging environment when there isn't one or try to access the production environment without publishing your project.
@@ -1588,7 +1588,7 @@ Variable Name | Description
 `LEANCLOUD_APP_MASTER_KEY`| The Master Key of the current application.
 `LEANCLOUD_APP_ENV` | Current environment: <ul><li>Depending on how you start the local development instance, this variable may not exist or may be set to `development`.</li><li>Staging environment: `stage`.</li><li>Production environment: `production`.</li></ul>
 `LEANCLOUD_APP_PORT` | The port listened by the project. Other ports are not accessible from the public network.
-`LEANCLOUD_API_SERVER` | The URL used to access LeanStorage (looks like `https://api.leancloud.cn`). It is based on the location of the data center used to host the project and may change overtime. You can use it when making requests to LeanStorage or other LeanCloud services with our REST API. Please **do not** use `https://api.leancloud.cn` directly in LeanEngine.
+`LEANCLOUD_API_SERVER` | The URL used to access LeanStorage (looks like `https://api.leancloud.cn`). It is based on the location of the data center used to host the project and may change over time. You can use it when making requests to LeanStorage or other LeanCloud services with our REST API. Please **do not** use `https://api.leancloud.cn` directly in LeanEngine.
 `LEANCLOUD_AVAILABLE_CPUS` | The number of CPUs available to the LeanEngine instance. It is based on the size of your instance and should be larger than 1 for large instances (like those with 2 CPUs and 1024 MB memory). Please **do not** use the number of CPUs of the operating system directly, or your project may be terminated if excessive threads are opened up.
 `LEANCLOUD_APP_GROUP`| The group this instance belongs to. When using the LeanEngine [Group Management](leanengine_plan.html#group-management) feature, this becomes the name of the group.
 `LEANCLOUD_REGION` | The region where the instance is located at. For LeanCloud International version, the value is `US`.
@@ -1623,7 +1623,7 @@ The environment variables provided by LeanEngine {% if platformName === "Node.js
 
 On LeanEngine, requests from the clients go through a load balancer before they reach to your app. The load balancer handles SSL encryption and decryption, data compression, etc., so you don't have to add HTTPS- or gzip-related functions to your app.
 
-The load balancer also enforce limitations that the maximum size of each request is 100 MB (including uploading files to LeanEngine), the maximum time for processing each request is 60 seconds, and a WebSocket will be disconnected if no data goes through in the past 60 seconds.
+The load balancer also enforces limitations that the maximum size of each request is 100 MB (including uploading files to LeanEngine), the maximum time for processing each request is 60 seconds, and a WebSocket will be disconnected if no data goes through in the past 60 seconds.
 
 ### File System
 
@@ -1715,7 +1715,7 @@ When constructing a `Date` object, you should pass an object with time zone (lik
 
 If you need to configure IP whitelists on third-party services and need to obtain LeanEngine's public IP addresses, please go to [Dashboard > LeanEngine > Settings > Public IP addresses](https://console.leancloud.app/cloud.html?appid={{appid}}#/conf).
 
-We will try our best to avoid changing public IP addresses, but cannot eliminate the possibility of making changes. In case of IP-related problems, please double check if the public IP addresses are changed.
+We will try our best to avoid changing public IP addresses, but cannot eliminate the possibility of making changes. In the case of IP-related problems, please double check if the public IP addresses are changed.
 
 ## Custom Domains
 
