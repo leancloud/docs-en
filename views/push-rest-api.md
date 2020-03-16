@@ -1,0 +1,720 @@
+<!-- {% set deviceprofile_format = "`deviceProfile` 的值必须以字母开头，由大小写字母、数字和下划线组成的字符串，或为空值。" %}
+{% import "views/_parts.html" as include %}
+
+{{ include.setService('push') }} -->
+
+# Push Notification Service Overview
+
+Push notifications, it facilitates the developer to push messages or notifications to users. Keeping interactions with users will validly retain the customers and imporve the user experience. Leancloud integrates the  Android Push, iOS Push and Windows Phone Push into one service.
+
+In addition to iOS, Android SDK, you can take advantage of [REST API](#Use_REST_API_Push Notifications) to push requests.
+
+## Basic Concept
+
+### Installation
+
+{% if node=='qcloud' %}
+Installation is the only mark to represent the device is permitted to receive Push. Installations are objects used to store subscription data for installations for subscribers. It matches table `_Installation` in  `LeanStorage`. It includes the following fields:
+{% else %}
+Installation is the only mark to represent the device is permitted to receive Push. Installations are objects used to store subscription data for installations for subscribers. It matches table `_Installation` in  [LeanStorage](/dashboard/data.html?appid={{appid}}). It includes the following fields:
+{% endif %}
+
+Parameters | OS | Description
+---|---|---
+badge|iOS| number field on top right side representing the pending updating apps or unread messages.
+channels||array of the channels subscribed.
+deviceProfile || When the app have multiple iOS installations or multiple Android hybrid push environment , device Profile is used to specify the current device certificate and environment name. The value have to align with the name in [Dashboard > Messaging > Settings] (/dashboard/messaging.html?appid={{appid}}#/message/push/conf) , otherwise the push will fail. Please refer to [iOS test and production certificate distinguish](#iOS test and production certificate distinguish) and [Android hybrid Push under multiple environments](#Android hybrid Push under multiple environments). </br></br>{{deviceprofile_format}}
+deviceToke|iOS|mark for delivering messages to the APNs push networks.
+ansTopic|iOS| based on this Token Authentication ush to set this field. iOS SDK will automatically read iOS app bundle ID as the apnsTopic. Although you have tomannually set them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. no use of iOS SDK (React Native) 3. topic different from bundle ID.
+deviceType| | "ios", "android", or "wp" (Windows Phone)
+ID|Windows Phone| only works on Microsoft devices.
+installationId | Android | LeanCloud SDK generated identifier for each Android device
+subscriptionUri |Windows Phone|MPNS (Microsoft Push Notification Service) Push channel
+timeZone | |device timezone.
+
+Add and manipulate the devices , please refer to the following SDK introduction and [REST API](#Use_rest_api_to_push).
+
+### create Installation object
+
+Via using REST API, you can create installation object in Leancloud by adding several special fields. Using REST API can accomplish several operations not accomplishable via Leancloud SDK, such as query all the installations to find all the subscribers to a given channel.
+
+Creating one installation is similar to create a normal object, but several fields for installation should be authenticated. Taking APNS service as an instance, you can send the following request:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceType": "ios",
+        "deviceToken": "abcdefghijklmnopqrstuvwzxyrandomuuidforyourdevice012345678988",
+        "channels": [
+          ""
+        ]
+      }' \
+  https://{{host}}/1.1/installations
+```
+
+It returns **201 Created** in HTTP reply, the Locations header includes the latest installed URL:
+
+```sh
+Status: 201 Created
+Location: https://{{host}}/1.1/installations/51ff1808e4b074ac5c34d7fd
+```
+
+The returned body is one JSON object, including objectID and createdAt which is the timestamp for creating the object.
+
+```json
+{
+  "createdAt": "2012-04-28T17:41:09.106Z",
+  "objectId": "51ff1808e4b074ac5c34d7fd"
+}
+```
+
+### retrieve Installation
+
+Via GET request to retrieve, the following demsonstrated how to retrieve the object created.
+
+```sh
+curl -X GET \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  https://{{host}}/1.1/installations/51ff1808e4b074ac5c34d7fd
+```
+
+The returned JSON contains all the user-provided fields and the default three createdAt\updatedAt\objectId fields:
+
+```json
+{
+  "deviceType": "ios",
+  "deviceToken": "abcdefghijklmnopqrstuvwzxyrandomuuidforyourdevice012345678988",
+  "channels": [
+    ""
+  ],
+  "createdAt": "2012-04-28T17:41:09.106Z",
+  "updatedAt": "2012-04-28T17:41:09.106Z",
+  "objectId": "51ff1808e4b074ac5c34d7fd"
+}
+```
+
+### update Installation
+
+Updating the installation object can get accomplished via PUT request. For example, to subscribe to a channel named「foo」:
+
+```sh
+curl -X PUT \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceType": "ios",
+        "deviceToken": "abcdefghijklmnopqrstuvwzxyrandomuuidforyourdevice012345678988",
+        "channels": [
+          "",
+          "foo"
+        ]
+      }' \
+  https://{{host}}/1.1/installations/51ff1808e4b074ac5c34d7fd
+```
+
+### Query Installation
+
+You can send a GET request to the root URL of installations to query multiple objects. It only works in REST API
+
+A GET request will list all the installations without any root URL.
+
+```sh
+curl -X GET \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  https://{{host}}/1.1/installations
+```
+
+It returns in the field `results`:
+
+```json
+{
+  "results": [
+    {
+      "deviceType": "ios",
+      "deviceToken": "abcdefghijklmnopqrstuvwzxyrandomuuidforyourdevice012345678988",
+      "channels": [
+        ""
+      ],
+      "createdAt": "2012-04-28T17:41:09.106Z",
+      "updatedAt": "2012-04-28T17:41:09.106Z",
+      "objectId": "51ff1808e4b074ac5c34d7fd"
+    },
+    {
+      "deviceType": "ios",
+      "deviceToken": "876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9",
+      "channels": [
+        ""
+      ],
+      "createdAt": "2012-04-30T01:52:57.975Z",
+      "updatedAt": "2012-04-30T01:52:57.975Z",
+      "objectId": "51fcb74ee4b074ac5c34cf85"
+    }
+  ]
+}
+```
+
+All the queries work on normal objects are applicable on installations. Refer to the query part for normal object. By querying the list of the channels, you can retrieve all the devices subscribed to a given channel.
+
+### delete Installation
+
+To remove an installation object in Leancloud, send DELETE request to corresponding URL. It only works in REST API.
+
+```sh
+curl -X DELETE \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  https://{{host}}/1.1/installations/51fcb74ee4b074ac5c34cf85
+```
+ 
+### Notification
+
+{% if node=='qcloud' %}
+In  **Dashboard > Messaging > History** , a record represents one push notification. It includes the following field:
+{% else %}
+In [Dashboard > Messaging > History](/dashboard/messaging.html?appid={{appid}}#/message/push/list) , one record represents one push notification. It includes the following fields:
+{% endif%}
+
+Parameters | OS | Description
+---|---|---
+data| | push content, JSON object
+invalidTokens|iOS|the returned [INVALID TOKEN](https://developer.apple.com/library/mac/technotes/tn2265/_index.html#//apple_ref/doc/uid/DTS40010376-CH1-TNTAG32) in this push from the APNS.**If the number is too large, check the certificate.**
+prod|iOS|which environment certificate is used. **dev** represents development certificate, **prod** represents production certificate.
+status| | status of the push, **in-queue** , **done** or **scheduled** represents waiting to be activated.
+devices| | target devices number . The number is not the number successfully pushed. It is the number of devices valid for the query in `_Installation`. **Valid** means the target has `valid` filed in the `_Installation` table as true and updatedAt field within three months. Much Inactive users(Someone have already uninstall the apps) may include in the attempt. These users cannot receive the push.
+successes | |quantity of successfully pushed devices. Success indicates that the target Android devices successfully receive the push. For iOS or Android devices using hybrid push, success means notifications are used to the Apple APNS or device matched push platform.
+where| |query conditions in `_Installation` for this push, devices match the conditions will receive the messages.
+errors| |error message in the push.
+
+The Nature of the Push is to retrieve all the devices meet the query conditions in `_Installation` table. Then the messages are pushed to the targets. As `_Installation` is a fully configurable Key-Value Object, pushs under various complex conditions are achievable such as subscriptions, Geopoint push , specific user push.
+
+When the field **devices** has a value of 0. It represents no target devices are retrieved under such query conditions. No devices will receive the push. A value larger than 0 represents qualified devices exist, but no devices are ensured to receive the push. It is reasonable to have **devices** larger than **successes** and the gap is larger when there are enormous inactive devices.
+
+Turn the field `valid` into `false` in `_Installation` will disable receiving the push.
+
+**warning** , we only retain the history for one week and the expired push history will get cleared. There is no relation between the expiry of the push and the history clearance. The targets will still receive the push nonetheless the push history are cleared. The expiry date on the push history refer to [Push notification](#Push notification).
+
+{#TODO 
+
+
+## iOS Push Notification
+
+Refer to [iOS push guide](./ios_push_guide.html).
+
+## Android Push Notification
+
+Refer to [Android push guide](./android_push_guide.html).
+
+## Android Mix Push
+
+
+We designed an advanced push mechanism named [mix push] to lift up the push rate on some Android device with more restrictive background process management. 
+
+The function is only available for Business Plan users, switch on the function in [Dashboard > Messaging > Push Notification > Settings > mix push](/dashboard/messaging.html?appid={{appid}}#/message/push/conf), switch on the mix push.
+
+Attention, **Swtich on Push Notification** option can adjust at discretion without any adversity. When it is switched off, the next Android Push will work as the normal push via the LeanCloud owned channel to the client terminal. Nothing is changed but the push may get influenced by some background process management. However, the third party channel will get utilized if the mix push is switched on.
+
+Refer to [Android mix push guide](./android_push_guide.html#Mix Push).
+
+{# TODO
+
+## 云引擎和 JavaScript 创建推送
+
+请阅读 [JavaScript SDK 指南 &middot; Push 通知](./leanstorage_guide-js.html#Push_通知)。
+
+}
+
+## REST API Push Notification 
+
+### DeviceToken
+
+iOS device generate DeviceToken as device unique ID.
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceType": "ios",
+        "deviceToken": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "channels": [
+          "public", "protected", "private"
+        ]
+      }' \
+  https://{{host}}/1.1/installations
+```
+
+### installtionId
+
+For android device, LeanCloud SDK will automatically generate unique ID as installationId and saved in cloud. The way to ave installationId is as follows:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceType": "android",
+        "installationId": "12345678-4312-1234-1234-1234567890ab",
+        "channels": [
+          "public", "protected", "private"
+        ]
+      }' \
+  https://{{host}}/1.1/installations
+```
+
+`installationId` should always be unique within the given application.
+
+### subscribe and unsubscribe the channel
+
+Via setting `channels` field to subscribe to a channel. Assuming `mrmBZvsErB` is the objectId of a pending object with Installation set.
+
+```sh
+curl -X PUT \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "channels": [
+          "customer"
+        ]
+      }' \
+  https://{{host}}/1.1/installations/mrmBZvsErB
+```
+
+unsubscribe a channel:
+
+```
+curl -X PUT \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "channels": {
+           "__op":"Remove",
+           "objects":["customer"]
+        }
+       }' \
+  https://{{host}}/1.1/installations/mrmBZvsErB
+```
+
+By nature, `channels` is an array. Therefore, it complies with standard [REST API](./rest_api.html#array) array command.
+
+### add self-customized fields
+
+Via setting `channels` field to subscribe to a channel. Assuming `mrmBZvsErB` is the objectId of a pending object with Installation set. The self-customized field is **userObjectId**, the value is `<user's objectId>`:
+
+```sh
+curl -X PUT \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "userObjectId": "<user\'s objectId>"
+      }' \
+  https://{{host}}/1.1/installations/mrmBZvsErB
+```
+
+### Push notification
+
+#### push via query conditions
+
+This interface is used for query under given conditions, push the notification to all the devices enrolled in _Installation table. For example, it is the way to push notifications to all the devices  which includes "public" value in their "channels" fields. They will receive a message "Hello from Leancloud".
+
+Attention, this interface requires the HTTP Body should be limited to 4096 bits. Namely, the serialized JSON object passed in shall not surpass this limitation.
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "where": {"channels" : ["public"]},
+        "data": {"alert" : "Hello from LeanCloud"}
+     }' \
+  https://{{host}}/1.1/push
+```
+
+The parameters are as follows:
+
+Name | Optionality | Description 
+--- | --- | ---
+data| **required** | content of the push , JSON, refer to {#Todo [消息内容](#消息内容_Data) #}
+where | optional | the condition to query the `_installation` table. JSON object, if the query the includes some conditions like datetime or bitwise data need serialization. They should be serialized. When querying all the devices participated earlier than given time, the where condition should be `{"createdAt":{"$gte":{"__type":"Date","iso":"2015-06-21T18:02:52.249Z"}}}`. Please refer to [Advanced data types](./rest_api.html#Advanced Data Types)
+channels | optional | targeted channels ,included in the `where` fields
+expiration_interval | optional | expiry time relative to the moment invoked the API, unit on ***second**.
+expiration_time | optional | the absolute expiry time, using UTC time and ISO8601 standard. Such as "2019-04-01T06:19:29.000Z"
+notification_id | optional | self-customized push notification id,
+the length is limited to 16 bits and only consists of English letters and numbers. we will randomly generate one for  the push if not provided by default. We will summarize the number of targets and successes. The result will get revealed in [Notification](#Notification). Users are allowed to concatenate multiple request into a same id.
+push_time | optional | set a fixed time to push, using UTC time and ISO8601 standard. Such as "2019-04-01T06:19:29.000Z". The notification will be pushed immediately if the push_time is not later than the current time for more than 1 min. A cyclical push can be accomplished via [Use Leanengine for cyclical push](#Use Leanengine for cyclical push).
+req_id | optional |  self-customized request id, the length is limited to 16 bits and only consists of English letters and numbers. Requests with same req_id will be judged as duplication and only one of them will get handled. This mechanism can validly handle the time-up problem. **Abnormally resend the request will influence the Push**, take care.
+prod | optional |In which environment the APNs will use, development or production
+topic | optional | **Only works for the Token Authentication** The APNs Topic is required for authentication. The push can only arrive in the device with the same topic.Generally, iOS SDK will automatically read the bundle ID of the iOS app as topic field in Installation. The field should input manually under the following circumstances: 1. iOS SDK versiion is earlier than v4.2.0. 2. No iOS SDK 3. The target has different topic to the iOS Bundle ID.
+apns_team_id | **Only works for the Token Authentication**. When using Token Authentication, the Team ID is required. The push can only arrive in the device with the same Team ID. Generally, if there is no duplication in the APNs Topic or the apnsTeamId is pre-set in the Installation. Otherwise providing the parameter and bind it in the `where` field to ensure the target device have the Team Id.
+flow_control | optional | limit the frequency of the push, the value is the frequency of the push per second. The lowest one is 1000 and value lower than 1000 is handled as 1000.
+
+### Push Notification via ID list
+
+This interface is set up for push to a given device ID. It is way faster than the query condition as no condition is queried from the `_installation` table. The following example demonstrated how to push "Hello from LeanCloud" to three devices with given "device_token1","device_token2","device_token3".
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "data": {"alert" : "Hello from LeanCloud"},
+        "device_type": "ios",
+        "device_ids": ["device_token1", "device_token2", "device_token3"]
+     }' \
+  https://{{host}}/1.1/push/devices
+```
+
+The shared common parameters are as follows:
+
+Name | Optionality | Description
+--- | --- | ---
+
+data| **required** | content of the push , JSON, refer to {#Todo [消息内容](#消息内容_Data) #}. The JSON string should be less than 4096 bits.
+device_type | **required** | The device type, android or iOS, no mix push with those two types together.
+device_ids | **required** |  The target device ID List, 500 at maximum. For iOS device, it is the deviceToken in the _Installation table. For mixed push Android device, it is the registrationId field. For the non-mixed Android device, it is the installationId field.
+expiration_interval | optional | expiry time relative to the API is invoked, unit on seconds
+expiration_tie | optional | the absolute expiry time, using UTC time and ISO8601 standard. Such as "2019-04-01T06:19:29.000Z"
+notification_id | optional | self-customized push notification id,
+the length is limited to 16 bits and only consists of English letters and numbers. we will randomly generate one for  the push if not provided by default. We will summarize the number of targets and successes. The result will get revealed in [Notification](#Notification). Users are allowed to concatenate multiple request into a same id.
+req_id | optional | self-customized request id, the length is limited to 16 bits and only consists of English letters and numbers. Requests with same req_id will be judged as duplication and only one of them will get handled. This mechanism can validly handle the time-up problem. **Abnormally resend the request will influence the Push**, take care.
+
+For iOS device, the extra fields:
+
+Name | Optionality | Description
+---- | ---- | ----
+prod | optional | Push to which APNs environment, development or production.
+topic | optional | **Only works for the Token Authentication** The APNs Topic is required for authentication. The push can only arrive in the device with the same topic.
+anpns_team_id | optional | **Only works for the Token Authentication**. When using Token Authentication, the Team ID is required. The push can only arrive in the device with the same Team ID. 
+device_profile | optional | The self-customized push certificate for iOS device. If the certificate is the pre-set development environment or production environment certificate, ignore this field. The API will judge it based on the `prod` field
+
+For Android device, the extra fields:
+
+Name | Optionality | Description
+---- | ---- | ----
+channel | optional | push channel
+vendor | optional | ***only for the mixed push*** field matched in _Installation table `vendor`. one push can only arrive in the device with the same Team ID.
+device_profile | optional | ***only for the mixed push*** when the push platform have multiple settings the field should be filled. _default by default.
+
+#### master key authentication
+
+In [Dashboard > Messaging > Push Notifications > Settings > Push notification settings](/dashboard/messaging.html?appid={{appid}}#/message/push/conf) tick the **Prevent clients from sending push notifications**, the interface requires **master key** authentication to push, this avoids the clients to push to any target devices in the app without restrictions. We suggest this function to be on.
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{masterkey}},master"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "where": {"channels" : ["public"]},
+        "data": {"alert" : "Hello from LeanCloud"}
+     }' \
+  https://{{host}}/1.1/push
+```
+
+### Expiry Time
+
+We suggest iOS devices should all have expiry time, this can allow the receiver to reconnect to the server and get the push even though temporary disconnetion. Refer to [Stackoverflow &middot; Push notification is not being delivered when iPhone comes back online](http://stackoverflow.com/questions/24026544/push-notification-is-not-being-delivered-when-iphone-comes-back-online)。
+
+and 
+
+[Expiry time and fixed time push](#Expiry Time and Fixed Time Push)
+
+### Message Content Data
+
+#### iOS device content
+
+For iOS device, the content of the data can be:
+```
+{
+"alert": string type, content of the push , if the target are all iOS devices it can be JSON as well, the following fields will give you details,
+"title": string type, title of the push , if the alert is of JSON type the field can be igrnored,
+"category": string, type of the push,
+"thred-id": string, name of the push type,
+"badge" int, the number of the unread message, the number in the red ballon on top right side of the icon. It can also be "Increment"(case-sensitive),
+"sound": string or JSON, the sound when push arrived, details given in the following JSON guide,
+"content-available": int tupe , if use Newstand, set to 1 to start a background download,
+"mutable-content"" int, to support UNNotificationServiceExtension function, activate with value 1.
+"collapse-id": string, matching the APNs request header's apns-collapse-id,  to concatanate multiple tweets. Refer to the official Apple Request Header document,
+"apns-priority"： int type, be 10 or 5 and matching APNs requet header's apns-priority parameter. The field judges whether the device will push under low power mode. Refer to the official Apple Request Header document,
+"apns-push-type": string type, used for push type information, in iOS 13 or watchOS 6 and later version, be "background" or "alret", default on "alert",
+"url-args": string type, for safari push. Refer to APNs document for url-args description.
+"target-content-id": string, refer to APNs document for target-content-id parameter description,
+"custom-key": self-customized fields, custom-key is one example, switch at discretion.
+}
+```
+
+#### Android device
+
+If it is a Android, default fields are as follows:
+
+```
+{
+  "alert": string, content of the push
+  "title": string, titile in the notification center
+  "silent": boolean, close the notification center alert or not. Default on false, namely close the alert,
+  "custom-key": self-customized user field, custom-key is an example, switch at discretion.
+}
+```
+
+If self-customize Receiver, set `action`:
+
+```
+{
+  "alert": string, content of the push
+  "title": string, title in the notification centre
+  "action": string, action name for registering Receiver
+  "silent": boolean, mute the notificaiton or not, default on false
+  "custom-key": self-customized field, switch at discretion
+  
+}
+
+{#TODO For customize Receiver refer to [customize Receiver](./android_push_guide.html#customize_Receiver).}
+
+#### Mixed device type push
+
+For a single push, if the query have several different device types, we can retrieve the matching device type to push. For example:
+
+```
+{
+  "ios": {
+    "alert":             "Hello iOS",
+    "badge":             "Increment",
+    "custom-key":        "custom-value"
+  },
+  "android": {
+    "alert":             "Hello LeanCloud",
+    "action":            "com.your_company.push",
+    "custom-key":        "custom-value"
+  },
+  "mi": {
+    "alert":             "Hello Mi",
+    "custom-key":        "custom-value"
+  },
+  "hms": {
+    "alert":             "Hello Huawei",
+    "custom-key":        "custom-value"
+  }
+}
+```
+
+The name and the matching platform is as follows:
+
+name | platform
+-------- | ----
+ios | Apple APNs
+android | Android from LeanCloud
+mi | Xiaomi
+hms | Huawei 
+mz | meizu
+vivo | -
+oppo | -
+
+{#TODO 
+
+#### iOS 测试和生产证书区分
+
+我们现在支持上传两个环境的 iOS 推送证书：测试和生产环境，你可以通过设定 `prod` 属性来指定使用哪个环境证书。
+
+```
+{
+  "prod": "dev",
+  "data": {
+    "alert": "test"
+  }
+}
+```
+
+如果是 `dev` 值就表示使用开发证书，`prod` 值表示使用生产证书。如果未设置 `prod` 属性，且使用的不是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html)，我们默认使用**生产证书**来发推送。如果未设置 `prod` 属性，且使用的是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html) ，则需要在发推送之前执行 [AV.setProduction](https://leancloud.github.io/javascript-sdk/docs/AV.html#.setProduction) 函数才会使用生产证书发推送，否则会以开发证书发推送。注意，当设备设置了 `deviceProfile` 时我们优先按照 `deviceProfile` 指定的证书推送。
+
+#### Android 推送区分透传和通知栏消息
+
+Android 推送（包括 Android 混合推送）支持透传和通知栏两种消息类型。透传消息是指消息到达设备后会先交给 LeanCloud Android SDK，再由 SDK 将消息通过 [自定义 Receiver](./android_push_guide.html#自定义_Receiver) 传递给开发者，收到消息后的行为由开发者定义的 Receiver 来决定，SDK 不会自动弹出通知栏提醒。而通知栏消息是指消息到达设备后会立即自动弹出通知栏提醒。
+
+LeanCloud 推送服务通过推送请求中 `data` 参数内的 `silent` 字段区分透传和通知栏消息。如果 `silent` 是 `true` 则表示这个消息是透传消息，为 `false` 表示消息是通知栏消息。如果不传递 `silent` 则默认其值为 `false`。另外请注意，如果希望接收透传消息请不要忘记自行实现 [自定义 Receiver](./android_push_guide.html#自定义_Receiver)。
+
+推送请求中的 `data` 参数请参考 [消息内容 Data](#消息内容_Data)。
+
+#### Android 混合推送多配置区分
+
+如果使用了混合推送功能，并且在 [控制台 > 消息 > 推送 > 设置 > 混合推送](/dashboard/messaging.html?appid={{appid}}#/message/push/conf) 增加了多个混合推送配置，那么在向 `_Installation` 表保存设备信息时就需要将当前设备所对应的混合推送配置名存入 `deviceProfile` 字段。系统会按照该字段指定的唯一配置名为每个目标设备进行混合推送。
+
+如果 `deviceProfile` 字段为空，系统会默认使用名为 `_default` 的混合推送配置来进行推送，所以一定要保证在控制台的混合推送设置中，存在以 `_default` 命名的 Profile 并且已被正确配置，否则系统会**拒绝推送。**
+
+{{deviceprofile_format}}
+
+#### 推送查询条件
+
+`_Installation` 表中的所有属性，无论是内置的还是自定义的，都可以作为查询条件通过 where 来指定，并且支持 [REST API](./rest_api.html#查询) 定义的各种复杂查询。
+
+下面会举一些例子，更多例子请参考 [REST API](./rest_api.html#查询) 查询文档。
+
+#}
+
+### Push to All the device 
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "data": {
+          "alert": "LeanCloud greetings！"
+        }
+      }' \
+  https://{{host}}/1.1/push
+```
+
+### Send to specific User
+
+* to Andorid users
+
+```sh
+curl -X POST \
+-H "X-LC-Id: {{appid}}"          \
+-H "X-LC-Key: {{appkey}}"        \
+-H "Content-Type: application/json" \
+-d '{
+      "where":{
+        "deviceType": "android"
+      },
+      "data": {
+        "alert": "LeanCloud greetings！"
+      }
+    }' \
+https://{{host}}/1.1/push
+```
+
+* To public channel users
+
+```sh
+curl -X POST \
+-H "X-LC-Id: {{appid}}"          \
+-H "X-LC-Key: {{appkey}}"        \
+-H "Content-Type: application/json" \
+-d '{
+      "where":{
+        "channels":
+          {"$regex":"\\Qpublic\\E"}
+      },
+      "data": {
+        "alert": "LeanCloud greetings！"
+      }
+    }' \
+https://{{host}}/1.1/push
+```
+
+A more express way:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "channels":[ "public"],
+        "data": {
+          "alert": "LeanCloud greetings！"
+        }
+      }' \
+  https://{{host}}/1.1/push
+```
+
+* Send to one installation id
+
+```sh
+curl -X POST \
+-H "X-LC-Id: {{appid}}"          \
+-H "X-LC-Key: {{appkey}}"        \
+-H "Content-Type: application/json" \
+-d '{
+      "where":{
+          "installationId":"57234d4c-752f-4e78-81ad-a6d14048020d"
+          },
+      "data": {
+        "alert": "LeanCloud greetings！"
+      }
+    }' \
+https://{{host}}/1.1/push
+```
+
+* Send to inactive users
+
+```sh
+curl -X POST \
+-H "X-LC-Id: {{appid}}"          \
+-H "X-LC-Key: {{appkey}}"        \
+-H "Content-Type: application/json" \
+-d '{
+      "where":{
+          "updatedAt":{
+              "$lt":{"__type":"Date","iso":"2015-06-29T11:33:53.323Z"}
+            }
+      },
+      "data": {
+          "alert": "LeanCloud greetings！"
+      }
+    }' \
+https://{{host}}/1.1/push
+```
+
+* Push accroding to the query conditions:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "where": {
+          "inStock": true
+        },
+        "data": {
+          "alert": "New Arrivals!"
+        }
+      }' \
+  https://{{host}}/1.1/push
+```
+
+Using `where` to identify the fields in `_Installations`. Assuming the table has boolean field `inStock`.
+
+* Push accroding to Geo-Point:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "where": {
+          "owner": {
+            "$inQuery": {
+              "location": {
+                "$nearSphere": {
+                  "__type": "GeoPoint",
+                  "latitude": 30.0,
+                  "longitude": -20.0
+                },
+                "$maxDistanceInMiles": 10.0
+              }
+            }
+          }
+        },
+        "data": {
+          "alert": "Heat Alert!"
+        }
+      }' \
+  https://{{host}}/1.1/push
+```
