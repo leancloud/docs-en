@@ -81,13 +81,9 @@ Refer to [Android mix push guide](./android_push_guide.html#Mix Push).
 
 #}
 
-{# TODO
+## Send Notification under LeanEngine in JavaScript
 
-## 云引擎和 JavaScript 创建推送
-
-请阅读 [JavaScript SDK 指南 &middot; Push 通知](./leanstorage_guide-js.html#Push_通知)。
-
-}
+Please refer to the [Push Notifications] section of the [LeanStorage JavaScript Guide](leanstorage_guide-js.html#push-notifications).
 
 ## REST API Push Notification 
 

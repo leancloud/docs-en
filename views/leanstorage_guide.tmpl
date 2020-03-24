@@ -6807,7 +6807,38 @@ In-App Searching offers a better way to search through the information contained
 In-app socializing offers features like following, timeline, status update, interaction, messaging, etc. For more details, see [In-App Socializing Guide](status_system.html).
 
 {% if platform_name === "JavaScript" %}
-{# ## Push 通知 #}
+## Push Notifications
+
+You can send notifications to mobile devices in JavaScript SDK.
+
+For example, to push notifications to all devices subscribed to the `public` channel:
+
+```js
+AV.Push.send({
+  channels: [ 'public' ],
+  data: {
+    alert: 'public message'
+  }
+});
+```
+
+Here is another example, push notification to a specific user:
+
+```js
+var query = new AV.Query('_Installation');
+query.equalTo('installationId', installationId);
+AV.Push.send({
+  where: query,
+  data: {
+    alert: 'Public message'
+  }
+});
+```
+
+Please refer to the [JavaScript SDK API Documentation][AV.Push] and the [Push Notifications Guide](push_guide.html) for more information.
+
+[AV.Push]: https://leancloud.github.io/javascript-sdk/docs/AV.Push.html
+
 {% endif %}
 
 {% if platform_name === "JavaScript" %}
