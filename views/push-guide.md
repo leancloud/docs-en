@@ -28,33 +28,38 @@ timeZone||a string indicating the device timezone
 
 ### Notification
 
-{% if node=='qcloud' %}
-In  **Dashboard > Messaging > History** , a record represents one push notification. It includes the following field:
-{% else %}
-In [Dashboard > Messaging > History](/dashboard/messaging.html?appid={{appid}}#/message/push/list) , one record represents one push notification. It includes the following fields:
-{% endif%}
+A notification corresponds to an entry in [Dashboard > Messaging > Push notification > History](messaging.html?appid={{appid}}#/message/push/list).
+It includes the following attributes:
 
-Parameters | OS | Description
+Attributes | Platform | Description
 ---|---|---
-data| | push content, JSON object
-invalidTokens|iOS|the returned [INVALID TOKEN](https://developer.apple.com/library/mac/technotes/tn2265/_index.html#//apple_ref/doc/uid/DTS40010376-CH1-TNTAG32) in this push from the APNS.**If the number is too large, check the certificate.**
-prod|iOS|which environment certificate is used. **dev** represents development certificate, **prod** represents production certificate.
-status| | status of the push, **in-queue** , **done** or **scheduled** represents waiting to be activated.
-devices| | target devices number . The number is not the number successfully pushed. It is the number of devices valid for the query in `_Installation`. **Valid** means the target has `valid` filed in the `_Installation` table as true and updatedAt field within three months. Much Inactive users(Someone have already uninstall the apps) may include in the attempt. These users cannot receive the push.
-successes | |quantity of successfully pushed devices. Success indicates that the target Android devices successfully receive the push. For iOS or Android devices using hybrid push, success means notifications are used to the Apple APNS or device matched push platform.
-where| |query conditions in `_Installation` for this push, devices match the conditions will receive the messages.
-errors| |error message in the push.
+data| |Push content (a JSON object).
+invalidTokens|iOS|The number of returned [INVALID TOKEN](https://developer.apple.com/library/mac/technotes/tn2265/_index.html#//apple_ref/doc/uid/DTS40010376-CH1-TNTAG32) from the APNs for this push. **If this number is very large, please check if the certificate is valid.**
+prod|iOS|The certificate of environment to use. **dev** represents a development certificate, **prod** represents a production certificate.
+status| |Push status. Its value may be one of **in-queue** (still in the queue), **done** (pushed) or **scheduled** (scheduled notification to be pushed).
+devices| |The number of targets. This number is not the number of devices successfully pushed, but the number of devices valid for the query of installations. **Valid** means the `valid` attribute of the installation is true and its `updatedAt` attribute is within three months. This number may include a lot of inactive users (for example, users who have already uninstalled the application), and these users may not be able to receive notifications.
+successes | |The number of successfully pushed devices. "Successfully pushed" refers to the device successfully received the notification or the notification has been delivered to the upstream push service such as Apple's APNS or Android's FCM.
+where| |Query conditions of installations for this push. Devices matching the specfied conditions will receive the notification.
+errors| |Error message.
 
-The Nature of the Push is to retrieve all the devices meet the query conditions in `_Installation` table. Then the messages are pushed to the targets. As `_Installation` is a fully configurable Key-Value Object, pushs under various complex conditions are achievable such as subscriptions, Geopoint push , specific user push.
+The essence of "push" is querying for all the devices matching some specific conditions, then pushing a message to these devices.
+As an installation is a fully customizable object, you can easily implemnt pushes with various complex conditions, such as pushing to users subscribed to certain channels, users located in certain places, etc.
 
-When the field **devices** has a value of 0. It represents no target devices are retrieved under such query conditions. No devices will receive the push. A value larger than 0 represents qualified devices exist, but no devices are ensured to receive the push. It is reasonable to have **devices** larger than **successes** and the gap is larger when there are enormous inactive devices.
+When `devices` has a value of 0, there is no devices matching the query conditions specfied.
+Thus you need to examine the query conditions.
+When `devices` has a value larger than 0, it only means there are devices matching the query conditions exist.
+It is not guaranteed these devices will all receive the notifications pushed,
+thus it is reasonable to have **devices** larger than **successes**.
+And their difference may be large when there are enormous inactive devices.
 
-Turn the field `valid` into `false` in `_Installation` will disable receiving the push.
+Changing the attribute `valid` of an installation to `false` will disable push notificatino for that device.
 
-**warning** , we only retain the history for one week and the expired push history will get cleared. There is no relation between the expiry of the push and the history clearance. The targets will still receive the push nonetheless the push history are cleared. The expiry date on the push history refer to [Push notification](#Push notification).
+Note that LeanCloud only retains the push history for one week and the expired push history will get cleared.
+There is no relation between the expiration of the notification and the expiration of the push history.
+The targeted devices will still receive the notification pushed to them nonetheless the push history has been cleared.
+Refer to the [notification expiration](#notification-expiration) section for more information on the expiration of notication itself.
 
-{#TODO 
-
+{# TODO 
 
 ## iOS Push Notification
 
@@ -66,7 +71,6 @@ Refer to [Android push guide](./android_push_guide.html).
 
 ## Android Mix Push
 
-
 We designed an advanced push mechanism named [mix push] to lift up the push rate on some Android device with more restrictive background process management. 
 
 The function is only available for Business Plan users, switch on the function in [Dashboard > Messaging > Push Notification > Settings > mix push](/dashboard/messaging.html?appid={{appid}}#/message/push/conf), switch on the mix push.
@@ -74,6 +78,8 @@ The function is only available for Business Plan users, switch on the function i
 Attention, **Swtich on Push Notification** option can adjust at discretion without any adversity. When it is switched off, the next Android Push will work as the normal push via the LeanCloud owned channel to the client terminal. Nothing is changed but the push may get influenced by some background process management. However, the third party channel will get utilized if the mix push is switched on.
 
 Refer to [Android mix push guide](./android_push_guide.html#Mix Push).
+
+#}
 
 {# TODO
 
