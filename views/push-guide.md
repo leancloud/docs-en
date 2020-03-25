@@ -503,42 +503,43 @@ and
 
 #### Message Content
 
-#### iOS device content
+#### iOS Devices
 
-For iOS device, the content of the data can be:
-```
+For iOS devices, the notification content (passed in the `data` parameter) should be wrapped in a JSON object with an `aps` key:
+
+```json
 {
-"alert": string type, content of the push , if the target are all iOS devices it can be JSON as well, the following fields will give you details,
-"title": string type, title of the push , if the alert is of JSON type the field can be igrnored,
-"category": string, type of the push,
-"thred-id": string, name of the push type,
-"badge" int, the number of the unread message, the number in the red ballon on top right side of the icon. It can also be "Increment"(case-sensitive),
-"sound": string or JSON, the sound when push arrived, details given in the following JSON guide,
-"content-available": int tupe , if use Newstand, set to 1 to start a background download,
-"mutable-content"" int, to support UNNotificationServiceExtension function, activate with value 1.
-"collapse-id": string, matching the APNs request header's apns-collapse-id,  to concatanate multiple tweets. Refer to the official Apple Request Header document,
-"apns-priority"： int type, be 10 or 5 and matching APNs requet header's apns-priority parameter. The field judges whether the device will push under low power mode. Refer to the official Apple Request Header document,
-"apns-push-type": string type, used for push type information, in iOS 13 or watchOS 6 and later version, be "background" or "alret", default on "alert",
-"url-args": string type, for safari push. Refer to APNs document for url-args description.
-"target-content-id": string, refer to APNs document for target-content-id parameter description,
-"custom-key": self-customized fields, custom-key is one example, switch at discretion.
+  "aps": {
+     "alert": {
+       "title":               "notification title",
+       // ... and other APNs payload keys
+     }
+     // ... and other APNs payload keys
+   },
+   "collapse-id":          "`apns-collapse-id` request header",
+   "apns-priority":        "`apns-priority` request header",
+   "apns-push-type":       "One of `background`, `voip`, `complication`, `fileprovider`, `mdm`, and `alert`. Default value: `alert`",
+   "custom-key":           "arbitrary key specifed by developers"
 }
 ```
 
-#### Android device
+Please refer to [official](ttps://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification) [Apple](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) [documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 
-If it is a Android, default fields are as follows:
+#### Android Devices
 
-```
+For Android devices, the default fields are as follows:
+
+```json
 {
-  "alert": string, content of the push
-  "title": string, titile in the notification center
-  "silent": boolean, close the notification center alert or not. Default on false, namely close the alert,
-  "custom-key": self-customized user field, custom-key is an example, switch at discretion.
+  "alert": "string, notification content",
+  "title": "string, notification titile",
+  "silent": "boolean, disabling the notification center alert, defaults to false",
+  "custom-key": "arbitrary key specifed by developers",
+  "action": "string, if you want to customize the Receiver"
 }
 ```
 
-If self-customize Receiver, set `action`:
+To customize the Receiver, set the `action` field:
 
 ```
 {
@@ -546,14 +547,14 @@ If self-customize Receiver, set `action`:
   "title": string, title in the notification centre
   "action": string, action name for registering Receiver
   "silent": boolean, mute the notificaiton or not, default on false
-  "custom-key": self-customized field, switch at discretion
-  
+  "custom-key": self-customized field, switch at discretion  
 }
 
-{#TODO For customize Receiver refer to [customize Receiver](./android_push_guide.html#customize_Receiver).}
+{# TODO For customize Receiver refer to [customize Receiver](./android_push_guide.html#customize_Receiver). #}
 
-#### Mixed device type push
+#### Mixing Device Types
 
+{# TODO
 For a single push, if the query have several different device types, we can retrieve the matching device type to push. For example:
 
 ```
@@ -590,6 +591,8 @@ hms | Huawei
 mz | meizu
 vivo | -
 oppo | -
+
+#}
 
 {#TODO 
 
