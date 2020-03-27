@@ -68,7 +68,7 @@ You may implement your own `SignatureFactory` to retrieve signatures from remote
 
 This signature expires in 6 hours,
 but it becomes invalid once the client has been kicked off (via `POST /1.2/rtm/clients/{client_id}/kick`).
-Signature invalidness does not affect current connected clients.
+Signature invalidness does not affect currently connected clients.
 
 #### Signatures for Creating Conversations
 
