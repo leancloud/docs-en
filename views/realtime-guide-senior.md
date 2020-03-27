@@ -66,7 +66,7 @@ Parameter | Description
 
 You may implement your own `SignatureFactory` to retrieve signatures from remote servers. If you don't have your own server, you may use the **web hosting** service provided by LeanEngine. Generating signatures within your mobile app is **extremely dangerous** since your **Master Key** can get exposed.
 
-This signature expires in 6 months,
+This signature expires in 6 hours,
 but it becomes invalid once the client has been kicked off (via `POST /1.2/rtm/clients/{client_id}/kick`).
 
 #### Signatures for Creating Conversations
