@@ -546,47 +546,23 @@ If `silent` is unset, LeanCloud will use the default value `false`.
 
 {# TODO For customize Receiver refer to [customize Receiver](./android_push_guide.html#customize_Receiver). #}
 
-#### Mixing Device Types
+#### Push to Both iOS and Android Devices
 
-{# TODO
-For a single push, if the query have several different device types, we can retrieve the matching device type to push. For example:
+You can push to both iOS and Android (with and without FCM) devices in one API call:
 
-```
+```json
 {
   "ios": {
-    "alert":             "Hello iOS",
-    "badge":             "Increment",
-    "custom-key":        "custom-value"
+    "aps": { /* data for ios */ }
+  },
+  "fcm": {
+    // with FCM
   },
   "android": {
-    "alert":             "Hello LeanCloud",
-    "action":            "com.your_company.push",
-    "custom-key":        "custom-value"
-  },
-  "mi": {
-    "alert":             "Hello Mi",
-    "custom-key":        "custom-value"
-  },
-  "hms": {
-    "alert":             "Hello Huawei",
-    "custom-key":        "custom-value"
+    // without FCM
   }
 }
 ```
-
-The name and the matching platform is as follows:
-
-name | platform
--------- | ----
-ios | Apple APNs
-android | Android from LeanCloud
-mi | Xiaomi
-hms | Huawei 
-mz | meizu
-vivo | -
-oppo | -
-
-#}
 
 {#TODO 
 
