@@ -18,7 +18,7 @@ Attributes | Platform | Description
 ---|---|---
 badge|iOS| number shown on the top right corner of the application icon, which may represent unread messages
 channels||array of the channels subscribed
-deviceProfile||When your application has multiple iOS push certificates or multiple Android mixpush configurations, you can use `deviceProfile` to specify the current certificate or configuration. Its value has to align with the value in [Dashboard > Messaging > Push notifications > Settings](messaging.html?appid={{appid}}#/message/push/conf), otherwise the push will fail. `deviceProfile` must be an empty string or a string that begins with a letter, and only contains letters, numbers, and underscores.
+deviceProfile||When your application has multiple iOS push certificates or multiple Android mixpush configurations, you can use `deviceProfile` to specify the current certificate or configuration. Its value has to align with the value in [Dashboard > Messaging > Push notifications > Settings](messaging.html?appid={{appid}}#/message/push/conf), otherwise, the push will fail. `deviceProfile` must be an empty string or a string that begins with a letter, and only contains letters, numbers, and underscores.
 deviceToke|iOS|a unique identifier assigned by Apple for APNS
 ansTopic|iOS|This is required for push notifications based on Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. not using iOS SDK (for example, you are developing a React Native application) 3. using a `topic` different from bundle ID.
 deviceType|| `ios` or `android`
@@ -35,29 +35,29 @@ Attributes | Platform | Description
 ---|---|---
 data| |Push content (a JSON object).
 invalidTokens|iOS|The number of returned [INVALID TOKEN](https://developer.apple.com/library/mac/technotes/tn2265/_index.html#//apple_ref/doc/uid/DTS40010376-CH1-TNTAG32) from the APNs for this push. **If this number is very large, please check if the certificate is valid.**
-prod|iOS|The certificate of environment to use. **dev** represents a development certificate, **prod** represents a production certificate.
+prod|iOS|The certificate of the environment to use. **dev** represents a development certificate, **prod** represents a production certificate.
 status| |Push status. Its value may be one of **in-queue** (still in the queue), **done** (pushed) or **scheduled** (scheduled notification to be pushed).
 devices| |The number of targets. This number is not the number of devices successfully pushed, but the number of devices valid for the query of installations. **Valid** means the `valid` attribute of the installation is true and its `updatedAt` attribute is within three months. This number may include a lot of inactive users (for example, users who have already uninstalled the application), and these users may not be able to receive notifications.
 successes | |The number of successfully pushed devices. "Successfully pushed" refers to the device successfully received the notification or the notification has been delivered to the upstream push service such as Apple's APNS or Android's FCM.
-where| |Query conditions of installations for this push. Devices matching the specfied conditions will receive the notification.
+where| |Query conditions of installations for this push. Devices matching the specified conditions will receive the notification.
 errors| |Error message.
 
 The essence of "push" is querying for all the devices matching some specific conditions, then pushing a message to these devices.
-As an installation is a fully customizable object, you can easily implemnt pushes with various complex conditions, such as pushing to users subscribed to certain channels, users located in certain places, etc.
+As installation is a fully customizable object, you can easily implement pushes with various complex conditions, such as pushing to users subscribed to certain channels, users located in certain places, etc.
 
-When `devices` has a value of 0, there is no devices matching the query conditions specfied.
+When `devices` has a value of 0, there are no devices matching the query conditions specified.
 Thus you need to examine the query conditions.
-When `devices` has a value larger than 0, it only means there are devices matching the query conditions exist.
+When `devices` has a value larger than 0, it only means devices matching the query conditions exist.
 It is not guaranteed these devices will all receive the notifications pushed,
 thus it is reasonable to have **devices** larger than **successes**.
 And their difference may be large when there are enormous inactive devices.
 
-Changing the attribute `valid` of an installation to `false` will disable push notificatino for that device.
+Changing the attribute `valid` of installation to `false` will disable push notification for that device.
 
 Note that LeanCloud only retains the push history for one week and the expired push history will get cleared.
 There is no relation between the expiration of the notification and the expiration of the push history.
 The targeted devices will still receive the notification pushed to them nonetheless the push history has been cleared.
-Refer to the [notification expiration](#notification-expiration) section for more information on the expiration of notication itself.
+Refer to the [notification expiration](#notification-expiration) section for more information on the expiration of notification itself.
 
 {# TODO 
 
@@ -223,7 +223,7 @@ curl -X PUT \
 ### Installation Queries
 
 Similar to normal objects, you can send a GET request to `installations` list all installations.
-This only works in REST API, and there is no equivelent APIs in client side SDKs.
+This only works in the REST API, and there is no equivalent APIs in client-side SDKs.
 
 ```sh
 curl -X GET \
@@ -268,7 +268,7 @@ By querying the `channels` array, you can retrieve all the devices subscribed to
 
 You can delete an installation just as [deleting a normal object](rest_api.html#deleting-objects).
 This is also only available in REST API.
-There is no equivelent APIs in client side SDKs.
+There is no equivalent APIs in client-side SDKs.
 
 ```sh
 curl -X DELETE \
@@ -281,9 +281,9 @@ curl -X DELETE \
 
 #### Master Key
 
-By default you have to use maser key (`X-LC-Key: {{masterkey}},master`) to send push notifications.
+By default, you have to use the master key (`X-LC-Key: {{masterkey}},master`) to send push notifications.
 If you want to allow your application users to send push notifications to each other, you can disable the **Prevent clients from sending push notifications** option in [Dashboard > Messaging > Push notifications > Settings](/messaging.html?appid={{appid}}#/message/push/conf).
-This is insecure thus we recommed to keep this restriction on.
+This is insecure thus we recommend to keep this restriction on.
 
 #### Query Then Push
 
@@ -302,8 +302,7 @@ curl -X POST \
   https://{{host}}/1.1/push
 ```
 
-Note that the the HTTP body (namely the serialized JSON object passed in) must be no larger than 4096 bytes.
-Namely  shall not surpass this limitation.
+Note that the HTTP body (namely the serialized JSON object passed in) must be no larger than 4096 bytes.
 
 The parameters available are as follows:
 
@@ -315,14 +314,14 @@ channels | optional | Included as a condition in the `where` parameter.
 expiration_interval | optional | Expiration time in ***second**, relative to the moment the API is invoked.
 expiration_time | optional | The absolute expiration time in ISO8691 format with `UTC+0` timezone, e.g. `2019-04-01T06:19:29.000Z`.
 notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
-push_time | optional | A ISO8601 timestamp string used for scheduled push. The timezone is `UTC+0`. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](https://docs.leancloud.app/leanengine_overview.html).
-req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplication and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfer normal pushes**. Please be careful.
-prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` enviroment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. The `deviceProfile` attribute of the installation takes precedence over this parameter.
+push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](https://docs.leancloud.app/leanengine_overview.html).
+req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplication and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfere with normal pushes**. Please be careful.
+prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` environment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. The `deviceProfile` attribute of the installation takes precedence over this parameter.
 topic | optional | **Only applicable for pushing to iOS devices with the Token Authentication.** The APNs Topic is required for Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. not using iOS SDK (for example, you are developing a React Native application) 3. using a `topic` different from bundle ID.
-apns_team_id | **Only applicable for pushing to iOS devices with the Token Authentication.**  The Team ID is required for Token Authentication. Generally, if there is no duplicated APNs Topics for all of your Team IDs, or if you have specified the `apnsTeamId` attribue of the installation beforehand, then LeanCloud will automatically push notifications with the Team ID matched. Otherwise you need to manually specify this parameter and ensure all the targeted devices have the specified Team ID.
+apns_team_id | **Only applicable for pushing to iOS devices with the Token Authentication.**  The Team ID is required for Token Authentication. Generally, if there are no duplicated APNs Topics for all of your Team IDs, or if you have specified the `apnsTeamId` attribute of the installation beforehand, then LeanCloud will automatically push notifications with the Team ID matched. Otherwise, you need to manually specify this parameter and ensure all the targeted devices have the specified Team ID.
 flow_control | optional | Targets per second. If specified, LeanCloud will throttle the pushes. The minimum value is 1000, if a value less than 1000 is specified, it will be treated as 1000.
 
-Below are examples for some common use cases.
+Below are examples of some common use cases.
 Refer to [Queries](rest_api.html#queries) section for more information.
 
 ##### Push to All Devices
