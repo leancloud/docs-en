@@ -532,22 +532,17 @@ For Android devices, the default fields are as follows:
 {
   "alert": "string, notification content",
   "title": "string, notification titile",
-  "silent": "boolean, disabling the notification center alert, defaults to false",
+  "silent": "boolean, see below",
   "custom-key": "arbitrary key specifed by developers",
   "action": "string, if you want to customize the Receiver"
 }
 ```
 
-To customize the Receiver, set the `action` field:
-
-```
-{
-  "alert": string, content of the push
-  "title": string, title in the notification centre
-  "action": string, action name for registering Receiver
-  "silent": boolean, mute the notificaiton or not, default on false
-  "custom-key": self-customized field, switch at discretion  
-}
+If `silent` is `false`, when the device receives the notification, it will automatically appear in the notification drawer.
+If `silent` is `true`, when the device receives the notification, it will be forward to LeanCloud Android SDK instead.
+Then LeanCloud Android SDK will pass the notification to the custom Receiver implemented by the developer.
+LeanCloud SDK will not put the notification into the notification drawer automatically.
+If `silent` is unset, LeanCloud will use the default value `false`.
 
 {# TODO For customize Receiver refer to [customize Receiver](./android_push_guide.html#customize_Receiver). #}
 
@@ -609,14 +604,6 @@ oppo | -
 ```
 
 如果是 `dev` 值就表示使用开发证书，`prod` 值表示使用生产证书。如果未设置 `prod` 属性，且使用的不是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html)，我们默认使用**生产证书**来发推送。如果未设置 `prod` 属性，且使用的是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html) ，则需要在发推送之前执行 [AV.setProduction](https://leancloud.github.io/javascript-sdk/docs/AV.html#.setProduction) 函数才会使用生产证书发推送，否则会以开发证书发推送。注意，当设备设置了 `deviceProfile` 时我们优先按照 `deviceProfile` 指定的证书推送。
-
-#### Android 推送区分透传和通知栏消息
-
-Android 推送（包括 Android 混合推送）支持透传和通知栏两种消息类型。透传消息是指消息到达设备后会先交给 LeanCloud Android SDK，再由 SDK 将消息通过 [自定义 Receiver](./android_push_guide.html#自定义_Receiver) 传递给开发者，收到消息后的行为由开发者定义的 Receiver 来决定，SDK 不会自动弹出通知栏提醒。而通知栏消息是指消息到达设备后会立即自动弹出通知栏提醒。
-
-LeanCloud 推送服务通过推送请求中 `data` 参数内的 `silent` 字段区分透传和通知栏消息。如果 `silent` 是 `true` 则表示这个消息是透传消息，为 `false` 表示消息是通知栏消息。如果不传递 `silent` 则默认其值为 `false`。另外请注意，如果希望接收透传消息请不要忘记自行实现 [自定义 Receiver](./android_push_guide.html#自定义_Receiver)。
-
-推送请求中的 `data` 参数请参考 [消息内容 Data](#消息内容_Data)。
 
 #### Android 混合推送多配置区分
 
