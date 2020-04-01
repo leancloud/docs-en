@@ -316,7 +316,7 @@ expiration_time | optional | The absolute expiration time in ISO8691 format with
 notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
 push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](https://docs.leancloud.app/leanengine_overview.html).
 req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplication and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfere with normal pushes**. Please be careful.
-prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` environment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. The `deviceProfile` attribute of the installation takes precedence over this parameter.
+prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` environment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. When `prod` is unspecified, if there is a `X-LC-Prod` HTTP header whose value is not equal to `1`, then this is equivalent to `{"prod": "dev"}`, otherwise, the default value `{"prod": "prod"}` will be used. The `deviceProfile` attribute of the installation takes precedence over this parameter.
 topic | optional | **Only applicable for pushing to iOS devices with the Token Authentication.** The APNs Topic is required for Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. not using iOS SDK (for example, you are developing a React Native application) 3. using a `topic` different from bundle ID.
 apns_team_id | **Only applicable for pushing to iOS devices with the Token Authentication.**  The Team ID is required for Token Authentication. Generally, if there are no duplicated APNs Topics for all of your Team IDs, or if you have specified the `apnsTeamId` attribute of the installation beforehand, then LeanCloud will automatically push notifications with the Team ID matched. Otherwise, you need to manually specify this parameter and ensure all the targeted devices have the specified Team ID.
 flow_control | optional | Targets per second. If specified, LeanCloud will throttle the pushes. The minimum value is 1000, if a value less than 1000 is specified, it will be treated as 1000.
@@ -563,33 +563,4 @@ You can push to both iOS and Android (with and without FCM) devices in one API c
   }
 }
 ```
-
-{#TODO 
-
-#### iOS 测试和生产证书区分
-
-我们现在支持上传两个环境的 iOS 推送证书：测试和生产环境，你可以通过设定 `prod` 属性来指定使用哪个环境证书。
-
-```
-{
-  "prod": "dev",
-  "data": {
-    "alert": "test"
-  }
-}
-```
-
-如果是 `dev` 值就表示使用开发证书，`prod` 值表示使用生产证书。如果未设置 `prod` 属性，且使用的不是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html)，我们默认使用**生产证书**来发推送。如果未设置 `prod` 属性，且使用的是 [JavaScript 数据存储 SDK](https://leancloud.github.io/javascript-sdk/docs/AV.Push.html) ，则需要在发推送之前执行 [AV.setProduction](https://leancloud.github.io/javascript-sdk/docs/AV.html#.setProduction) 函数才会使用生产证书发推送，否则会以开发证书发推送。注意，当设备设置了 `deviceProfile` 时我们优先按照 `deviceProfile` 指定的证书推送。
-
-#### Android 混合推送多配置区分
-
-如果使用了混合推送功能，并且在 [控制台 > 消息 > 推送 > 设置 > 混合推送](/dashboard/messaging.html?appid={{appid}}#/message/push/conf) 增加了多个混合推送配置，那么在向 `_Installation` 表保存设备信息时就需要将当前设备所对应的混合推送配置名存入 `deviceProfile` 字段。系统会按照该字段指定的唯一配置名为每个目标设备进行混合推送。
-
-如果 `deviceProfile` 字段为空，系统会默认使用名为 `_default` 的混合推送配置来进行推送，所以一定要保证在控制台的混合推送设置中，存在以 `_default` 命名的 Profile 并且已被正确配置，否则系统会**拒绝推送。**
-
-{{deviceprofile_format}}
-
-
-
-#}
 
