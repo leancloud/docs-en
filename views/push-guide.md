@@ -311,10 +311,10 @@ Name | Optionality | Description
 data| **required** | A JSON object of notification content.{#TODO refer to [消息内容](#消息内容_Data) #}
 where | optional | The conditions to query the `_installation` table. See also descriptions on how to encode [Advanced data types](rest_api.html#advanced-data-types).
 channels | optional | Included as a condition in the `where` parameter.
-expiration_interval | optional | Expiration time in ***second**, relative to the moment the API is invoked.
-expiration_time | optional | The absolute expiration time in ISO8691 format with `UTC+0` timezone, e.g. `2019-04-01T06:19:29.000Z`.
-notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
 push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](https://docs.leancloud.app/leanengine_overview.html).
+expiration_time | optional | The absolute expiration time in ISO8691 format with `UTC+0` timezone, e.g. `2019-04-01T06:19:29.000Z`. If the client-side receives the notifications after the expiration time, it will not display these expired notifications to the user.
+expiration_interval | optional | Expiration time in ***second**, relative to `push_time` or the moment the API is invoked if `push_time` is unspecified.
+notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
 req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplication and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfere with normal pushes**. Please be careful.
 prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` environment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. When `prod` is unspecified, if there is a `X-LC-Prod` HTTP header whose value is not equal to `1`, then this is equivalent to `{"prod": "dev"}`, otherwise, the default value `{"prod": "prod"}` will be used. The `deviceProfile` attribute of the installation takes precedence over this parameter.
 topic | optional | **Only applicable for pushing to iOS devices with the Token Authentication.** The APNs Topic is required for Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. not using iOS SDK (for example, you are developing a React Native application) 3. using a `topic` different from bundle ID.
@@ -488,18 +488,6 @@ Name | Optionality | Description
 channel | optional | Android notification channel.
 vendor | optional | `fcm` if using FCM.
 
-{# TODO
-
-### Expiry Time
-
-We suggest iOS devices should all have expiry time, this can allow the receiver to reconnect to the server and get the push even though temporary disconnetion. Refer to [Stackoverflow &middot; Push notification is not being delivered when iPhone comes back online](http://stackoverflow.com/questions/24026544/push-notification-is-not-being-delivered-when-iphone-comes-back-online)。
-
-and 
-
-[Expiry time and fixed time push](#Expiry Time and Fixed Time Push)
-
-#}
-
 #### Message Content
 
 #### iOS Devices
@@ -562,5 +550,42 @@ You can push to both iOS and Android (with and without FCM) devices in one API c
     // without FCM
   }
 }
+```
+
+#### Expiration Time and Scheduled Push
+
+As mentioned above, the `expiration_time` parameter can be used to specify the expiration time of the message:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "expiration_time": "2015-10-07T00:51:13Z",
+        "data": {
+          "alert": "Your coupon will expire on October 7.
+"
+        }
+      }' \
+  https://{{host}}/1.1/push
+```
+
+`expiration_interval` can also be used,
+typically used with `push_time`:
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{appkey}}"        \
+  -H "Content-Type: application/json" \
+  -d '{
+        "push_time": "2016-01-28T00:07:29.773Z",
+        "expiration_interval": 86400,
+        "data": {
+          "alert": "Send this notification at 8:07 BST on January 28, expired in 24 hours (86400 seconds)"
+        }
+      }' \
+  https://{{host}}/1.1/push
 ```
 
