@@ -654,3 +654,69 @@ curl -X DELETE \
 
 You can check push history at **Dashboard > Messaging > Push notifications > History**,
 where you can also cancel unpushed notifications.
+
+## Limits and Costs
+
+### Push Notifications
+
+Calls to [push notifications](#push_notifications) have a frequency limit:
+
+|Per Application with a Business Plan | Per Application with a Developer Plan |
+|-|-|
+|Maximum 9600 times/min, default 600 times/min|60 times/min|
+
+Once you exceeds the limit, LeanCloud will reject the following requests within one minute, returning a 429 error code.
+
+Frequency limit of an application with a Business Plan can be adjusted at **Dashboard > Messaging > Push notifications > Settings > Push notifications settings > Frequency limit for calling API for push notifications**.
+It is billed on the peak daily call frequency:
+
+| Frequency (calls per minute) | Cost (USD / Day) |
+| - | - |
+| 0 - 600 | Free
+| 601 - 1200 | $20  |
+| 1201 - 1800 | $30 |
+| 1801 - 2400 | $40 |
+| 2401 - 3000 | $50 |
+| 3001 - 3600 | $60 |
+| 3601 - 4200 | $70 |
+| 4201 - 4800 | $80 | 
+| 4801 - 5400 | $90 |
+| 5401 - 6000 | $100|
+| 6001 - 6600 | $110|
+| 6601 - 7200 | $120|
+| 7201 - 7800 | $130|
+| 7801 - 8400 | $140|
+| 8401 - 9000 | $150|
+| 9001 - 9600 | $160|
+
+Peak daily call frequency can be viewed at **Dashboard > Messaging > Push notifications > Statistics > Queries per minute**.
+
+### Notifications Pushed Daily
+
+|Per Application with a Business Plan | Per Application with a Developer Plan |
+|-|-|
+|-----------------|-----------------|
+|No maximum, default 1m|10k|
+
+Once the limit is reached, no more notifications can be pushed within that day.
+
+This daily limit of an application with a Business Plan can be adjusted at **Dashboard > Messaging > Push notifications > Settings > Push notifications settings > Daily limit**.
+The adjustment may increase your costs.
+
+| Notifications Pushed Daily | Cost (USD, Ceiling) |
+| - | - |
+| less than or equal to one million | Free |
+| n millions (`n > 1`) | `$0.02 * (n - 1)` |
+
+Notifications pushed daily can be viewed at **Dashboard > Messaging > Push notifications > Statistics > Attempts**.
+
+### Other Limits
+
+### Other
+
+* In order to avoid sending messages to a large number of inactive users, LeanCloud restricts pushing notifications to installations whose `updatedAt` attribute is within the last three months. Applications with a Business Plan can contact LeanCloud to extend the active period (at most one year).
+* To prevent performance issues caused by a large number of certificate errors, LeanCloud imposes a limit on the number of devices that can be pushed to using **a development certificate**. You can push to at most 20k devices at a time with a development certificate. If there are more than 20k devices that meet the push criteria, LeanCloud will reject the push, and the **status** column in **Dashboard > Messaging > Push notifications > History** will show "error" with the message "dev profile disabled for massive push".
+* Apple has limits on the size of push messages. See [APNs documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html) for more information.
+* An application with a Developer Plan can have at most 10 scheduled push tasks and an application with a Business Plan can have at most 1000 scheduled push tasks.
+
+If the push fails, you can check the error message at **Dashboard > Messaging > Push notifications > History**. 
