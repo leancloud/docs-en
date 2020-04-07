@@ -311,7 +311,7 @@ Name | Optionality | Description
 data| **required** | A JSON object of notification content.{#TODO refer to [消息内容](#消息内容_Data) #}
 where | optional | The conditions to query the `_installation` table. See also descriptions on how to encode [Advanced data types](rest_api.html#advanced-data-types).
 channels | optional | Included as a condition in the `where` parameter.
-push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](https://docs.leancloud.app/leanengine_overview.html).
+push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](leanengine_cloudfunction_guide-node.html#scheduled_tasks).
 expiration_time | optional | The absolute expiration time in ISO8691 format with `UTC+0` timezone, e.g. `2019-04-01T06:19:29.000Z`. If the client-side receives the notifications after the expiration time, it will not display these expired notifications to the user.
 expiration_interval | optional | Expiration time in ***second**, relative to `push_time` or the moment the API is invoked if `push_time` is unspecified.
 notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
@@ -559,7 +559,7 @@ As mentioned above, the `expiration_time` parameter can be used to specify the e
 ```sh
 curl -X POST \
   -H "X-LC-Id: {{appid}}"          \
-  -H "X-LC-Key: {{appkey}}"        \
+  -H "X-LC-Key: {{masterkey}},master"        \
   -H "Content-Type: application/json" \
   -d '{
         "expiration_time": "2015-10-07T00:51:13Z",
@@ -577,7 +577,7 @@ typically used with `push_time`:
 ```sh
 curl -X POST \
   -H "X-LC-Id: {{appid}}"          \
-  -H "X-LC-Key: {{appkey}}"        \
+  -H "X-LC-Key: {{masterkey}},master"        \
   -H "Content-Type: application/json" \
   -d '{
         "push_time": "2016-01-28T00:07:29.773Z",
@@ -589,3 +589,68 @@ curl -X POST \
   https://{{host}}/1.1/push
 ```
 
+##### Querying and Canceling Scheduled Push
+
+You can query scheduled push notifications via `POST /scheduledPushMessages` with **master key**:
+
+```sh
+curl -X GET \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{masterkey}},master"        \
+  -H "Content-Type: application/json" \
+  https://{{host}}/1.1/scheduledPushMessages
+```
+
+The response body:
+
+```json
+{
+  "results": [
+    {
+      "id": 1,
+      "expire_time": 1373912050838,
+      "push_msg": {
+        "through?": null,
+        "app-id": "OLnulS0MaC7EEyAJ0uA7uKEF-gzGzoHsz",
+        "where": {
+          "sort": {
+            "createdAt": 1
+          },
+          "query": {
+            "installationId": "just-for-test",
+            "valid": true
+          }
+        },
+        "prod": "prod",
+        "api-version": "1.1",
+        "msg": {
+          "message": "test msg"
+        },
+        "id": "XRs9jmWnLd0GH2EH",
+        "notificationId": "mhWjvHvJARB6Q6ni"
+      },
+      "createdAt": "2016-01-21T00:47:46.000Z"
+    }
+  ]
+}
+```
+
+`push_msg` contains details of the push notification,
+and `expire_time` is a unix timestamp for the push time scheduled.
+
+A scheduled push can be cancelld based on the query results.
+Note that you need to use the outermost `id` in the query results.
+For example, to cancel the first scheduled push, use `results[0].id` (`1` in the example above) instead of `results[0].push_msg.id` (`XRs9jmWnLd0GH2EH` in the example above).
+
+```sh
+curl -X DELETE \
+  -H "X-LC-Id: {{appid}}"          \
+  -H "X-LC-Key: {{masterkey}},master"        \
+  -H "Content-Type: application/json" \
+  https://{{host}}/1.1/scheduledPushMessages/1
+```
+
+### Querying and Canceling Push Notifications
+
+You can check push history at **Dashboard > Messaging > Push notifications > History**,
+where you can also cancel unpushed notifications.
