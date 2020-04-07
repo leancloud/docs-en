@@ -277,6 +277,15 @@ curl -X DELETE \
   https://{{host}}/1.1/installations/51fcb74ee4b074ac5c34cf85
 ```
 
+### Automatic Cleanups
+
+Whenever a user opens the app, LeanCloud will update the `updatedAt` attribute of that installation.
+If the `updatedAt` attribute of an installation has not been updated for a long time, then it indicates that the user has not opened the app for a long time.
+When the app has not been opened for more than 90 days, LeanCloud will delete that installation.
+However, once the user opens the app again, a new installation will be created automatically.
+
+For iOS devices, if APNs informs that a deviceToken has expired, LeanCloud will also delete the related installation automatically.
+
 ### Push Notifications
 
 #### Master Key
