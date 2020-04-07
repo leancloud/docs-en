@@ -720,8 +720,6 @@ Notifications pushed daily can be viewed at **Dashboard > Messaging > Push notif
 
 ### Other Limits
 
-### Other
-
 * In order to avoid sending messages to a large number of inactive users, LeanCloud restricts pushing notifications to installations whose `updatedAt` attribute is within the last three months. Applications with a Business Plan can contact LeanCloud to extend the active period (at most one year).
 * To prevent performance issues caused by a large number of certificate errors, LeanCloud imposes a limit on the number of devices that can be pushed to using **a development certificate**. You can push to at most 20k devices at a time with a development certificate. If there are more than 20k devices that meet the push criteria, LeanCloud will reject the push, and the **status** column in **Dashboard > Messaging > Push notifications > History** will show "error" with the message "dev profile disabled for massive push".
 * Apple has limits on the size of push messages. See [APNs documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html) for more information.
