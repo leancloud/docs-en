@@ -74,7 +74,7 @@ We designed an advanced push mechanism named [mix push] to lift up the push rate
 
 The function is only available for Business Plan users, switch on the function in [Dashboard > Messaging > Push Notification > Settings > mix push](/dashboard/messaging.html?appid={{appid}}#/message/push/conf), switch on the mix push.
 
-Attention, **Swtich on Push Notification** option can adjust at discretion without any adversity. When it is switched off, the next Android Push will work as the normal push via the LeanCloud owned channel to the client terminal. Nothing is changed but the push may get influenced by some background process management. However, the third party channel will get utilized if the mix push is switched on.
+Attention, **Switch on Push Notification** option can adjust at discretion without any adversity. When it is switched off, the next Android Push will work as the normal push via the LeanCloud owned channel to the client terminal. Nothing is changed but the push may get influenced by some background process management. However, the third party channel will get utilized if the mix push is switched on.
 
 Refer to [Android mix push guide](./android_push_guide.html#Mix Push).
 
@@ -349,7 +349,7 @@ curl -X POST \
 
 ##### Push to Android Devices
 
-* to Andorid users
+* to Android users
 
 ```sh
 curl -X POST \
@@ -646,7 +646,7 @@ The response body:
 `push_msg` contains details of the push notification,
 and `expire_time` is a unix timestamp for the push time scheduled.
 
-A scheduled push can be cancelld based on the query results.
+A scheduled push can be canceled based on the query results.
 Note that you need to use the outermost `id` in the query results.
 For example, to cancel the first scheduled push, use `results[0].id` (`1` in the example above) instead of `results[0].push_msg.id` (`XRs9jmWnLd0GH2EH` in the example above).
 
@@ -667,7 +667,7 @@ where you can also cancel unpushed notifications.
 
 ### Push Notifications
 
-Calls to [push notifications](#push_notifications) have a frequency limit:
+Calls to [push notifications](#push-notifications) have a frequency limit:
 
 |Per Application with a Business Plan | Per Application with a Developer Plan |
 |-|-|
@@ -703,7 +703,6 @@ Peak daily call frequency can be viewed at **Dashboard > Messaging > Push notifi
 
 |Per Application with a Business Plan | Per Application with a Developer Plan |
 |-|-|
-|-----------------|-----------------|
 |No maximum, default 1m|10k|
 
 Once the limit is reached, no more notifications can be pushed within that day.
