@@ -317,7 +317,7 @@ The parameters available are as follows:
 
 Name | Optionality | Description 
 --- | --- | ---
-data| **required** | A JSON object of notification content.{#TODO refer to [消息内容](#消息内容_Data) #}
+data| **required** | A JSON object of notification content. See [Message Content section](#message-content) for more details.
 where | optional | The conditions to query the `_installation` table. See also descriptions on how to encode [Advanced data types](rest_api.html#advanced-data-types).
 channels | optional | Included as a condition in the `where` parameter.
 push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](leanengine_cloudfunction_guide-node.html#scheduled_tasks).
