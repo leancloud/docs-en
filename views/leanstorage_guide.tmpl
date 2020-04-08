@@ -6811,7 +6811,7 @@ In-app socializing offers features like following, timeline, status update, inte
 
 You can send notifications to mobile devices in JavaScript SDK.
 
-For example, to push notifications to all devices subscribed to the `public` channel:
+For example, to send push notifications to all devices subscribed to the `public` channel:
 
 ```js
 AV.Push.send({
@@ -6822,7 +6822,7 @@ AV.Push.send({
 });
 ```
 
-Here is another example, push notification to a specific user:
+Here is another example sending a push notification to a specific user:
 
 ```js
 var query = new AV.Query('_Installation');
