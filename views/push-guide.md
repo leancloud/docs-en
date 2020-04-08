@@ -141,7 +141,7 @@ curl -X POST \
 
 ### Retrieving Installations
 
-You can retrieve an installation just as [retrieving a normal object](rest.html#retrieving-objects):
+You can retrieve an installation in a similar way to [retrieving a normal object](rest_api.html#retrieving-objects):
 
 ```sh
 curl -X GET \
@@ -167,7 +167,7 @@ The JSON object returned:
 
 ### Updating Installations
 
-You can update an installation just as [updating a normal object](rest.html#updating-objects).
+You can update an installation in a similar way to [updating a normal object](rest.html#updating-objects).
 
 For example, to subscribe to a channel named "foo":
 
@@ -221,7 +221,7 @@ curl -X PUT \
 
 ### Installation Queries
 
-Similar to normal objects, you can send a GET request to `installations` list all installations.
+Similar to normal objects, you can send a GET request to `/installations` to list all installations.
 This only works in the REST API, and there is no equivalent APIs in client-side SDKs.
 
 ```sh
@@ -265,7 +265,7 @@ By querying the `channels` array, you can retrieve all the devices subscribed to
 
 ### Deleting Installations
 
-You can delete an installation just as [deleting a normal object](rest_api.html#deleting-objects).
+You can delete an installation in a similar way to [deleting a normal object](rest_api.html#deleting-objects).
 This is also only available in REST API.
 There is no equivalent APIs in client-side SDKs.
 
@@ -284,6 +284,8 @@ When the app has not been opened for more than 90 days, LeanCloud will delete th
 However, once the user opens the app again, a new installation will be created automatically.
 
 For iOS devices, if APNs informs that a deviceToken has expired, LeanCloud will also delete the related installation automatically.
+Also, the expired deviceToken will be added to an internal filter,
+and no further notifications will be pushed to an installation with that expired deviceToken.
 
 ### Push Notifications
 
@@ -317,17 +319,17 @@ The parameters available are as follows:
 Name | Optionality | Description 
 --- | --- | ---
 data| **required** | A JSON object of notification content. See [Message Content section](#message-content) for more details.
-where | optional | The conditions to query the `_installation` table. See also descriptions on how to encode [Advanced data types](rest_api.html#advanced-data-types).
+where | optional | The conditions to query the `_installation` table. See also descriptions on how to encode [advanced data types](rest_api.html#advanced-data-types).
 channels | optional | Included as a condition in the `where` parameter.
-push_time | optional | A ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](leanengine_cloudfunction_guide-node.html#scheduled_tasks).
+push_time | optional | An ISO8601 timestamp string with timezone `UTC+0` used for scheduled push. The notification will be pushed immediately if the `push_time` is in less than one minute. You can implement cyclical pushes using [LeanEngine](leanengine_cloudfunction_guide-node.html#scheduled-tasks).
 expiration_time | optional | The absolute expiration time in ISO8691 format with `UTC+0` timezone, e.g. `2019-04-01T06:19:29.000Z`. If the client-side receives the notifications after the expiration time, it will not display these expired notifications to the user.
-expiration_interval | optional | Expiration time in ***second**, relative to `push_time` or the moment the API is invoked if `push_time` is unspecified.
+expiration_interval | optional | Expiration time in **second**, relative to `push_time` or the moment the API is invoked if `push_time` is unspecified.
 notification_id | optional | Customizable push notification id. It is a string consist of up to 16 alphanumeric characters. If not specified, an auto-generated random id will be used. Targets and successes are calculated based on this id, as displayed in [Notification History on Dashboard](#Notification). Specifying a `notification_id` allows for developers to accumulate targets and successes of push notifications for multiple requests.
-req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplication and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfere with normal pushes**. Please be careful.
+req_id | optional | Customizable request id. Similar to `notification_id`, it is a string consist of up to 16 alphanumeric characters. Requests with an identical `req_id` in five minutes will be treated as duplicated and LeanCloud will only handle one of them. You can specify this parameter when you plan to retry requests on timeout errors. **Retrying too frequently or too much will interfere with normal pushes**. Please be careful.
 prod | optional |**Only applicable for iOS devices.** When using Token Authentication, you can use this parameter to specify whether the notifications will be pushed to the `dev` environment or `prod` environment of APNs. When using certificate authentication, you can use this parameter to specify whether using a `dev` certificate or a `prod` certificate. When `prod` is unspecified, if there is a `X-LC-Prod` HTTP header whose value is not equal to `1`, then this is equivalent to `{"prod": "dev"}`, otherwise, the default value `{"prod": "prod"}` will be used. The `deviceProfile` attribute of the installation takes precedence over this parameter.
-topic | optional | **Only applicable for pushing to iOS devices with the Token Authentication.** The APNs Topic is required for Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0 2. not using iOS SDK (for example, you are developing a React Native application) 3. using a `topic` different from bundle ID.
-apns_team_id | **Only applicable for pushing to iOS devices with the Token Authentication.**  The Team ID is required for Token Authentication. Generally, if there are no duplicated APNs Topics for all of your Team IDs, or if you have specified the `apnsTeamId` attribute of the installation beforehand, then LeanCloud will automatically push notifications with the Team ID matched. Otherwise, you need to manually specify this parameter and ensure all the targeted devices have the specified Team ID.
-flow_control | optional | Targets per second. If specified, LeanCloud will throttle the pushes. The minimum value is 1000, if a value less than 1000 is specified, it will be treated as 1000.
+topic | optional | **Only applicable for pushing to iOS devices with the Token Authentication.** The APNs Topic is required for Token Authentication. iOS SDKs will automatically use the bundle ID of the iOS application as `apnsTopic`. However, you have to manually specify them under the following circumstances: 1. iOS SDK version is earlier than v4.2.0; 2. not using iOS SDK (for example, you are developing a React Native application); 3. using a `topic` different from bundle ID.
+apns_team_id | optional | **Only applicable for pushing to iOS devices with the Token Authentication.**  The Team ID is required for Token Authentication. Generally, if there are no duplicated APNs Topics for all of your Team IDs, or if you have specified the `apnsTeamId` attribute of the installation beforehand, then LeanCloud will automatically push notifications with the Team ID matched. Otherwise, you need to manually specify this parameter and ensure all the targeted devices have the specified Team ID.
+flow_control | optional | Targets per second. If specified, LeanCloud will throttle the pushes. The minimum value is 1000. If a value less than 1000 is specified, it will be treated as 1000.
 
 Below are examples of some common use cases.
 Refer to [Queries](rest_api.html#queries) section for more information.
@@ -348,8 +350,6 @@ curl -X POST \
 ```
 
 ##### Push to Android Devices
-
-* to Android users
 
 ```sh
 curl -X POST \
@@ -453,7 +453,7 @@ curl -X POST \
 #### Push Notifications with Device ID List
 
 You can also directly specify a list of devices as push targets.
-This may be faster than the query then push approach mentioned above.
+This may be faster than the query-then-push approach mentioned above.
 
 ```sh
 curl -X POST \
@@ -511,14 +511,14 @@ For iOS devices, the notification content (passed in the `data` parameter) shoul
      }
      // ... and other APNs payload keys
    },
-   "collapse-id":          "`apns-collapse-id` request header",
-   "apns-priority":        "`apns-priority` request header",
+   "collapse-id":          "request header",
+   "apns-priority":        "request header",
    "apns-push-type":       "One of `background`, `voip`, `complication`, `fileprovider`, `mdm`, and `alert`. Default value: `alert`",
    "custom-key":           "arbitrary key specifed by developers"
 }
 ```
 
-Please refer to [official](ttps://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification) [Apple](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) [documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
+Please refer to the [official](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification) [Apple](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) [documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 
 #### Android Devices
 
@@ -572,8 +572,7 @@ curl -X POST \
   -d '{
         "expiration_time": "2015-10-07T00:51:13Z",
         "data": {
-          "alert": "Your coupon will expire on October 7.
-"
+          "alert": "Your coupon will expire on October 7."
         }
       }' \
   https://{{host}}/1.1/push
@@ -724,4 +723,4 @@ Notifications pushed daily can be viewed at **Dashboard > Messaging > Push notif
 * Apple has limits on the size of push messages. See [APNs documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html) for more information.
 * An application with a Developer Plan can have at most 10 scheduled push tasks and an application with a Business Plan can have at most 1000 scheduled push tasks.
 
-If the push fails, you can check the error message at **Dashboard > Messaging > Push notifications > History**. 
+If the push fails, you can check the error message at **Dashboard > Messaging > Push notifications > History**.
