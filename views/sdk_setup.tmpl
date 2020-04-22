@@ -98,6 +98,8 @@ Keep in mind that `leancloud-sdk` depends on the `curl` extension (you may need 
 {% if platform_name === "Java" %}
 You can add our SDK into your project with a package manager of your own choice.
 
+#### LeanStorage
+
 For Maven:
 
 ```xml
@@ -130,9 +132,40 @@ If you are building for Android, use the following packages instead:
 
 ```groovy
 implementation 'cn.leancloud:storage-android:{{ version.unified }}'
-implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-implementation 'com.alibaba:fastjson:1.1.70.android'
+implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ```
+
+#### LeanMessage
+
+For Maven:
+
+```xml
+<dependency>
+    <groupId>cn.leancloud</groupId>
+    <artifactId>realtime-core</artifactId>
+    <version>{{ version.unified }}</version>
+</dependency>
+```
+
+For Ivy:
+
+```xml
+<dependency org="cn.leancloud" name="realtime-core" rev="{{ version.unified }}" />
+```
+
+For SBT:
+
+```scala
+libraryDependencies += "cn.leancloud" %% "realtime-core" % "{{ version.unified }}"
+```
+
+For Gradle:
+
+```groovy
+implementation 'cn.leancloud:realtime-android:{{ version.unified }}'
+implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+```
+
 {% endif %}
 
 ### Installing Manually
