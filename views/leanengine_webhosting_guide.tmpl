@@ -130,7 +130,7 @@ There are [many options](https://docs.npmjs.com/files/package.json) that can be 
 Options that LeanEngine will respect include:
 
 - `scripts.start` is the command to start the project (defaults to `node server.js`), which can be modified if you want to attach startup options to Node.js (such as `--es_staging`) or use another file as the entry point.
-- `scripts.postinstall` will run once after the project is built; you can write build commands such as `gulp build` here. LeanEngine does **not** install modules in `devDependencies` by default, so if your build command requires `devDependencies` to run, refer to notes below. 
+- `scripts.postinstall` will run once after the project is built; you can write build commands such as `gulp build` here. LeanEngine does **not** install modules in `devDependencies` by default, so if your build command requires `devDependencies` in order to run, refer to the notes below. 
 - `engines.node` specifies the required version of Node.js. For compatibility, the default version is still `0.12`, **so it is recommended that you specify a higher version (for example, the current LTS version, `12.x`)**. You can also use `*` to always use the latest version.
 - `dependencies` specifies the project dependencies. LeanEngine will use `npm install --production` during deployment to install all the dependencies listed here.
 - `devDependencies` specifies the dependencies for development. LeanEngine does **not** install modules in `devDependencies` by defalut. To install them, specify `installDevDependencies: true` in the `leanengine.yaml` file.
