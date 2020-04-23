@@ -1586,7 +1586,19 @@ curl -X GET \
 Similarly, you can use `$and` operator to query objects matching all subqueries.
 
 ```
---data-urlencode 'where={"$and":[{"price": {"$ne":0}},{"price":{"$exists":true}}]}' \
+where={"$and":[{"price": {"$ne":199}},{"price":{"$exists":true}}]}'
+```
+
+The query condition expressions are implicitly combined with the `$and` operator, so the query expression above could also be rewritten as:
+
+```
+where=[{"price": {"$ne":199}},{"price":{"$exists":true}}]
+```
+
+However, to combine two or more OR-ed queries, you have to use the `$and` operator:
+
+```
+where={"$and":[{"$or":[{"pubUserCertificate":{"$gt":2}},{"pubUserCertificate":{"$lt":3}}]},{"$or":[{"pubUser":"LeanCloud Support"},{"pubUser":"LeanCloud Engineers"}]}]}
 ```
 
 Be aware that non-filtering constraints such as `limit`, `skip`, `order`, and `include` are not allowed in subqueries of a compound query.
