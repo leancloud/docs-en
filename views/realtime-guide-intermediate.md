@@ -1673,12 +1673,14 @@ realtime.register(OperationMessage);
 ```
 ```swift
 class CustomMessage: IMCategorizedMessage {
-    
+
+    // Specify the type; can be other positive integers 
     class override var messageType: MessageType {
         return 1
     }
 }
 
+// Register the class 
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     
     do {
@@ -1689,22 +1691,6 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
     }
     
     return true
-}
-
-func client(_ client: IMClient, conversation: IMConversation, event: IMConversationEvent) {
-    switch event {
-    case .message(event: let messageEvent):
-        switch messageEvent {
-        case .received(message: let message):
-            if let customMessage = message as? CustomMessage {
-                print(customMessage)
-            }
-        default:
-            break
-        }
-    default:
-        break
-    }
 }
 ```
 ```objc
@@ -1724,25 +1710,16 @@ func client(_ client: IMClient, conversation: IMConversation, event: IMConversat
 
 @end
 
-// 1. Register subclass
+// Register subclass
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [CustomMessage registerSubclass];
 }
-// 2. Receive message
-- (void)conversation:(AVIMConversation *)conversation didReceiveTypedMessage:(AVIMTypedMessage *)message {
-    if (message.mediaType == 123) {
-        CustomMessage *imageMessage = (CustomMessage *)message;
-        [imageMessage setObject:@"value" forKey:@"customKey"];
-        NSString *value = [imageMessage objectForKey:@"customKey"];
-        // Handle custom message
-    }
-}
 ```
 ```java
-@AVIMMessageType(type = AVIMMessageType.TEXT_MESSAGE_TYPE)
-public class AVIMTextMessage extends AVIMTypedMessage {
+@AVIMMessageType(type = 123)
+public class CustomMessage extends AVIMTypedMessage {
   // An empty constructor has to be present
-  public AVIMTextMessage() {
+  public CustomMessage() {
 
   }
 
@@ -1767,6 +1744,9 @@ public class AVIMTextMessage extends AVIMTypedMessage {
     this.attrs = attr;
   }
 }
+
+// Register
+AVIMMessageManager.registerAVIMMessageType(CustomMessage.class);
 ```
 ```cs
 // Provide a class name
@@ -1783,34 +1763,6 @@ public class InputtingMessage : AVIMTypedMessage
 
 // Register subclass
 realtime.RegisterMessageType<InputtingMessage>();
-
-// Send a message with the custom type:
-var inputtingMessage = new InputtingMessage();
-// TextContent is inherited from AVIMTypedMessage
-inputtingMessage.TextContent = "Typing…";
-// Ecode is the property we just defined
-inputtingMessage.Ecode = "#e001";
-        
-// At this point, the user is already logged in and the conversation object for the current conversation is already obtained
-await conversation.SendMessageAsync(inputtingMessage);
-
-For other members in the same `conversation`, they can receive the message with the following code:
-async void Start() 
-{   
-    var jerry = await realtime.CreateClientAsync("jerry");
-    // Event for message received
-    jerry.OnMessageReceived += Jerry_OnMessageReceived;
-}
-void Jerry_OnMessageReceived(object sender, AVIMMessageEventArgs e)
-{
-    if (e.Message is InputtingMessage)
-    {
-        var inputtingMessage = (InputtingMessage)e.Message;
-        Debug.Log(string.Format("Message with custom type received: {0} {1}", inputtingMessage.TextContent, inputtingMessage.Ecode));
-    }
-}
-
-// Here we introduced how you can build your own message type to support the function of displaying typing status. However, to fully implement such function, you have to make the message into a [transient message](#transient-messages).
 ```
 
 See [Back to Receiving Messages](realtime-guide-beginner.html#back-to-receiving-messages) in the previous chapter for more details on how to receive messages with custom types.

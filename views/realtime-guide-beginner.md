@@ -2029,7 +2029,7 @@ In `AVIMConversation`, the process of receiving a message is:
 
 `OnTextMessageReceived` > `OnTypedMessageReceived` > `OnMessageReceived`
 
-Such design allows you to assign different operations to different layers. It works for other types of rich media messages as well.
+Such a design allows you to assign different operations to different layers. It works for other types of rich media messages as well.
 
 {{ docs.langSpecEnd('cs') }}
 
@@ -2071,7 +2071,13 @@ client.on(Event.MESSAGE, function messageEventHandler(message, conversation) {
       var location = message.getLocation();
       console.log('Location message received. Latitude: ' + location.latitude + ', Longitude: ' + location.longitude);
       break;
+    case 1:
+      console.log('Customized message type');
     default:
+      // Your application may add new customized message types in future.
+      // SDK may add new built-in message types as well.
+      // Therefore, do not forget to handle them in the default branch.
+      // For example, you can notify users to upgrade to a new version.
       console.warn('Message with unknown type received.');
   }
 });
@@ -2104,47 +2110,17 @@ func client(_ client: IMClient, conversation: IMConversation, event: IMConversat
                     print(locationMessage)
                 case let recalledMessage as IMRecalledMessage:
                     print(recalledMessage)
+                case let customMessage as CustomMessage:
+                    print(customMessage)
                 default:
                     break
                 }
             } else {
-                print(message)
-            }
-        default:
-            break
-        }
-    default:
-        break
-    }
-}
-
-// Handle messages with custom types
-class CustomMessage: IMCategorizedMessage {
-    
-    class override var messageType: MessageType {
-        return 1
-    }    
-}
-
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    
-    do {
-        try CustomMessage.register()
-    } catch {
-        print(error)
-        return false
-    }
-    
-    return true
-}
-
-func client(_ client: IMClient, conversation: IMConversation, event: IMConversationEvent) {
-    switch event {
-    case .message(event: let messageEvent):
-        switch messageEvent {
-        case .received(message: let message):
-            if let customMessage = message as? CustomMessage {
-                print(customMessage)
+                // Your application may add new customized message types in future.
+                // SDK may add new built-in message types as well.
+                // Therefore, do not forget to handle them in the default branch.
+                // For example, you can notify users to upgrade to a new version.
+                print("Message with unknown type received.")
             }
         default:
             break
@@ -2169,32 +2145,31 @@ func client(_ client: IMClient, conversation: IMConversation, event: IMConversat
         // Handle file message
     } else if(message.mediaType == kAVIMMessageMediaTypeText){
         // Handle text message
-    }
+    } else if(message.mediaType == 123){
+        // Handle customized message type
+    } 
 }
 
-// Handle messages with custom types
-
-// 1. Register subclass
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [AVIMCustomMessage registerSubclass];
-}
-// 2. Receive message
-- (void)conversation:(AVIMConversation *)conversation didReceiveTypedMessage:(AVIMTypedMessage *)message {
-    if (message.mediaType == 1) {
-        AVIMCustomMessage *imageMessage = (AVIMCustomMessage *)message;
-        // Handle image message
-    }
+// Handle unknown messages types
+- (void)conversation:(AVIMConversation *)conversation didReceiveCommonMessage:(AVIMMessage *)message {
+    // Your application may add new customized message types in future.
+    // SDK may add new built-in message types as well.
+    // Therefore, do not forget to handle them here.
+    // For example, you can notify users to upgrade to a new version.
 }
 ```
 ```java
-// 1. Register default handler
+// 1. Register default handler, which will only be invoked when all other handlers are not invoked
 AVIMMessageManager.registerDefaultMessageHandler(new AVIMMessageHandler(){
     public void onMessage(AVIMMessage message, AVIMConversation conversation, AVIMClient client) {
         // Receive the message
     }
 
     public void onMessageReceipt(AVIMMessage message, AVIMConversation conversation, AVIMClient client) {
-        // Do something after receiving the message
+        // Your application may add new customized message types in future.
+        // SDK may add new built-in message types as well.
+        // Therefore, do not forget to handle them here.
+        // For example, you can notify users to upgrade to a new version.
     }
 });
 // 2. Register handler for each type of message
@@ -2229,6 +2204,10 @@ AVIMMessageManager.registerMessageHandler(AVIMTypedMessage.class, new AVIMTypedM
                 // Do something
                 AVIMRecalledMessage recalledMessage = (AVIMRecalledMessage)message;
                 break;
+            case 123:
+                // This is a customized message type.
+                CustomMessage customMessage = (CustomMessage)message;
+                break;
             default:
                 // UnsupportedMessageType
                 break;
@@ -2236,21 +2215,6 @@ AVIMMessageManager.registerMessageHandler(AVIMTypedMessage.class, new AVIMTypedM
     }
 
     public void onMessageReceipt(AVIMTypedMessage message, AVIMConversation conversation, AVIMClient client) {
-        // Do something after receiving the message
-    }
-});
-
-// Handle messages with custom types
-public class CustomMessage extends AVIMMessage {
-  
-}
-
-AVIMMessageManager.registerMessageHandler(CustomMessage.class, new MessageHandler<CustomMessage>(){
-    public void onMessage(CustomMessage message, AVIMConversation conversation, AVIMClient client) {
-        // Receive the message
-    }
-
-    public void onMessageReceipt(CustomMessage message, AVIMConversation conversation, AVIMClient client){
         // Do something after receiving the message
     }
 });
@@ -2279,10 +2243,11 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
     {
 
     }
-    else if (e.Message is AVIMTypedMessage baseTypedMessage)
+    else if (e.Message is InputtingMessage inputtingMessage)
     {
-
-    } // Attach more conditions for custom types
+        Debug.Log(string.Format("Received a customized message {0} {1}", inputtingMessage.TextContent, inputtingMessage.Ecode));
+    }
+    // Messages with unknon types will be discarded.
 }
 ```
 
