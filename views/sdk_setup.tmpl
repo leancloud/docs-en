@@ -168,6 +168,7 @@ implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
 {% endif %}
 
+
 ### Installing Manually
 
 <a class="btn btn-default" target="_blank" href="sdk_down.html">Download SDK</a>
@@ -491,6 +492,23 @@ You can also search for adapters contributed by other developers with the keywor
 [@leancloud/adapter-types]: https://unpkg.com/browse/@leancloud/adapter-types@1.0.2/types.d.ts
 
 {% endif %}
+{% if platform_name === "Flutter" %}
+#### LeanStorage
+
+Specify [leancloud_storage] as dependency in `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  ...
+  leancloud_storage: ^{{ version.flutter_storage }}
+```
+
+[leancloud_storage]: https://pub.dev/packages/leancloud_storage
+
+You can run `flutter pub get` to install dependencies.
+{% endif %}
 {% if platform_name === ".NET" %}
 ### Unity
 
@@ -721,6 +739,23 @@ Run the following code before using LeanMessage:
 const realtime = new AVRealtime("{{appid}}", "{{appkey}}");
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+### Initializing LeanStorage
+
+Add this import statement in the Dart code:
+
+```dart
+import 'package:leancloud_storage/leancloud.dart';
+```
+
+And initialize SDK as follows:
+
+```dart
+LeanCloud.initialize(
+    '{{appid}}', '{{appkey}}',
+    queryCache: new LCQueryCache())
+```
+{% endif %}
 
 ## Enabling Debug Logs
 
@@ -736,6 +771,14 @@ You can easily trace the problems in your project by turning debug logs on durin
 ```swift
 // Place the line before LCApplication.default.set; only needs to be called once
 LCApplication.logLevel = .all
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+### LeanStorage
+
+```dart
+// Place the line after LeanCloud.initialize
+LCLogger.setLevel(LCLogger.DebugLevel);
 ```
 {% endif %}
 {% if platform_name === "JavaScript" %}
@@ -939,6 +982,15 @@ testObject.saveInBackground().blockingSubscribe();
 ```
 
 Save the file and run it.
+{% endif %}
+{% if platform_name === "Flutter" %}
+Then add the following code into your project:
+
+```dart
+LCObject testObject = LCObject('TestObject');
+testObject['words'] = 'Hello world!';
+await testObject.save()
+```
 {% endif %}
 {% if platform_name === ".NET" %}
 Then add the following code into your project:
