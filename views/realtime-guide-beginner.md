@@ -2259,21 +2259,21 @@ A `Conversation` object holds some built-in properties which match the fields in
 
 | Property of `Conversation` | Field in `_Conversation` | Description |
 | --- | --- | --- |
-| `id` | `objectId` | A globally unique ID. |
-| `name` | `name` | The name of the conversation. Shared by all members. |
-| `members` | `m` | The list of members. |
-| `creator` | `c` | The creator of the conversation. |
-| `transient` | `tr` | Whether it is a chat room. |
-| `system` | `sys` | Whether it is a system conversation. |
-| `mutedMembers` | `mu` | The list of members that muted the conversation. |
-| `muted` | N/A | Whether the current user muted the conversation. |
 | `createdAt` | `createdAt` | The time the conversation is created. |
-| `updatedAt` | `updatedAt` | The time the conversation is updated. |
-| `lastMessageAt` | `lm` | The time the last message is sent. |
-| `lastMessage` | N/A | The last message. Could be empty. |
-| `unreadMessagesCount` | N/A | The number of unread messages. |
+| `creator` | `c` | The creator of the conversation. |
+| `id` | `objectId` | A globally unique ID. |
 | `lastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
+| `lastMessage` | N/A | The last message. Could be empty. |
+| `lastMessageAt` | `lm` | The time the last message is sent. |
 | `lastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
+| `members` | `m` | The list of members. |
+| `muted` | N/A | Whether the current user muted the conversation. |
+| `mutedMembers` | `mu` | The list of members that muted the conversation. |
+| `name` | `name` | The name of the conversation. Shared by all members. |
+| `system` | `sys` | Whether it is a system conversation. |
+| `transient` | `tr` | Whether it is a chat room. |
+| `unreadMessagesCount` | N/A | The number of unread messages. |
+| `updatedAt` | `updatedAt` | The time the conversation is updated. |
 
 {{ docs.langSpecEnd('js') }}
 
@@ -2281,66 +2281,75 @@ A `Conversation` object holds some built-in properties which match the fields in
 
 | Property of `IMConversation` | Field in `_Conversation` | Description |
 | --- | --- | --- |
+| `client`                        | N/A                | The `Client` the conversation belongs to. |
 | `ID`                            | `objectId`         | A globally unique `ID`. |
-| `uniqueID`                      | `uniqueId`         | A globally unique `ID` for `Unique Conversation`. |
+| `clientID`                      | N/A                | The `ID` of the `Client` the conversation belongs to. |
 | `isUnique`                      | `unique`           | Whether it is a `Unique Conversation`. |
+| `uniqueID`                      | `uniqueId`         | A globally unique `ID` for `Unique Conversation`. |
 | `name`                          | `name`             | The name of the conversation. |
-| `members`                       | `m`                | The list of members. |
 | `creator`                       | `c`                | The creator of the conversation. |
-| `attributes`                    | `attr`             | Custom attributes. |
 | `createdAt`                     | `createdAt`        | The time the conversation is created. |
 | `updatedAt`                     | `updatedAt`        | The time the conversation is updated. |
-| `lastMessage`                   | N/A                | The last message. Could be empty. |
+| `attributes`                    | `attr`             | Custom attributes. |
+| `members`                       | `m`                | The list of members. |
 | `isMuted`                       | N/A                | Whether the current user muted the conversation. |
+| `isOutdated`                    | N/A                | Whether the properties of the conversation are outdated. Can be used to determine if the data of the conversation needs to be updated. |
+| `lastMessage`                   | N/A                | The last message. Could be empty. |
 | `unreadMessageCount`            | N/A                | The number of unread messages. |
 | `isUnreadMessageContainMention` | N/A                | Whether an unread message mentions the current `Client`. |
-| `client`                        | N/A                | The `Client` the conversation belongs to. |
-| `clientID`                      | N/A                | The `ID` of the `Client` the conversation belongs to. |
-| `isOutdated`                    | N/A                | Whether the properties of the conversation are outdated. Can be used to determine if the data of the conversation needs to be updated. |
-
+| `memberInfoTable`               | N/A                | A table of member information. |
 {{ docs.langSpecEnd('swift') }}
 
 {{ docs.langSpecStart('objc') }}
 
 | Property of `AVIMConversation` | Field in `_Conversation` | Description |
 | --- | --- | --- |
+| `clientID`                      | N/A                | The `ID` of the `Client` the conversation belongs to. |
 | `conversationId` | `objectId` | A globally unique ID. |
-| `name` | `name` | The name of the conversation. Shared by all members. |
-| `members` | `m` | The list of members. |
 | `creator` | `c` | The creator of the conversation. |
-| `attributes` | `attr` | Custom attributes. |
-| `transient` | `tr` | Whether it is a chat room. |
 | `createdAt` | `createdAt` | The time the conversation is created. |
 | `updatedAt` | `updatedAt` | The time the conversation is updated. |
-| `system` | `sys` | Whether it is a system conversation. |
-| `lastMessageAt` | `lm` | The time the last message is sent. |
 | `lastMessage` | N/A | The last message. Could be empty. |
-| `muted` | N/A | Whether the current user muted the conversation. |
-| `unreadMessagesCount` | N/A | The number of unread messages. |
-| `lastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
+| `lastMessageAt` | `lm` | The time the last message is sent. |
 | `lastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
+| `lastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
+| `unreadMessagesCount` | N/A | The number of unread messages. |
+| `unreadMessageContainMention` | N/A | Whether the conversation mentioned the current client. |
+| `name` | `name` | The name of the conversation. Shared by all members. |
+| `members` | `m` | The list of members. |
+| `attributes` | `attr` | Custom attributes. |
+| `uniqueID`                      | `uniqueId`         | A globally unique `ID` for `Unique Conversation`. |
+| `unique`                      | `unique`           | Whether it is a `Unique Conversation`. |
+| `transient` | `tr` | Whether it is a chat room. |
+| `system` | `sys` | Whether it is a system conversation. |
+| `temporary` | N/A | Whether it is a temporary conversation that will not be saved in the `_Conversation` class. |
+| `temporaryTTL` | N/A | Time to live (applicable for temporary conversations only). |
+| `muted` | N/A | Whether the current user muted the conversation. | `imClient` | N/A | The `AVIMClient` the conversation belongs to. |
 
 {{ docs.langSpecEnd('objc') }}
 
 {{ docs.langSpecStart('java') }}
 
-| Property of `AVIMConversation` | Field in `_Conversation` | Description |
+| Getters of `AVIMConversation` | Field in `_Conversation` | Description |
 | --- | --- | --- |
-| `conversationId` | `objectId` | A globally unique ID. |
-| `name` | `name` | The name of the conversation. Shared by all members. |
-| `members` | `m` | The list of members. |
-| `creator` | `c` | The creator of the conversation. |
-| `attributes` | `attr` | Custom attributes. |
+| `getAttributes` | `attr` | Custom attributes. |
+| `getConversationId` | `objectId` | A globally unique ID. |
+| `getCreatedAt` | `createdAt` | The time the conversation is created. |
+| `getCreator` | `c` | The creator of the conversation. |
+| `getLastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
+| `getLastMessage` | N/A | The last message. Could be empty. |
+| `getLastMessageAt` | `lm` | The time the last message is sent. |
+| `getLastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
+| `getMembers` | `m` | The list of members. |
+| `getName` | `name` | The name of the conversation. Shared by all members. |
+| `getTemporaryExpiredat` | N/A | Time to live (applicable for temporary conversations only). |
+| `getUniqueId`                      | `uniqueId`         | A globally unique `ID` for `Unique Conversation`. |
+| `getUnreadMessagesCount` | N/A | The number of unread messages. |
+| `getUpdatedAt` | `updatedAt` | The time the conversation is updated. |
+| `isSystem` | `sys` | Whether it is a system conversation. |
+| `isTemporary` | N/A | Whether it is a temporary conversation that will not be saved in the `_Conversation` class. |
 | `isTransient` | `tr` | Whether it is a chat room. |
-| `lastMessageAt` | `lm` | The time the last message is sent. |
-| `lastMessage` | N/A | The last message. Could be empty. |
-| `muted` | N/A | Whether the current user muted the conversation. |
-| `unreadMessagesCount` | N/A | The number of unread messages. |
-| `lastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
-| `lastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
-| `createdAt` | `createdAt` | The time the conversation is created. |
-| `updatedAt` | `updatedAt` | The time the conversation is updated. |
-| `system` | `sys` | Whether it is a system conversation. |
+| `isUnique`                      | `unique`           | Whether it is a `Unique Conversation`. |
 
 {{ docs.langSpecEnd('java') }}
 
@@ -2348,20 +2357,19 @@ A `Conversation` object holds some built-in properties which match the fields in
 
 | Property of `AVIMConversation` | Field in `_Conversation` | Description |
 | --- | --- | --- |
-| `Id` | `objectId` | A globally unique ID. |
+| `CurrentClient`                        | N/A                | The `Client` the conversation belongs to. |
+| `ConversationId` | `objectId` | A globally unique ID. |
 | `Name` | `name` | The name of the conversation. Shared by all members. |
 | `MemberIds` | `m` | The list of members. |
 | `MuteMemberIds` | `mu` | The list of members that muted the conversation. |
 | `Creator` | `c` | The creator of the conversation. |
 | `IsTransient` | `tr` | Whether it is a chat room. |
-| `IsUnique` | `unique` | If this is `true`, the same conversation will be reused when a new conversation is created with the same composition of members and `unique` to be `true`. |
 | `IsSystem` | `sys` | Whether it is a system conversation. |
-| `LastMessageAt` | `lm` | The time the last message is sent. |
-| `LastMessage` | N/A | The last message. Could be empty. |
-| `LastDeliveredAt` | N/A | The time the last message being delivered is sent (for one-on-one chatting only). |
-| `LastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
+| `IsUnique` | `unique` | If this is `true`, the same conversation will be reused when a new conversation is created with the same composition of members and `unique` to be `true`. |
+| `IsTemporary` | N/A | Whether it is a temporary conversation that will not be saved in the `_Conversation` class. |
 | `CreatedAt` | `createdAt` | The time the conversation is created. |
 | `UpdatedAt` | `updatedAt` | The time the conversation is updated. |
+| `LastMessageAt` | `lm` | The time the last message is sent. |
 
 {{ docs.langSpecEnd('cs') }}
 
