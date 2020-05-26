@@ -2324,7 +2324,8 @@ A `Conversation` object holds some built-in properties which match the fields in
 | `system` | `sys` | Whether it is a system conversation. |
 | `temporary` | N/A | Whether it is a temporary conversation that will not be saved in the `_Conversation` class. |
 | `temporaryTTL` | N/A | Time to live (applicable for temporary conversations only). |
-| `muted` | N/A | Whether the current user muted the conversation. | `imClient` | N/A | The `AVIMClient` the conversation belongs to. |
+| `muted` | N/A | Whether the current user muted the conversation. |
+| `imClient` | N/A | The `AVIMClient` the conversation belongs to. |
 
 {{ docs.langSpecEnd('objc') }}
 
