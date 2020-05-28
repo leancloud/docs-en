@@ -2,6 +2,9 @@
 {% macro regex(useSingleQuotes = false) -%}
 ^((?!ticket).)*&dollar;{% if useSingleQuotes == true %}&apos;{% else %}&quot;{% endif %}
 {%- endmacro %}
+{% macro regexFlutter() -%}
+^((?!ticket).)*\&dollar;
+{%- endmacro %}
 
 # LeanStorage {{platform_name}} Guide
 
@@ -127,6 +130,15 @@ do {
 ```
 {% endif %}
 
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject("Todo");
+todo["title"] = "R&D Weekly Meeting";
+todo["content"] = "All team members, Tue 2pm";
+await todo.save();
+```
+{% endif %}
+
 {% call docs.noteWrap() %}
 The SDK designed for each language interacts with the same [REST API](rest_api.html) via HTTPS, offering fully functional interfaces for you to manipulate the data in the cloud.
 {% endcall %}
@@ -150,6 +162,9 @@ See [How to Install Java SDK](sdk_setup-java.html).
 {% endif %}
 {% if platform_name === "Swift" %}
 See [How to Install Swift SDK](sdk_setup-swift.html).
+{% endif %}
+{% if platform_name === "Flutter" %}
+See [How to Install Flutter SDK](sdk_setup-flutter.html)。
 {% endif %}
 
 {% if platform_name === "JavaScript" %}
@@ -192,7 +207,7 @@ Some examples:
 
 {% if platform_name === "Objective-C" %}
 ```objc
-// Basic objects
+// Basic types
 NSNumber     *boolean    = @(YES);
 NSNumber     *number     = [NSNumber numberWithInt:2018];
 NSString     *string     = [NSString stringWithFormat:@"%@ Top Hit Songs", number];
@@ -215,10 +230,8 @@ AVObject *testObject = [AVObject objectWithClassName:@"TestObject"];
 {% endif %}
 {% if platform_name === "JavaScript" %}
 ```js
-// Declare a class
-const TestObject = AV.Object.extend('TestObject');
-
-// Basic objects
+// Basic types
+const bool   = true;
 const number = 2018;
 const string = `${number} Top Hit Songs`;
 const date   = new Date();
@@ -228,60 +241,87 @@ const object = {
   string: string
 };
 
-// An AV.Object with another class
-const pointer = AV.Object.createWithoutData('Todo', '582570f38ac247004f39c24b');
-
 // Create an object
+const TestObject = AV.Object.extend('TestObject');
 const testObject = new TestObject();
 testObject.set('testNumber',  number);
 testObject.set('testString',  string);
 testObject.set('testDate',    date);
 testObject.set('testArray',   array);
 testObject.set('testObject',  object);
-testObject.set('testNull',    null);
-testObject.set('testPointer', pointer);
 testObject.save();
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+// Basic types
+int number = 2018;
+bool boolValue = true;
+String stringValue = 'hello, world';
+DateTime now = DateTime.now();
+List intList = [1, 2, 3];
+Map<String, dynamic> stringMap = {
+  'year': 1780,
+  'first': 'partridge',
+  'second': 'turtledoves',
+  'fifth': 'golden rings'
+};
+
+// Create an object
+LCObject object = new LCObject('Hello');
+object['intValue'] = intValue;
+object['boolValue'] = boolValue;
+object['stringValue'] = stringValue;
+object['time'] = now;
+object['intList'] = intList;
+object['stringMap'] = stringMap;
 ```
 {% endif %}
 {% if platform_name === "Python" %}
 ```python
 from datetime import datetime
 
-# Declare a class
-TestObject = leancloud.Object.extend('TestObject')
+// Basic types
+bool = True
+number = 2018
+string = 'Top Hit Songs'
+date = datetime.now()
+list = [string, number]
+dictionary = {
+    'number': number,
+    'string': string
+}
 
 # Create an object
+TestObject = leancloud.Object.extend('TestObject')
 test_object = TestObject()
-test_object.set('testString',  'work')
-test_object.set('testInt',     108)
-test_object.set('testFloat',   1.890)
-test_object.set('testBoolean', True)
-test_object.set('testList',    [1, 2, [3, 4, 'string']])
-test_object.set('testDict',    {'item1': 12, 'item2': 'string', 'item3': [1, 2, '3']})
-test_object.set('testDate',    datetime.now())
+test_object.set('testString', string)
+test_object.set('testNumber', number)
+test_object.set('testBoolean', bool)
+test_object.set('testList', list)
+test_object.set('testDict', dictionary)
+test_object.set('testDate', date)
 test_object.save()
 ```
 {% endif %}
 {% if platform_name === "PHP" %}
 ```php
-// Basic objects
+// Basic types
 $bool       = true;
 $number     = 2018;
 $string     = $number . " Top Hit Songs";
 $date       = new \DateTime();
-$bytesArray = Bytes::createFromBase64Data(base64_encode("Hello world!"));
+$mixedArray = array($string, $number);
+$dictionary = array("number" => $number, "string" => $string);
 
 // Create an object
 $testObject = new LeanObject("TestObject");
 $testObject->set("testBoolean", $bool);
-$testObject->set("testInteger", $number);
+$testObject->set("testNumber", $number);
 $testObject->set("testString",  $string);
-$testObject->set("testData",    $bytesArray);
-$testObject->set("testDate",    $date);
-$testObject->set("testArray",   array($string, $number));
-$testObject->set("testAssociativeArray",
-                 array("number" => $number,
-                       "string" => $string));
+$testObject->set("testDate", $date);
+$testObject->set("testArray", $mixedArray);
+$testObject->set("testAssociativeArray", $dictionary);
 $testObject->save();
 ```
 {% endif %}
@@ -390,6 +430,11 @@ AVObject todo = new AVObject("Todo");
 {% if platform_name === "Swift" %}
 ```swift
 let todo = LCObject(className: "Todo")
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject('Todo');
 ```
 {% endif %}
 
@@ -537,6 +582,14 @@ do {
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```
+LCObject todo = LCObject("Todo");
+todo['title'] = 'Sign up for Marathon';
+todo['priority'] = 2;
+await todo.save();
+```
+{% endif %}
 
 To make sure the object is successfully saved, take a look at [Dashboard > LeanStorage > Data > `Todo`](https://console.leancloud.app/data.html?appid={{appid}}#/Todo) in your app. You should see a new entry of data with something like this when you click on its `objectId`:
 
@@ -564,10 +617,10 @@ There are several built-in fields that are provided by default which you don't n
 
 Built-in Field | Type | Description
 --- | --- | ---
-`objectId` | `{% if platform_name === "Objective-C" %}NSString{% endif %}{% if platform_name === "JavaScript" %}String{% endif %}{% if platform_name === "Python" %}str{% endif %}{% if platform_name === "PHP" %}String{% endif %}{% if platform_name === "Java" %}String{% endif %}{% if platform_name === "Swift" %}LCString{% endif %}` | A unique identifier for each saved object.
-`ACL` | `{% if platform_name === "Objective-C" %}AVACL{% endif %}{% if platform_name === "JavaScript" %}AV.ACL{% endif %}{% if platform_name === "Python" %}leancloud.ACL{% endif %}{% if platform_name === "PHP" %}ACL{% endif %}{% if platform_name === "Java" %}AVACL{% endif %}{% if platform_name === "Swift" %}LCACL{% endif %}` | Access Control List, a special object defining the read and write permissions of other people.
-`createdAt` | `{% if platform_name === "Objective-C" %}NSDate{% endif %}{% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Python" %}datetime.datetime{% endif %}{% if platform_name === "PHP" %}DateTime{% endif %}{% if platform_name === "Java" %}Date{% endif %}{% if platform_name === "Swift" %}LCDate{% endif %}` | The time the object was created.
-`updatedAt` | `{% if platform_name === "Objective-C" %}NSDate{% endif %}{% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Python" %}datetime.datetime{% endif %}{% if platform_name === "PHP" %}DateTime{% endif %}{% if platform_name === "Java" %}Date{% endif %}{% if platform_name === "Swift" %}LCDate{% endif %}` | The time the object was last modified.
+`objectId` | `{% if platform_name === "Objective-C" %}NSString{% endif %}{% if platform_name === "JavaScript" %}String{% endif %}{% if platform_name === "Python" %}str{% endif %}{% if platform_name === "PHP" %}String{% endif %}{% if platform_name === "Java" %}String{% endif %}{% if platform_name === "Swift" %}LCString{% endif %}{% if platform_name === "Flutter" %}String{% endif %}` | A unique identifier for each saved object.
+`ACL` | `{% if platform_name === "Objective-C" %}AVACL{% endif %}{% if platform_name === "JavaScript" %}AV.ACL{% endif %}{% if platform_name === "Python" %}leancloud.ACL{% endif %}{% if platform_name === "PHP" %}ACL{% endif %}{% if platform_name === "Java" %}AVACL{% endif %}{% if platform_name === "Swift" %}LCACL{% endif %}{% if platform_name === "Flutter" %}LCACL{% endif %}` | Access Control List, a special object defining the read and write permissions of other people.
+`createdAt` | `{% if platform_name === "Objective-C" %}NSDate{% endif %}{% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Python" %}datetime.datetime{% endif %}{% if platform_name === "PHP" %}DateTime{% endif %}{% if platform_name === "Java" %}Date{% endif %}{% if platform_name === "Swift" %}LCDate{% endif %}{% if platform_name === "Flutter" %}DateTime{% endif %}` | The time the object was created.
+`updatedAt` | `{% if platform_name === "Objective-C" %}NSDate{% endif %}{% if platform_name === "JavaScript" %}Date{% endif %}{% if platform_name === "Python" %}datetime.datetime{% endif %}{% if platform_name === "PHP" %}DateTime{% endif %}{% if platform_name === "Java" %}Date{% endif %}{% if platform_name === "Swift" %}LCDate{% endif %}{% if platform_name === "Flutter" %}DateTime{% endif %}` | The time the object was last modified.
 
 Each of these fields is filled in by the cloud automatically and doesn't exist on the local `{{ baseObjectName }}` until a save operation has been completed.
 
@@ -678,6 +731,18 @@ let _ = query.get("582570f38ac247004f39c24b") { (result) in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+LCObject todo = await query.get('582570f38ac247004f39c24b');
+String title = todo['title'];
+int priority = todo['priority'];
+
+String objectId = todo.objectId;
+DateTime updatedAt = todo.updatedAt;
+DateTime createdAt = todo.createdAt;
+```
+{% endif %}
 
 {% if platform_name === "JavaScript" or platform_name === "Python" or platform_name === "Swift" %}
 After retrieving an object, you can use the `get` method to acquire the data stored in its fields. Be aware that `objectId`, `updatedAt`, and `createdAt` are 3 special properties that cannot be retrieved using the `get` method or modified with the `set` method. Each of these fields is filled in by the cloud only, so they don't exist on `{{ baseObjectName }}` until a save operation has been completed.
@@ -759,6 +824,13 @@ _ = todo.fetch { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject.createWithoutData('Todo', '582570f38ac247004f39c24b');
+await todo.fetch();
+// todo is refreshed
+```
+{% endif %}
 
 {% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" %}
 Keep in mind that **any unsaved changes made to the object prior to calling `{% if platform_name === "Objective-C" %}fetchInBackgroundWithBlock{% endif %}{% if platform_name === "JavaScript" %}fetch{% endif %}{% if platform_name === "Java" %}fetchInBackground{% endif %}` will be discarded**. To avoid this, you have the option to provide **a list of keys** when calling the method so that only the fields being specified are retrieved and refreshed (including special built-in fields such as `objectId`, `createdAt`, and `updatedAt`). Changes made to other fields will remain intact.
@@ -797,6 +869,13 @@ todo.fetchInBackground(keys).subscribe(new Observable<AVObject>() {
 });
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject.createWithoutData('Todo', '582570f38ac247004f39c24b');
+await todo.fetch(includes: ['priority','location']);
+// Only priority and location will be retrieved and refreshed
+```
+{% endif %}
 
 {# After the object is refreshed successfully, its `updatedAt` value will be updated on the client. The cloud won't have this new value until the next save or fetch happens, thus some network bandwidth can be saved out of it. #}
 
@@ -804,7 +883,7 @@ todo.fetchInBackground(keys).subscribe(new Observable<AVObject>() {
 
 ### Updating Objects
 
-To update an existing object, assign the new data to each field and call the `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}` method. For example:
+To update an existing object, assign the new data to each field and call the `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Flutter" %}save{% endif %}` method. For example:
 
 {% if platform_name === "Objective-C" %}
 ```objc
@@ -844,9 +923,27 @@ todo.save();
 {% endif %}
 {% if platform_name === "Swift" %}
 ```swift
-let todo = LCObject(className: "Todo", objectId: "582570f38ac247004f39c24b")
-todo.set("content", value: "Weekly meeting has been rescheduled to Wed 3pm for this week.")
-todo.save()
+do {
+    let todo = LCObject(className: "Todo", objectId: "582570f38ac247004f39c24b")
+    try todo.set("content", value: "Weekly meeting has been rescheduled to Wed 3pm for this week.")
+    todo.save { (result) in
+        switch result {
+        case .success:
+            break
+        case .failure(error: let error):
+            print(error)
+        }
+    }
+} catch {
+    print(error)
+}
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject.createWithoutData('Todo', '582570f38ac247004f39c24b');
+todo['content'] = 'Weekly meeting has been rescheduled to Wed 3pm for this week.';
+await todo.save();
 ```
 {% endif %}
 
@@ -970,6 +1067,62 @@ account.saveInBackground(option).subscribe(new Observer<AVObject>() {
 });
 ```
 {% endif %}
+{% if platform_name === "Swift" %}
+```swift
+do {
+    let account = LCObject(className: "Account", objectId: "5745557f71cfe40068c6abe0")
+    // Atomically decrease balance by 100
+    let amount = -100
+    try account.increase("balance", by: amount)
+    // Add the condition
+    let query = LCQuery(className: "Account")
+    query.whereKey("balance", .greaterThanOrEqualTo(-amount))
+    let options: [LCObject.SaveOption] = [
+        .query(query),
+        // Return the latest data in the cloud upon completion.
+        // All the fields will be returned if the object is new,
+        // otherwise only fields with changes will be returned.
+        .fetchWhenSave
+    ]
+    account.save(options: options) { (result) in
+        switch result {
+        case .success:
+            if let balance = account["balance"] {
+                print("Balance: \(balance)")
+            }
+        case .failure(error: let error):
+            if error.code == 305 {
+                print("Insufficient balance. Operation failed!")
+            }
+        }
+    }
+} catch {
+    print(error)
+}
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  LCObject account = LCObject.createWithoutData('Account', '5745557f71cfe40068c6abe0');
+  // Atomically decrease balance by 100
+  int amount = -100;
+  account.increment('balance', amount);
+  // Add the condition
+  LCQuery<LCObject> query = LCQuery('Account');
+  query.whereGreaterThanOrEqualTo('balance', -amount);
+  // Return the latest data in the cloud upon completion.
+  // All the fields will be returned if the object is new,
+  // otherwise only fields with changes will be returned.
+  await account.save(fetchWhenSave: true, query: query);
+  print('Balance: ${account['balance']}');
+} on LCException catch (e) {
+  if (e.code == 305) {
+    print("Insufficient balance. Operation failed!");
+  }
+}
+```
+{% endif %}
 
 {% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Python" or platform_name === "Java" %}
 **`query` option only works for existing objects.** In other words, it has no effect on objects that haven't been saved to the cloud yet.
@@ -1009,6 +1162,11 @@ post.increment("likes", 1);
 {% if platform_name === "Swift" %}
 ```swift
 try post.increase("likes", by: 1)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+post.increment('likes',1);
 ```
 {% endif %}
 
@@ -1053,6 +1211,14 @@ There are several operations that can be used to atomically update an array asso
 - `append(String, elements: [LCType], unique: Bool)`<br/>appends the given array of objects to the end of an array. A `bool` can be specified for `unique` to ensure that each object only appears once within the array.
 - `remove(String, element: LCType)`<br/>removes all instances of the given object from an array.
 - `remove(String, elements: [LCType])`<br/>removes all instances of the given array of objects from an array.
+{% endif %}
+{% if platform_name === "Flutter" %}
+- `add(key, value)`<br/>appends the given object to the end of an array.
+- `addAll(key, values)`<br/>appends the given objects to the end of an array.
+- `addUnique(key, value)`<br/>adds the given object into an array only if it is not in it. The object will be inserted at a random position.
+- `addAllUnique(key, values)`<br/>appends the given array objects to the end of an array ensuring that each object only appears once within the array.
+- `remove(key, value)`<br/>removes all instances of the given object from an array.
+- `removeAll(key, values)`<br/>removes all instances of the given objects from an array.
 {% endif %}
 
 For example, `Todo` has a field named `alarms` for keeping track of times at which a user wants to be alerted. The following code adds the times to the alarms field:
@@ -1179,6 +1345,17 @@ func testSetArray() {
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+DateTime alarm1 = DateTime.parse('2018-04-30 07:40:00Z');
+DateTime alarm2 = DateTime.parse('2018-04-30 07:50:00Z');
+DateTime alarm3 = DateTime.parse('2018-04-30 07:60:00Z');
+
+LCObject todo = LCObject("Todo");
+todo.addAllUnique('alarms', [alarm1, alarm2, alarm3]);
+await todo.save();
+```
+{% endif %}
 
 {# Note that it is not currently possible to atomically add and remove items from an array in the same save. You will have to call `save` in between every different kind of array operation. #}
 
@@ -1230,6 +1407,12 @@ _ = todo.delete { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject.createWithoutData('Todo', '582570f38ac247004f39c24b');
+await todo.delete();
+```
+{% endif %}
 
 {% if platform_name === "JavaScript" %}
 You can delete a given field of an object with the `unset` method:
@@ -1242,6 +1425,15 @@ todo.unset('priority');
 
 // Save the object to the cloud
 todo.save();
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+You can delete a given field of an object with the `unset` method:
+
+```dart
+LCObject todo = LCObject.createWithoutData('Todo', '582570f38ac247004f39c24b');
+todo.unset('priority');
+await todo.save();
 ```
 {% endif %}
 
@@ -1360,6 +1552,15 @@ _ = LCObject.fetch(objects, completion: { (result) in
 })
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject.saveAll();
+
+LCObject.deleteAll();
+
+LCObject.fetchAll();
+```
+{% endif %}
 
 The following code sets `isComplete` of all `Todo` objects to be `true`:
 
@@ -1466,6 +1667,17 @@ _ = query.find { (result) in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+List<LCObject> results = await query.find();
+
+for (LCObject todo in results) {
+  todo['isComplete'] = true;
+}
+await LCObject.saveAll(results);
 ```
 {% endif %}
 
@@ -1603,6 +1815,24 @@ do {
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+// Create a post
+LCObject post = LCObject("Post");
+post['title'] = 'I am starving!';
+post['content'] = 'Hmmm, where should I go for lunch?';
+
+// Create a comment
+LCObject comment = LCObject("Comment");
+comment['content'] = 'KFC is the best!';
+
+// Add the post as a property of the comment
+comment['parent'] = post;
+
+// This will save both post and comment
+await comment.save();
+```
+{% endif %}
 
 Internally, the backend will store the referred-to object with the `Pointer` type in just one place in order to maintain consistency. You can also link objects using their `objectId`s like this:
 
@@ -1641,6 +1871,12 @@ comment.put("post", post);
 ```swift
 let post = LCObject(className: "Post", objectId: "57328ca079bc44005c2472d0")
 try comment.set("post", value: post)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject post = LCObject.createWithoutData('Post', '57328ca079bc44005c2472d0');
+comment['post'] = post;
 ```
 {% endif %}
 
@@ -1742,6 +1978,21 @@ _ = query.find { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Student');
+query.whereEqualTo('lastName', 'Smith');
+// students 是包含满足条件的 Student 对象的数组
+List<LCObject> students = await query.find();
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Student');
+query.whereEqualTo('lastName', 'Smith');
+List<LCObject> students = await query.find();
+```
+{% endif %}
 
 ### Query Constraints
 
@@ -1777,6 +2028,11 @@ query.whereNotEqualTo("firstName", "Jack");
 {% if platform_name === "Swift" %}
 ```swift
 query.whereKey("firstName", .notEqualTo("Jack"))
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereNotEqualTo('firstName', 'Jack');
 ```
 {% endif %}
 
@@ -1872,6 +2128,17 @@ query.whereKey("age", .greaterThan(18));
 query.whereKey("age", .greaterThanOrEqualTo(18));
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereLessThan('age', 18);
+
+query.whereLessThanOrEqualTo('age', 18);
+
+query.whereGreaterThan('age', 18);
+
+query.whereGreaterThanOrEqualTo('age', 18);
+```
+{% endif %}
 
 You can apply multiple constraints to a single query, and objects will only be in the results if they match all of the constraints. In other words, it's like concatenating constraints with `AND`:
 
@@ -1909,6 +2176,12 @@ query.whereGreaterThan("age", 18);
 ```swift
 query.whereKey("firstName", .equalTo("Jack"))
 query.whereKey("age", .greaterThan(18))
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereEqualTo('firstName', 'Jack');
+query.whereGreaterThan('age', 18);
 ```
 {% endif %}
 
@@ -1950,12 +2223,17 @@ query.limit(10);
 query.limit = 10
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.limit(10);
+```
+{% endif %}
 
 {% call docs.noteWrap() %}
 For performance reasons, the maximum value allowed for `limit` is `1000`, meaning that LeanCloud would only return 1,000 results even it is set to be greater than `1000`.
 {% endcall %}
 
-If you need exactly one result, you may use `{% if platform_name === "Objective-C" %}getFirstObject{% endif %}{% if platform_name === "JavaScript" %}first{% endif %}{% if platform_name === "Python" %}first{% endif %}{% if platform_name === "PHP" %}{% endif %}{% if platform_name === "Java" %}getFirst{% endif %}{% if platform_name === "Swift" %}getFirst{% endif %}` for convenience:
+If you need exactly one result, you may use `{% if platform_name === "Objective-C" %}getFirstObject{% endif %}{% if platform_name === "JavaScript" %}first{% endif %}{% if platform_name === "Python" %}first{% endif %}{% if platform_name === "PHP" %}{% endif %}{% if platform_name === "Java" %}getFirst{% endif %}{% if platform_name === "Swift" %}getFirst{% endif %}{% if platform_name === "Flutter" %}first{% endif %}` for convenience:
 
 {% if platform_name === "Objective-C" %}
 ```objc
@@ -2018,6 +2296,13 @@ _ = query.getFirst { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+query.whereEqualTo('priority', 2);
+LCObject todo = await query.first();
+```
+{% endif %}
 
 You can skip certain number of results by setting `skip`:
 
@@ -2055,6 +2340,11 @@ query.skip(20);
 ```swift
 // Skip the first 20 results
 query.skip = 20
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.skip(20);
 ```
 {% endif %}
 
@@ -2107,6 +2397,14 @@ let query = LCQuery(className: "Todo")
 query.whereKey("priority", .equalTo(2))
 query.limit = 10
 query.skip = 20
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+query.whereEqualTo('priority', 2);
+query.limit(10);
+query.skip(20);
 ```
 {% endif %}
 
@@ -2170,6 +2468,13 @@ query.whereKey("createdAt", .ascending)
 query.whereKey("createdAt", .descending)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.orderByAscending('createdAt');
+
+query.orderByDescending('createdAt');
+```
+{% endif %}
 
 You can even attach multiple sorting rules to a single query:
 
@@ -2207,6 +2512,12 @@ query.addDescendingOrder("createdAt");
 ```swift
 query.whereKey("priority", .ascending)
 query.whereKey("createdAt", .descending)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.addAscendingOrder('priority');
+query.addDescendingOrder('createdAt');
 ```
 {% endif %}
 
@@ -2264,6 +2575,13 @@ query.whereKey("images", .existed)
 
 // Finds objects that don't have the "images" field
 query.whereKey("images", .notExisted)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereExists('images');
+
+query.whereDoesNotExist('images');
 ```
 {% endif %}
 
@@ -2379,6 +2697,18 @@ _ = query.getFirst { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+query.select('title');
+query.select('content');
+LCObject todo = await query.first();
+
+String title = todo['title']; // √
+String content = todo['content']; // √
+String notes = todo['notes']; // null
+```
+{% endif %}
 
 You can add a minus prefix to the attribute name for inverted selection.
 For example, if you do not care about the post author, use `-author`.
@@ -2435,6 +2765,13 @@ let query = LCQuery(className: "Todo")
 query.whereKey("title", .prefixedBy("lunch"))
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = new LCQuery('Todo');
+// SQL equivalent: title LIKE 'lunch%'
+query.whereStartsWith('title', 'lunch');
+```
+{% endif %}
 
 Use `{% if platform_name === "Objective-C" %}containsString{% endif %}{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Python" %}contains{% endif %}{% if platform_name === "PHP" %}contains{% endif %}{% if platform_name === "Java" %}whereContains{% endif %}{% if platform_name === "Swift" %}.matchedSubstring{% endif %}` to restrict to string values that contain a particular string:
 
@@ -2481,14 +2818,21 @@ let query = LCQuery(className: "Todo")
 query.whereKey("title", .matchedSubstring("lunch"))
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+// SQL equivalent: title LIKE '%lunch%'
+query.whereContains('title', 'lunch');
+```
+{% endif %}
 
-Unlike `{% if platform_name === "Objective-C" %}hasPrefix{% endif %}{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Python" %}startswith{% endif %}{% if platform_name === "PHP" %}startsWith{% endif %}{% if platform_name === "Java" %}whereStartsWith{% endif %}{% if platform_name === "Swift" %}.prefixedBy{% endif %}`, `{% if platform_name === "Objective-C" %}containsString{% endif %}{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Python" %}contains{% endif %}{% if platform_name === "PHP" %}contains{% endif %}{% if platform_name === "Java" %}whereContains{% endif %}{% if platform_name === "Swift" %}.matchedSubstring{% endif %}` can't take advantage of indexes, which is not encouraged to be used for large datasets.
+Unlike `{% if platform_name === "Objective-C" %}hasPrefix{% endif %}{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Python" %}startswith{% endif %}{% if platform_name === "PHP" %}startsWith{% endif %}{% if platform_name === "Java" %}whereStartsWith{% endif %}{% if platform_name === "Swift" %}.prefixedBy{% endif %}{% if platform_name === "Flutter" %}whereStartsWith{% endif %}`, `{% if platform_name === "Objective-C" %}containsString{% endif %}{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Python" %}contains{% endif %}{% if platform_name === "PHP" %}contains{% endif %}{% if platform_name === "Java" %}whereContains{% endif %}{% if platform_name === "Swift" %}.matchedSubstring{% endif %}{% if platform_name === "Flutter" %}whereContains{% endif %}` can't take advantage of indexes, which is not encouraged to be used for large datasets.
 
 {% call docs.noteWrap() %}
-Please note that both `{% if platform_name === "Objective-C" %}hasPrefix{% endif %}{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Python" %}startswith{% endif %}{% if platform_name === "PHP" %}startsWith{% endif %}{% if platform_name === "Java" %}whereStartsWith{% endif %}{% if platform_name === "Swift" %}.prefixedBy{% endif %}` and `{% if platform_name === "Objective-C" %}containsString{% endif %}{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Python" %}contains{% endif %}{% if platform_name === "PHP" %}contains{% endif %}{% if platform_name === "Java" %}whereContains{% endif %}{% if platform_name === "Swift" %}.matchedSubstring{% endif %}` perform **case-sensitive** matching, so the examples above will not look for string values containing `Lunch`, `LUNCH`, etc.
+Please note that both `{% if platform_name === "Objective-C" %}hasPrefix{% endif %}{% if platform_name === "JavaScript" %}startsWith{% endif %}{% if platform_name === "Python" %}startswith{% endif %}{% if platform_name === "PHP" %}startsWith{% endif %}{% if platform_name === "Java" %}whereStartsWith{% endif %}{% if platform_name === "Swift" %}.prefixedBy{% endif %}`{% if platform_name === "Flutter" %}whereStartsWith{% endif %} and `{% if platform_name === "Objective-C" %}containsString{% endif %}{% if platform_name === "JavaScript" %}contains{% endif %}{% if platform_name === "Python" %}contains{% endif %}{% if platform_name === "PHP" %}contains{% endif %}{% if platform_name === "Java" %}whereContains{% endif %}{% if platform_name === "Swift" %}.matchedSubstring{% endif %}{% if platform_name === "Flutter" %}whereContains{% endif %}` perform **case-sensitive** matching, so the examples above will not look for string values containing `Lunch`, `LUNCH`, etc.
 {% endcall %}
 
-If you are looking for string values that do not contain a particular string, use `{% if platform_name === "Objective-C" %}matchesRegex{% endif %}{% if platform_name === "JavaScript" %}matches{% endif %}{% if platform_name === "Python" %}matched{% endif %}{% if platform_name === "PHP" %}matches{% endif %}{% if platform_name === "Java" %}whereMatches{% endif %}{% if platform_name === "Swift" %}.matchedPattern{% endif %}` with regular expressions:
+If you are looking for string values that do not contain a particular string, use `{% if platform_name === "Objective-C" %}matchesRegex{% endif %}{% if platform_name === "JavaScript" %}matches{% endif %}{% if platform_name === "Python" %}matched{% endif %}{% if platform_name === "PHP" %}matches{% endif %}{% if platform_name === "Java" %}whereMatches{% endif %}{% if platform_name === "Swift" %}.matchedPattern{% endif %}{% if platform_name === "Flutter" %}whereMatches{% endif %}` with regular expressions:
 
 {% if platform_name === "Objective-C" %}
 <pre><code class="lang-objc">AVQuery *query = [AVQuery queryWithClassName:@"Todo"];
@@ -2526,6 +2870,11 @@ query.whereMatches("title","{{ regex() | safe }});
 <pre><code class="lang-swift">let query = LCQuery(className: "Todo")
 // "title" without "ticket" (case-insensitive)
 query.whereKey("title", .matchedPattern("{{ regex() | safe }}, option: nil))
+</code></pre>
+{% if platform_name === "Flutter" %}
+<pre><code class="lang-java">LCQuery query = LCQuery('Todo');
+// "title" without "ticket" (case-insensitive)
+query.whereMatches('title','{{ regexFlutter() | safe }}', modifiers: 'i');
 </code></pre>
 {% endif %}
 
@@ -2571,6 +2920,11 @@ query.whereEqualTo("tags", "work");
 query.whereKey("tags", .equalTo("work"))
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereEqualTo('tags', 'work');
+```
+{% endif %}
 
 To look for objects whose array field `tags` contains three elements:
 
@@ -2604,6 +2958,11 @@ query.whereSizeEqual("tags", 3);
 query.whereKey("tags", .equalToSize(3))
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereSizeEqualTo('tags', 3);
+```
+{% endif %}
 
 You can also look for objects whose array field `tags` contains `work`, `sales`, **and** `appointment`:
 
@@ -2635,6 +2994,11 @@ query.whereContainsAll("tags", Arrays.asList("work", "sales", "appointment"));
 {% if platform_name === "Swift" %}
 ```swift
 query.whereKey("tags", .containedAllIn(["work", "sales", "appointment"]))
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+query.whereContainsAll('tags', ['工作', '销售', '会议']);
 ```
 {% endif %}
 
@@ -2776,7 +3140,31 @@ let priorityOneOrTwo = priorityOne.or(priorityTwo)
 ```
 {% endif %}
 
-Conversely, you can use `{% if platform_name === "Objective-C" %}notContainedIn{% endif %}{% if platform_name === "JavaScript" %}notContainedIn{% endif %}{% if platform_name === "Python" %}not_contained_in{% endif %}{% if platform_name === "PHP" %}notContainedIn{% endif %}{% if platform_name === "Java" %}whereNotContainedIn{% endif %}{% if platform_name === "Swift" %}.notContainedIn{% endif %}` if you want to retrieve objects that do not match any of the values in a list.
+{% if platform_name === "Flutter" %}
+```dart
+// Single query
+LCQuery<LCObject> priorityOneOrTwo = LCQuery('Todo');
+priorityOneOrTwo.whereContainedIn('priority', [1, 2]);
+// Mission completed :)
+
+// ---------------
+//       vs.
+// ---------------
+
+// Multiple queries
+LCQuery<LCObject> priorityOne = LCQuery('Todo');
+priorityOne.whereEqualTo('priority', 1);
+
+LCQuery<LCObject> priorityTwo = LCQuery('Todo');
+priorityTwo.whereEqualTo('priority', 2);
+
+LCQuery<LCObject> priorityOneOrTwo = LCQuery.or([priorityOne, priorityTwo]);
+List<LCObject> results = await priorityOneOrTwo.find();
+// Kind of verbose :(
+```
+{% endif %}
+
+Conversely, you can use `{% if platform_name === "Objective-C" %}notContainedIn{% endif %}{% if platform_name === "JavaScript" %}notContainedIn{% endif %}{% if platform_name === "Python" %}not_contained_in{% endif %}{% if platform_name === "PHP" %}notContainedIn{% endif %}{% if platform_name === "Java" %}whereNotContainedIn{% endif %}{% if platform_name === "Swift" %}.notContainedIn{% endif %}{% if platform_name === "Flutter" %}whereNotContainedIn{% endif %}` if you want to retrieve objects that do not match any of the values in a list.
 
 ### Relational Queries
 
@@ -2850,6 +3238,14 @@ _ = query.find { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject post = LCObject.createWithoutData('Post', '57328ca079bc44005c2472d0');
+LCQuery<LCObject> query = LCQuery('Comment');
+query.whereEqualTo('post', post);
+List<LCObject> comments = await query.find();
+```
+{% endif %}
 
 To retrieve objects whose given field contains `{{ baseObjectName }}` that matches a different query, you can use `{% if platform_name === "Objective-C" %}matchesQuery{% endif %}{% if platform_name === "JavaScript" %}matchesQuery{% endif %}{% if platform_name === "Python" %}matches_query{% endif %}{% if platform_name === "PHP" %}matchesInQuery{% endif %}{% if platform_name === "Java" %}whereMatchesQuery{% endif %}{% if platform_name === "Swift" %}.matchedQuery{% endif %}`. The code below constructs a query that looks for all the comments for posts with images:
 
@@ -2907,10 +3303,19 @@ let query = LCQuery(className: "Comment")
 query.whereKey("post", .matchedQuery(innerQuery))
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery innerQuery = LCQuery('Post');
+innerQuery.whereExists('image');
 
-To retrieve objects whose given field does not contain `{{ baseObjectName }}` that matches a different query, use `{% if platform_name === "Objective-C" %}doesNotMatchQuery{% endif %}{% if platform_name === "JavaScript" %}doesNotMatchQuery{% endif %}{% if platform_name === "Python" %}does_not_match_query{% endif %}{% if platform_name === "PHP" %}notMatchInQuery{% endif %}{% if platform_name === "Java" %}whereDoesNotMatchQuery{% endif %}{% if platform_name === "Swift" %}.notMatchedQuery{% endif %}` instead.
+LCQuery query = LCQuery('Comment');
+query.whereMatchesQuery('post', innerQuery);
+```
+{% endif %}
 
-Sometimes you may need to look for related objects from different classes without extra queries. In such situations, you can use `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Python" %}include{% endif %}{% if platform_name === "PHP" %}_include{% endif %}{% if platform_name === "Java" %}include{% endif %}{% if platform_name === "Swift" %}.included{% endif %}` on the same query. The following code retrieves the last 10 comments together with the posts related to them:
+To retrieve objects whose given field does not contain `{{ baseObjectName }}` that matches a different query, use `{% if platform_name === "Objective-C" %}doesNotMatchQuery{% endif %}{% if platform_name === "JavaScript" %}doesNotMatchQuery{% endif %}{% if platform_name === "Python" %}does_not_match_query{% endif %}{% if platform_name === "PHP" %}notMatchInQuery{% endif %}{% if platform_name === "Java" %}whereDoesNotMatchQuery{% endif %}{% if platform_name === "Swift" %}.notMatchedQuery{% endif %}{% if platform_name === "Flutter" %}whereDoesNotMatchQuery{% endif %}` instead.
+
+Sometimes you may need to look for related objects from different classes without extra queries. In such situations, you can use `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Python" %}include{% endif %}{% if platform_name === "PHP" %}_include{% endif %}{% if platform_name === "Java" %}include{% endif %}{% if platform_name === "Swift" %}.included{% endif %}{% if platform_name === "Flutter" %}include{% endif %}` on the same query. The following code retrieves the last 10 comments together with the posts related to them:
 
 {% if platform_name === "Objective-C" %}
 ```objc
@@ -3049,6 +3454,21 @@ _ = query.find { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Comment');
+query.orderByDescending('createdAt');
+query.limit(10);
+// Include the related post together with each comment
+query.include('post');
+// comments contains the last 10 comments including the post associated with each
+List<LCObject> comments = await query.find();
+for (LCObject comment in comments) {
+  // This does not require a network access
+  LCObject post = comment['post'];
+}
+```
+{% endif %}
 
 You can even indicate multi-level associations using dot notations. If you wanted to include the post for each comment as well as the author of the post, you can do:
 
@@ -3082,14 +3502,17 @@ query.include("post.author");
 query.whereKey("post.author", .included)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+query.include('post.author');
+{% endif %}
 
 Feel free to use `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Python" %}include{% endif %}{% if platform_name === "PHP" %}_include{% endif %}{% if platform_name === "Java" %}include{% endif %}{% if platform_name === "Swift" %}.included{% endif %}` as many times as you need for the same query to have multiple fields included. Related objects retrieved in this way also works with `{{ baseQueryClassName }}` helpers like `{% if platform_name === "Objective-C" %}getFirstObject{% endif %}{% if platform_name === "JavaScript" %}first{% endif %}{% if platform_name === "Python" %}first{% endif %}{% if platform_name === "PHP" %}{% endif %}{% if platform_name === "Java" %}getFirst{% endif %}{% if platform_name === "Swift" %}getFirst{% endif %}`{% if platform_name === "JavaScript" or platform_name === "Python" or platform_name === "Swift" %} and `get`{% endif %}.
 
 {% call docs.noteWrap() %}
-Multi-level conditions passed into `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Python" %}include{% endif %}{% if platform_name === "PHP" %}_include{% endif %}{% if platform_name === "Java" %}include{% endif %}{% if platform_name === "Swift" %}.included{% endif %}` won't work with any `{{ baseObjectName }}` contained in an array field. The furthest level that can be reached is the field itself.
+Multi-level conditions passed into `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Python" %}include{% endif %}{% if platform_name === "PHP" %}_include{% endif %}{% if platform_name === "Java" %}include{% endif %}{% if platform_name === "Swift" %}.included{% endif %}{% if platform_name === "Flutter" %}.include{% endif%}` won't work with any `{{ baseObjectName }}` contained in an array field. The furthest level that can be reached is the field itself.
 {% endcall %}
 
-You can also use dot notations with `{% if platform_name === "Objective-C" %}selectKeys{% endif %}{% if platform_name === "JavaScript" %}select{% endif %}{% if platform_name === "Python" %}select{% endif %}{% if platform_name === "PHP" %}select{% endif %}{% if platform_name === "Java" %}selectKeys{% endif %}{% if platform_name === "Swift" %}.selected{% endif %}` to limit the fields returned from the related objects:
+You can also use dot notations with `{% if platform_name === "Objective-C" %}selectKeys{% endif %}{% if platform_name === "JavaScript" %}select{% endif %}{% if platform_name === "Python" %}select{% endif %}{% if platform_name === "PHP" %}select{% endif %}{% if platform_name === "Java" %}selectKeys{% endif %}{% if platform_name === "Swift" %}.selected{% endif %}{% if platform_name === "Flutter" %}.select{% endif %}` to limit the fields returned from the related objects:
 
 {% if platform_name === "Objective-C" %}
 ```objc
@@ -3121,6 +3544,12 @@ query.selectKeys(Arrays.asList("post.author.firstName"));
 query.whereKey("post.author.firstName", .selected)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```swift
+query.select('post.author.firstName');
+```
+{% endif %}
+
 
 #### Caveats about Inner Queries
 
@@ -3190,6 +3619,15 @@ query.whereKey("isComplete", .equalTo(true))
 let count = query.count()
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+query.whereEqualTo('isComplete', true);
+int count = await query.count();
+print('$count todos completed.');
+```
+{% endif %}
+
 
 ### Compound Queries
 
@@ -3271,6 +3709,18 @@ isCompleteQuery.whereKey("isComplete", .equalTo(true))
 let query = priorityQuery.or(isCompleteQuery)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> priorityQuery = LCQuery('Todo');
+priorityQuery.whereGreaterThanOrEqualTo('priority', 3);
+
+LCQuery<LCObject> isCompleteQuery = LCQuery('Todo');
+isCompleteQuery.whereEqualTo('isComplete', true);
+
+LCQuery<LCObject> priorityOneOrTwo = LCQuery.or([priorityQuery, isCompleteQuery]);
+```
+{% endif %}
+
 
 {% call docs.noteWrap() %}
 Queries regarding `GeoPoint` cannot be present among OR-ed queries.
@@ -3368,6 +3818,18 @@ let endDateQuery = LCQuery(className: "Todo")
 endDateQuery.whereKey("createdAt", .lessThan(dateFromString("2016-12-03")))
 
 let query = startDateQuery.and(endDateQuery)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> startDateQuery = new LCQuery('Todo');
+startDateQuery.whereGreaterThanOrEqualTo('createdAt', DateTime.parse('2016-11-13 00:00:00Z'));
+
+LCQuery<LCObject> endDateQuery = new LCQuery('Todo');
+endDateQuery.whereLessThan('createdAt', DateTime.parse('2016-12-03 00:00:00Z'));
+
+LCQuery<LCObject> query = LCQuery.and([startDateQuery, endDateQuery]);
+List<LCObject> results = await query.find();
 ```
 {% endif %}
 
@@ -3515,6 +3977,26 @@ priority3Query.whereKey("priority", .equalTo(3))
 let priorityQuery = priority2Query.or(priority3Query)
 let timeLocationQuery = locationQuery.or(createdAtQuery)
 let query = priorityQuery.and(timeLocationQuery)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> createdAtQuery = LCQuery('Todo');
+createdAtQuery.whereGreaterThanOrEqualTo('createdAt', DateTime.parse('2018-04-30 00:00:00Z'));
+createdAtQuery.whereLessThan('createdAt', DateTime.parse('2018-05-01 00:00:00Z'));
+
+LCQuery<LCObject> locationQuery = LCQuery('Todo');
+locationQuery.whereDoesNotExist('location');
+
+LCQuery<LCObject> priority2Query = LCQuery('Todo');
+priorityQuery.whereEqualTo('priority', 2);
+
+LCQuery<LCObject> priority3Query = LCQuery('Todo');
+priorityQuery.whereEqualTo('priority', 3);
+
+LCQuery<LCObject> priorityQuery = LCQuery.or([priority2Query, priority3Query]);
+LCQuery<LCObject> timeLocationQuery = LCQuery.or([locationQuery, createdAtQuery]); 
+LCQuery<LCObject> query = LCQuery.and([priorityQuery, timeLocationQuery]);
 ```
 {% endif %}
 
@@ -4055,6 +4537,11 @@ if let data = "LeanCloud".data(using: .utf8) {
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCFile file = LCFile.fromBytes('resume.txt', utf8.encode('LeanCloud'));
+```
+{% endif %}
 
 You can also create a file from a URL:
 
@@ -4097,12 +4584,17 @@ if let url = URL(string: "https://leancloud.cn/assets/imgs/press/Logo%20-%20Blue
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCFile file = LCFile.fromUrl('logo.png', 'https://leancloud.cn/assets/imgs/press/Logo%20-%20Blue%20Padding.a60eb2fa.png');
+```
+{% endif %}
 
 {% call docs.noteWrap() %}
 When creating files from URLs, the SDK will not upload the actual files into the cloud but will store the addresses of the files as strings. This will not lead to actual traffic for uploading files, as opposed to creating files in other ways by doing which the files will be actually stored into the cloud.
 {% endcall %}
 
-{% if platform_name === "JavaScript" or platform_name === "Python" or platform_name === "PHP" or platform_name === "Java" or platform_name === "Swift" %}
+{% if platform_name === "JavaScript" or platform_name === "Python" or platform_name === "PHP" or platform_name === "Java" or platform_name === "Swift" or platform_name === "Flutter" %}
 LeanCloud will auto-detect the type of the file you are uploading based on the file extension, but you can also specify the `Content-Type` (commonly referred to as MIME type):
 {% endif %}
 
@@ -4134,6 +4626,12 @@ if let data = "{\"company\":\"LeanCloud\"}".data(using: .utf8) {
     let file = LCFile(payload: .data(data: data))
     file.mimeType = "application/json"
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCFile file = LCFile.fromBytes('resume.txt', utf8.encode('LeanCloud'));
+file.mimeType = 'application/json';
 ```
 {% endif %}
 
@@ -4184,6 +4682,11 @@ AVFile file = AVFile.withAbsoluteLocalPath("avatar.jpg", "/tmp/avatar.jpg");
 if let url = Bundle.main.url(forResource: "avatar", withExtension: "jpg") {
     let file = LCFile(payload: .fileURL(fileURL: url))
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCFile file = await LCFile.fromPath('avatar.jpg', './avatar.jpg');
 ```
 {% endif %}
 
@@ -4254,6 +4757,12 @@ _ = file.save { result in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await file.save();
+print(file.objectId);
 ```
 {% endif %}
 
@@ -4333,8 +4842,16 @@ todo.append("attachments", element: file)
 todo.save()
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject('Todo');
+todo['title'] = 'Get Cakes';
+todo.add('attachments', file);
+await todo.save();
+```
+{% endif %}
 
-{% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" %}
+{% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" or platform_name === "Flutter" %}
 On a related note, if the files are referenced in an array field of `{{ baseObjectName }}` and you want to get them within the same query for `{{ baseObjectName }}`, you need to use the `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Java"%}include{% endif %}` method with `{{ baseQueryClassName }}`. For example, if you are retrieving all the todos with the same title `Get Cakes` and you want to retrieve their related attachments at the same time:
 {% endif %}
 
@@ -4401,8 +4918,23 @@ query.findInBackground().subscribe(new Observer<List<AVObject>>() {
 });
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+// Get all todos with the same title and contain attachments
+LCQuery<LCObject> query = LCQuery('Todo');
+query.whereEqualTo('title', 'Get Cakes');
+query.whereExists('attachments');
 
-{% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" or platform_name === "Swift" %}
+query.include('attachments');
+List<LCObject> todos = await query.find();
+for (LCObject todo in todos) {
+  // Include attachments with each todo
+  List<LCObject> attachments = todo['attachments'];
+}
+```
+{% endif %}
+
+{% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" or platform_name === "Swift" or platform_name === "Flutter" %}
 ### Upload Progress
 
 You can monitor the progress of uploading and display that to the user:
@@ -4456,6 +4988,16 @@ _ = file.save(progress: { (progress) in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await file.save(onProgress: (int count, int total) {
+print('$count/$total');
+if (count == total) {
+  print('done');
+}
+});
 ```
 {% endif %}
 
@@ -4565,6 +5107,15 @@ _ = file.save { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+file.addMetaData('size', 1024);
+file.addMetaData('width', 128);
+file.addMetaData('height', 256);
+file.mimeType = 'image/jpg';
+await file.save();
+```
+{% endif %}
 
 {% if platform_name === "Objective-C" %}
 {# ### 文件下载 #}
@@ -4612,6 +5163,12 @@ file.delete()
 ```swift
 let file = LCObject(className: "_File", objectId: "552e0a27e4b0643b709e891e")
 file.delete()
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCFile file = LCObject.createWithoutData('_File', '552e0a27e4b0643b709e891e');
+await file.delete();
 ```
 {% endif %}
 
@@ -4825,6 +5382,12 @@ AVGeoPoint point = new AVGeoPoint(39.9, 116.4);
 let point = LCGeoPoint(latitude: 39.9, longitude: 116.4)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCGeoPoint point = LCGeoPoint(39.9, 116.4);
+```
+{% endif %}
+
 
 Now you can store the point in an object as a regular field:
 
@@ -4856,6 +5419,11 @@ todo.put("location", point);
 {% if platform_name === "Swift" %}
 ```swift
 try todo.set("location", value: point)
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+todo['location'] = point;
 ```
 {% endif %}
 
@@ -4948,14 +5516,24 @@ _ = query.find { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+LCGeoPoint point = LCGeoPoint(39.9, 116.4);
+query.whereNear('location', point);
+
+query.limit(10);
+List<LCObject> todos = await query.find();
+```
+{% endif %}
 
 {% call docs.noteWrap() %}
-Additional sorting conditions like `{% if platform_name === "Objective-C" %}orderByAscending{% endif %}{% if platform_name === "JavaScript" %}ascending{% endif %}{% if platform_name === "Python" %}ascending{% endif %}{% if platform_name === "PHP" %}ascend{% endif %}{% if platform_name === "Java" %}orderByAscending{% endif %}{% if platform_name === "Swift" %}.ascending{% endif %}` and `{% if platform_name === "Objective-C" %}orderByDescending{% endif %}{% if platform_name === "JavaScript" %}descending{% endif %}{% if platform_name === "Python" %}descending{% endif %}{% if platform_name === "PHP" %}descend{% endif %}{% if platform_name === "Java" %}orderByDescending{% endif %}{% if platform_name === "Swift" %}.descending{% endif %}` will gain higher priorities than the default order by distance.
+Additional sorting conditions like `{% if platform_name === "Objective-C" %}orderByAscending{% endif %}{% if platform_name === "JavaScript" %}ascending{% endif %}{% if platform_name === "Python" %}ascending{% endif %}{% if platform_name === "PHP" %}ascend{% endif %}{% if platform_name === "Java" %}orderByAscending{% endif %}{% if platform_name === "Swift" %}.ascending{% endif %}{% if platform_name === "Flutter" %}orderByAscending{% endif %}` and `{% if platform_name === "Objective-C" %}orderByDescending{% endif %}{% if platform_name === "JavaScript" %}descending{% endif %}{% if platform_name === "Python" %}descending{% endif %}{% if platform_name === "PHP" %}descend{% endif %}{% if platform_name === "Java" %}orderByDescending{% endif %}{% if platform_name === "Swift" %}.descending{% endif %}{% if platform_name === "Flutter" %}orderByDescending{% endif %}` will gain higher priorities than the default order by distance.
 {% endcall %}
 
 To have the results limited within a certain distance, check out {% if platform_name === "Objective-C" %}`withinKilometers`, `withinMiles`, and `withinRadians`{% endif %}{% if platform_name === "JavaScript" %}`withinKilometers`, `withinMiles`, and `withinRadians`{% endif %}{% if platform_name === "Python" %}`within_kilometers`, `within_miles`, and `within_radians`{% endif %}{% if platform_name === "PHP" %}`withinKilometers`, `withinMiles`, and `withinRadians`{% endif %}{% if platform_name === "Java" %}`whereWithinKilometers`, `whereWithinMiles`, and `whereWithinRadians`{% endif %}{% if platform_name === "Swift" %}`.locatedNear`'s `from` and `to` parameters{% endif %} in our API docs.
 
-You can also query for the set of objects that are contained within a rectangular bounding box with {% if platform_name === "Objective-C" %}`withinGeoBoxFromSouthwest` and `toNortheast`{% endif %}{% if platform_name === "JavaScript" %}`withinGeoBox`{% endif %}{% if platform_name === "Python" %}`within_geo_box`{% endif %}{% if platform_name === "PHP" %}`withinBox`{% endif %}{% if platform_name === "Java" %}`whereWithinGeoBox`{% endif %}{% if platform_name === "Swift" %}`.locatedWithin`{% endif %}:
+You can also query for the set of objects that are contained within a rectangular bounding box with {% if platform_name === "Objective-C" %}`withinGeoBoxFromSouthwest` and `toNortheast`{% endif %}{% if platform_name === "JavaScript" %}`withinGeoBox`{% endif %}{% if platform_name === "Python" %}`within_geo_box`{% endif %}{% if platform_name === "PHP" %}`withinBox`{% endif %}{% if platform_name === "Java" %}`whereWithinGeoBox`{% endif %}{% if platform_name === "Swift" %}`.locatedWithin`{% endif %}{% if platform_name === "Flutter" %}`whereWithinGeoBox`{% endif %}:
 
 <img width="300" height="200" src="images/geopoint-withingeobox.svg" />
 
@@ -5005,6 +5583,14 @@ let query = LCQuery(className: "Todo")
 let southwest = LCGeoPoint(latitude: 30, longitude: 115)
 let northeast = LCGeoPoint(latitude: 40, longitude: 118)
 query.whereKey("location", .locatedWithin(southwest: southwest, northeast: northeast))
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('Todo');
+LCGeoPoint southwest = LCGeoPoint(30, 115);
+LCGeoPoint northeast = LCGeoPoint(40, 118);
+query.whereWithinGeoBox('location', southwest, northeast);
 ```
 {% endif %}
 
@@ -5178,9 +5764,28 @@ user.set("gender", value: "secret")
 assert(user.signUp().isSuccess)
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+// Create an instance
+LCUser user = LCUser();
+
+// Same as user['username'] = 'Tom';
+user.username = 'Tom';
+user.password = 'cat!@#123';
+
+// Optional
+user.email = 'tom@leancloud.rocks';
+user.mobile = '+8618200008888';
+
+// Other fields can be set in the same way as LCObject
+user['gender'] = 'secret';
+await user.signUp();
+```
+{% endif %}
+
 
 {% call docs.noteWrap() %}
-A new `{{ userObjectName }}` should always be created using `{% if platform_name === "Objective-C" %}signUpInBackground{% endif %}{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Python" %}sign_up{% endif %}{% if platform_name === "PHP" %}signUp{% endif %}{% if platform_name === "Java" %}signUpInBackground{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}` rather than `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}`. Subsequent updates to a user can be done with `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}`.
+A new `{{ userObjectName }}` should always be created using `{% if platform_name === "Objective-C" %}signUpInBackground{% endif %}{% if platform_name === "JavaScript" %}signUp{% endif %}{% if platform_name === "Python" %}sign_up{% endif %}{% if platform_name === "PHP" %}signUp{% endif %}{% if platform_name === "Java" %}signUpInBackground{% endif %}{% if platform_name === "Swift" %}signUp{% endif %}{% if platform_name === "Flutter" %}signUp{% endif %}` rather than `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}{% if platform_name === "Flutter" %}save{% endif %}`. Subsequent updates to a user can be done with `{% if platform_name === "Objective-C" %}saveInBackground{% endif %}{% if platform_name === "JavaScript" %}save{% endif %}{% if platform_name === "Python" %}save{% endif %}{% if platform_name === "PHP" %}save{% endif %}{% if platform_name === "Java" %}saveInBackground{% endif %}{% if platform_name === "Swift" %}save{% endif %}`.
 {% endcall %}
 
 If the code returns the error `202`, it means that a user with the same `username` already exists in `_User` table and the client should prompt the user to try a different username. It is also required that each `email` or `mobilePhoneNumber` appears only once in the corresponding column. Otherwise, error `203` or `214` will occur. You may ask a user to sign up with an email address and make the `username` to be the same as the `email`. By doing so, the user can directly [reset their password with email](#resetting-passwords).
@@ -5247,6 +5852,12 @@ _ = LCSMSClient.requestVerificationCode(mobilePhoneNumber: "+19490008888") { (re
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCSMSClient.requestSMSCode('+8618200008888');
+```
+{% endif %}
+
 
 After the verification code is entered by the user, call the following method to finish signing up:
 
@@ -5309,6 +5920,12 @@ _ = LCSMSClient.verifyMobilePhoneNumber("+19490008888", verificationCode: "12345
 })
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+ await LCUser.signUpOrLoginByMobilePhone('+8618200008888', '123456');
+```
+{% endif %}
+
 
 {% call docs.noteWrap() %}
 The `username` will be the same as `mobilePhoneNumber`. The `password` will be a temporary one generated by LeanCloud.
@@ -5381,6 +5998,17 @@ _ = LCUser.logIn(username: "Tom", password: "cat!@#123") { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  // success
+  LCUser user = await LCUser.login('Tom', 'cat!@#123');
+} on LCException catch (e) {
+  // failure (probably due to password error)
+  print('${e.code} : ${e.message}');
+}
+```
+{% endif %}
 
 #### Logging in with Emails
 
@@ -5440,6 +6068,15 @@ _ = LCUser.logIn(email: "tom@leancloud.rocks", password: "cat!@#123") { result i
     case .failure(error: let error):
         print(error)
     }
+}
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  LCUser user = await LCUser.loginByEmail('tom@leancloud.rocks', 'cat!@#123');
+} on LCException catch (e) {
+  print('${e.code} : ${e.message}');
 }
 ```
 {% endif %}
@@ -5504,6 +6141,16 @@ _ = LCUser.logIn(mobilePhoneNumber: "+19490008888", password: "cat!@#123") { res
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  LCUser user = await LCUser.loginByMobilePhoneNumber('+19490008888', 'cat!@#123');
+} on LCException catch (e) {
+  print('${e.code} : ${e.message}');
+}
+```
+{% endif %}
+
 
 {% call docs.noteWrap() %}
 By default, LeanCloud allows a user to log in to their account as long as the phone number and the password are correct even when the ownership of the phone hasn't been [verified](#verifying-phone-numbers). To make your app more secure, you can choose to allow only those who have their phones verified to log in. The option can be found in [Dashboard > LeanStorage > Settings](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf).
@@ -5546,6 +6193,11 @@ _ = LCUser.requestLoginVerificationCode(mobilePhoneNumber: "+19490008888") { res
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestLoginSMSCode('+19490008888');
 ```
 {% endif %}
 
@@ -5604,6 +6256,15 @@ _ = LCUser.logIn(mobilePhoneNumber: "+19490008888", verificationCode: "123456") 
     case .failure(error: let error):
         print(error)
     }
+}
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  await LCUser.signUpOrLoginByMobilePhone('+8618200008888', '123456');
+} on LCException catch (e) {
+  print('${e.code} : ${e.message}');
 }
 ```
 {% endif %}
@@ -5675,6 +6336,11 @@ _ = LCUser.requestVerificationMail(email: "tom@leancloud.rocks") { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestEmailVerify('tom@leancloud.rocks');
+```
+{% endif %}
 
 The `emailVerified` will become `true` after the link is clicked on. This field can never be `true` when the `email` field is empty.
 
@@ -5719,6 +6385,11 @@ _ = LCUser.requestVerificationCode(mobilePhoneNumber: "+19490008888") { result i
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestMobilePhoneVerify('+19490008888');
 ```
 {% endif %}
 
@@ -5780,6 +6451,11 @@ _ = LCUser.verifyMobilePhoneNumber(mobilePhoneNumber: "+19490008888", verificati
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.verifyMobilePhone('+8618200008888','123456');
 ```
 {% endif %}
 
@@ -5851,6 +6527,16 @@ if (currentUser != null) {
 let currentUser = LCApplication.default.currentUser
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCUser currentUser = await LCUser.getCurrent();
+if (currentUser != null) {
+  // Redirect to the home page
+} else {
+  // Show the sign-up or log-in page
+}
+```
+{% endif %}
 
 The session information of a user will remain in the client until the user is logged out:
 
@@ -5901,6 +6587,15 @@ LCUser.logOut()
 let currentUser = LCApplication.default.currentUser
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.logout();
+
+// currentUser becomes nil
+LCUser currentUser = await LCUser.getCurrent();
+```
+{% endif %}
+
 
 ### Setting The Current User
 
@@ -5972,6 +6667,11 @@ _ = LCUser.logIn(sessionToken: "anmlwi96s381m6ca7o7266pzf") { (result) in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.becomeWithSessionToken('anmlwi96s381m6ca7o7266pzf');
+```
+{% endif %}
 
 {% call docs.alertWrap() %}
 For security reasons, please avoid passing session tokens as a part of URLs in non-private environments. This increases the risk that they will be captured by attackers.
@@ -6041,9 +6741,24 @@ if (authenticated) {
 {% endif %}
 {% if platform_name === "Swift" %}
 ```swift
-{# TODO #}
+if let sessionToken = LCApplication.default.currentUser?.sessionToken?.value {
+    _ = LCUser.logIn(sessionToken: sessionToken) { (result) in
+        if result.isSuccess {
+            // The session token is valid
+        } else {
+            // The session token is invalid
+        }
+    }
+}
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCUser currentUser = await LCUser.getCurrent();
+bool isAuthenticated = await currentUser.isAuthenticated();
+```
+{% endif %}
+
 
 ### Resetting Passwords
 
@@ -6093,6 +6808,11 @@ _ = LCUser.requestPasswordReset(email: "tom@leancloud.rocks") { (result) in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestPasswordReset('tom@leancloud.rocks');
 ```
 {% endif %}
 
@@ -6145,6 +6865,11 @@ _ = LCUser.requestPasswordReset(mobilePhoneNumber: "+19490008888") { (result) in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestPasswordRestBySmsCode('+19490008888');
 ```
 {% endif %}
 
@@ -6214,6 +6939,11 @@ _ = LCUser.resetPassword(mobilePhoneNumber: "+19490008888", verificationCode: "1
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.resetPasswordBySmsCode('+19490008888', '123456', 'cat!@#123');
+```
+{% endif %}
 
 {# > Note that the messaging in either of the above flows will reference your app by the name that you specified when you created this app on LeanCloud. #}
 
@@ -6249,6 +6979,11 @@ AVQuery<AVUser> userQuery = AVUser.getQuery();
 {% if platform_name === "Swift" %}
 ```swift
 let userQuery = LCQuery(className: "_User")
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCUser> userQuery = LCUser.getQuery();
 ```
 {% endif %}
 
@@ -6373,6 +7108,19 @@ _ = book.save { result in
         print(error)
     }
 }
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCObject todo = LCObject('Book');
+LCUser author = await LCUser.getCurrent();
+todo['title'] = 'My Fifth Book';
+todo['author'] = author;
+await todo.save();
+
+LCQuery<LCObject> query = LCQuery('Book');
+query.whereEqualTo('author', author);
+List<LCObject> books = await query.find();
 ```
 {% endif %}
 
@@ -6548,8 +7296,31 @@ _ = LCUser.logIn(username: "Tom", password: "cat!@#123") { result in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+try {
+  LCUser user = await LCUser.login('Tom', 'cat!@#123');
+  // Attempt to change username
+  user['username'] = 'Jerry';
+  // Password is hashed and an empty string will be returned
+  String password = user['password'];
+  // This will work since the user is authenticated
+  await user.save();
 
-The `{{ userObjectName }}` obtained from `{% if platform_name === "Objective-C" %}[AVUser currentUser]{% endif %}{% if platform_name === "JavaScript" %}AV.User.current(){% endif %}{% if platform_name === "Python" %}leancloud.User.get_current(){% endif %}{% if platform_name === "PHP" %}User::getCurrentUser(){% endif %}{% if platform_name === "Java" %}AVUser.getCurrentUser(){% endif %}{% if platform_name === "Swift" %}LCApplication.default.currentUser{% endif %}` will always be authenticated.
+  // Get the user with a non-authenticated method
+  LCQuery<LCUser> userQuery = LCQuery('_User');
+  LCUser unauthenticatedUser = await userQuery.get(user.objectId);
+  unauthenticatedUser['username'] = 'Toodle';
+
+  // This will not succeed since the user is unauthenticated
+  unauthenticatedUser.save();
+} on LCException catch (e) {
+  print('${e.code} : ${e.message}');
+}
+```
+{% endif %}
+
+The `{{ userObjectName }}` obtained from `{% if platform_name === "Objective-C" %}[AVUser currentUser]{% endif %}{% if platform_name === "JavaScript" %}AV.User.current(){% endif %}{% if platform_name === "Python" %}leancloud.User.get_current(){% endif %}{% if platform_name === "PHP" %}User::getCurrentUser(){% endif %}{% if platform_name === "Java" %}AVUser.getCurrentUser(){% endif %}{% if platform_name === "Swift" %}LCApplication.default.currentUser{% endif %}{% if platform_name === "Flutter" %}LCUser.getCurrent(){% endif %}` will always be authenticated.
 
 To check if `{{ userObjectName }}` is authenticated, you can invoke the `{% if platform_name === "Objective-C" %}isAuthenticatedWithSessionToken{% endif %}{% if platform_name === "JavaScript" %}isAuthenticated{% endif %}{% if platform_name === "Python" %}is_authenticated{% endif %}{% if platform_name === "PHP" %}isAuthenticated{% endif %}{% if platform_name === "Java" %}isAuthenticated{% endif %}{% if platform_name === "Swift" %}{# TODO #}{% endif %}` method. You do not need to check if `{{ userObjectName }}` is authenticated if it is obtained via an authenticated method.
 
@@ -6633,6 +7404,21 @@ user.logIn(authData: authData, platform: .custom("github")) { (result) in
 }
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+var thirdPartyData = {
+  // Required
+  'openid':        'OPENID',
+  'access_token':  'ACCESS_TOKEN',
+  'expires_in':    7200,
+
+  // Optional
+  'refresh_token': 'REFRESH_TOKEN',
+  'scope':         'SCOPE'
+};
+LCUser currentUser = await LCUser.loginWithAuthData(thirdPartyData, 'weixin');
+```
+{% endif %}
 
 LeanCloud then verifies that the provided `authData` is valid and checks if a user is already associated with it. If so, it returns the status code `200 OK` along with the details (including a [`sessionToken`](#setting-the-current-user) for the user).
 
@@ -6705,10 +7491,39 @@ AV.User.loginWithAuthData(null, 'github').then((s) => {
 {# TODO #}
 {% endif %}
 {% if platform_name === "Java" %}
-{# TODO #}
+AVUser avUser = AVUser.currentUser();
+avUser.dissociateWithAuthData("github").subscribe(new Observer<AVUser>() {
+    @Override
+    public void onSubscribe(Disposable d) {
+    }
+    @Override
+    public void onNext(AVUser avUser) {
+        System.out.println("Unlinked successfully");
+    }
+    @Override
+    public void onError(Throwable e) {
+        System.out.println("Failed to unlink: " + e.getMessage());
+    }
+    @Override
+    public void onComplete() {
+    }
+});
 {% endif %}
 {% if platform_name === "Swift" %}
-{# TODO #}
+currentUser.disassociate(authData: .github) { (result) in
+    switch result {
+    case .success:
+        // Unlinked successfully
+    case .failure(error: let error):
+        // Failed to unlink
+    }
+}
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCUser currentUser = await LCUser.getCurrent();
+await currentUser.disassociateWithAuthData('github');
+```
 {% endif %}
 
 {% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" %}
@@ -6740,6 +7555,11 @@ AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
     public void onError(Throwable throwable) {}
     public void onComplete() {}
 });
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.loginAnonymously();
 ```
 {% endif %}
 
@@ -6802,6 +7622,16 @@ currentUser.signUpInBackground().subscribe(new Observer<AVUser>() {
 });
 ```
 {% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCUser currentUser = await LCUser.loginAnonymously();
+currentUser.username = 'Tom';
+currentUser.password = 'cat!@#123';
+
+await currentUser.signUp();
+```
+{% endif %}
+
 
 The code below checks if the current user is anonymous:
 
@@ -6828,6 +7658,16 @@ if (currentUser.isAnonymous()) {
 {% if platform_name === "Java" %}
 ```java
 {# TODO #}
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCUser currentUser = await LCUser.getCurrent();
+if (currentUser.isAnonymous) {
+  // currentUser is anonymous
+} else {
+  // currentUser is not anonymous
+}
 ```
 {% endif %}
 
