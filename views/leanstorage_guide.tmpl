@@ -2871,6 +2871,7 @@ query.whereMatches("title","{{ regex() | safe }});
 // "title" without "ticket" (case-insensitive)
 query.whereKey("title", .matchedPattern("{{ regex() | safe }}, option: nil))
 </code></pre>
+{% endif %}
 {% if platform_name === "Flutter" %}
 <pre><code class="lang-java">LCQuery query = LCQuery('Todo');
 // "title" without "ticket" (case-insensitive)
