@@ -356,42 +356,54 @@ React Native support is provided by a separate adapter library (`@leancloud/plat
 Installing:
 
 ```LeanStorage
-$ npm install leancloud-storage @leancloud/platform-adapters-react-native --save
+$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
+# for React Native 0.60+
+$ npx pod-install
+# for React Native <= 0.59 
+# npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 ```LeanStorage(LiveQuery)
-$ npm install leancloud-storage @leancloud/platform-adapters-react-native --save
+$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
+# for React Native 0.60+
+$ npx pod-install
+# for React Native <= 0.59 
+# npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 ```LeanMessage
-$ npm install leancloud-realtime @leancloud/platform-adapters-react-native --save
+yarn add leancloud-realtime @leancloud/platform-adapters-react-native
 ```
 ```LeanMessage(RichMediaMessage)
-$ npm install leancloud-realtime leancloud-realtime-plugin-typed-message leancloud-storage @leancloud/platform-adapters-react-native --save
+$ yarn add leancloud-realtime leancloud-realtime-plugin-typed-message leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
+# for React Native 0.60+
+$ npx pod-install
+# for React Native <= 0.59 
+# npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 
 Referencing:
 
 ```LeanStorage
-const AV = require('leancloud-storage/core');
-const reactNativeAdapters = require('@leancloud/platform-adapters-react-native');
-AV.setAdapters(reactNativeAdapters);
+import AV from 'leancloud-storage/core';
+import * as adapters from '@leancloud/platform-adapters-react-native';
+AV.setAdapters(adapters);
 ```
 ```LeanStorage(LiveQuery)
-const AV = require('leancloud-storage/live-query-core');
-const reactNativeAdapters = require('@leancloud/platform-adapters-react-native');
-AV.setAdapters(reactNativeAdapters);
+import AV from 'leancloud-storage/live-query-core';
+import * as adapters from '@leancloud/platform-adapters-react-native';
+AV.setAdapters(adapters);
 ```
 ```LeanMessage
-const { Realtime, setAdapters } = require('leancloud-realtime/im');
-const reactNativeAdapters = require('@leancloud/platform-adapters-react-native');
-setAdapters(reactNativeAdapters);
+import { Realtime, setAdapters } from 'leancloud-realtime/im';
+import * as adapters from '@leancloud/platform-adapters-react-native';
+setAdapters(adapters);
 ```
 ```LeanMessage(RichMediaMessage)
-const AV = require('leancloud-storage/core');
-const { Realtime, setAdapters } = require('leancloud-realtime/im');
-const { TypedMessagesPlugin, ImageMessage } = require('leancloud-realtime-plugin-typed-messages');
-const reactNativeAdapters = require('@leancloud/platform-adapters-react-native');
-AV.setAdapters(reactNativeAdapters);
-setAdapters(reactNativeAdapters);
+import AV from 'leancloud-storage/core';
+import { Realtime, setAdapters } from 'leancloud-realtime/im';
+import { TypedMessagesPlugin, ImageMessage } from 'leancloud-realtime-plugin-typed-messages';
+import * as adapters from '@leancloud/platform-adapters-react-native';
+AV.setAdapters(adapters);
+setAdapters(adapters);
 ```
 
 ### Electron
