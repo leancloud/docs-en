@@ -1347,9 +1347,9 @@ func testSetArray() {
 {% endif %}
 {% if platform_name === "Flutter" %}
 ```dart
-DateTime alarm1 = DateTime.parse('2018-04-30 07:40:00Z');
-DateTime alarm2 = DateTime.parse('2018-04-30 07:50:00Z');
-DateTime alarm3 = DateTime.parse('2018-04-30 07:60:00Z');
+DateTime alarm1 = DateTime.parse('2018-04-30 07:10:00Z');
+DateTime alarm2 = DateTime.parse('2018-04-30 07:20:00Z');
+DateTime alarm3 = DateTime.parse('2018-04-30 07:30:00Z');
 
 LCObject todo = LCObject("Todo");
 todo.addAllUnique('alarms', [alarm1, alarm2, alarm3]);
@@ -1982,7 +1982,7 @@ _ = query.find { result in
 ```dart
 LCQuery<LCObject> query = LCQuery('Student');
 query.whereEqualTo('lastName', 'Smith');
-// students 是包含满足条件的 Student 对象的数组
+// students is an array of Student objects satisfying conditions
 List<LCObject> students = await query.find();
 ```
 {% endif %}
@@ -2999,7 +2999,7 @@ query.whereKey("tags", .containedAllIn(["work", "sales", "appointment"]))
 {% endif %}
 {% if platform_name === "Flutter" %}
 ```dart
-query.whereContainsAll('tags', ['工作', '销售', '会议']);
+query.whereContainsAll('tags', ['work', 'sales', 'appointment']);
 ```
 {% endif %}
 
@@ -5776,7 +5776,7 @@ user.password = 'cat!@#123';
 
 // Optional
 user.email = 'tom@leancloud.rocks';
-user.mobile = '+8618200008888';
+user.mobile = '+19490008888';
 
 // Other fields can be set in the same way as LCObject
 user['gender'] = 'secret';
@@ -5855,7 +5855,7 @@ _ = LCSMSClient.requestVerificationCode(mobilePhoneNumber: "+19490008888") { (re
 {% endif %}
 {% if platform_name === "Flutter" %}
 ```dart
-await LCSMSClient.requestSMSCode('+8618200008888');
+await LCSMSClient.requestSMSCode('+19490008888');
 ```
 {% endif %}
 
@@ -5923,7 +5923,7 @@ _ = LCSMSClient.verifyMobilePhoneNumber("+19490008888", verificationCode: "12345
 {% endif %}
 {% if platform_name === "Flutter" %}
 ```dart
- await LCUser.signUpOrLoginByMobilePhone('+8618200008888', '123456');
+ await LCUser.signUpOrLoginByMobilePhone('+19490008888', '123456');
 ```
 {% endif %}
 
@@ -6263,7 +6263,7 @@ _ = LCUser.logIn(mobilePhoneNumber: "+19490008888", verificationCode: "123456") 
 {% if platform_name === "Flutter" %}
 ```dart
 try {
-  await LCUser.signUpOrLoginByMobilePhone('+8618200008888', '123456');
+  await LCUser.signUpOrLoginByMobilePhone('+19490008888', '123456');
 } on LCException catch (e) {
   print('${e.code} : ${e.message}');
 }
@@ -6456,7 +6456,7 @@ _ = LCUser.verifyMobilePhoneNumber(mobilePhoneNumber: "+19490008888", verificati
 {% endif %}
 {% if platform_name === "Flutter" %}
 ```dart
-await LCUser.verifyMobilePhone('+8618200008888','123456');
+await LCUser.verifyMobilePhone('+19490008888','123456');
 ```
 {% endif %}
 
@@ -7409,7 +7409,7 @@ user.logIn(authData: authData, platform: .custom("github")) { (result) in
 ```dart
 var thirdPartyData = {
   // Required
-  'openid':        'OPENID',
+  'uid':        'UID',
   'access_token':  'ACCESS_TOKEN',
   'expires_in':    7200,
 
@@ -7417,7 +7417,7 @@ var thirdPartyData = {
   'refresh_token': 'REFRESH_TOKEN',
   'scope':         'SCOPE'
 };
-LCUser currentUser = await LCUser.loginWithAuthData(thirdPartyData, 'weixin');
+LCUser currentUser = await LCUser.loginWithAuthData(thirdPartyData, 'github');
 ```
 {% endif %}
 
