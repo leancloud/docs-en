@@ -7658,7 +7658,12 @@ if (currentUser.isAnonymous()) {
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-{# TODO #}
+AVUser currentUser = AVUser.getCurrentUser();
+if (currentUser.isAnonymous()) {
+  // currentUser is anonymous
+} else {
+  // currentUser is not anonymous
+}
 ```
 {% endif %}
 {% if platform_name === "Flutter" %}
