@@ -5929,9 +5929,8 @@ _ = LCSMSClient.verifyMobilePhoneNumber("+19490008888", verificationCode: "12345
 
 
 {% call docs.noteWrap() %}
-The `username` will be the same as `mobilePhoneNumber`.
-LeanCloud will generate the `password` automatically.
-If you wish to let the user specify their own password, you can let the user fill in their mobile phone number and password, and then follow the process of registering with the user name and password describeded in the previous section,
+The `username` will be the same as `mobilePhoneNumber` and LeanCloud will generate a `password` automatically.
+If you wish to let the user specify their own password, you can let them fill in a password together with their mobile phone number, and then follow the process of registering with username and password described in the previous section,
 submitting the user's mobile phone number as the value of both the `username` and the `mobilePhoneNumber` fields.
 If you wish, you can also check the following options in "Dashboard > LeanStorage > Users > Settings": "Send verification SMS when users register or change phone numbers from clients", "Do not allow users with unverified phone numbers to log in", and/or "Allow users with verified phone numbers to login with SMS".
 {% endcall %}
