@@ -1999,8 +1999,8 @@ As mentioned above, we can utilize the UnionID mechanism offered by Weibo, WeCha
 To do so, you need to use a specific schema of `authData`, with the following keys:
 
 - `unionid`: the user's UnionID;
-- `main_account`: `true`, indicating we will use UnionID;
-- `plat_form`: `weibo`, `weixn`, or `qq`.
+- `main_account`: `true` indicates the current authentication information will be used as the main account;
+- `platform`: the platform of the UnionID, whose name can be specified by the developer, such as `weibo`, `weixin`, `qq`, and so on.
 
 Let's look at an example of WeChat UnionID.
 
@@ -2072,7 +2072,8 @@ And the `authData` stored on LeanCloud will be something like:
 }
 ```
 
-The `_weixin_unionid` key is automatically created by LeanCloud.
+The `_weixin_unionid` key is automatically created by LeanCloud
+based on the value of the `platform` parameter (`weixin` in this example). 
 
 #### Linking a Third-Party Account
 
