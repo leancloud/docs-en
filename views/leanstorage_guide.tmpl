@@ -146,25 +146,25 @@ The SDK designed for each language interacts with the same [REST API](rest_api.h
 ## Installing SDK
 
 {% if platform_name === "Objective-C" %}
-See [How to Install Objective-C SDK](sdk_setup-objc.html).
+See [How to Install the Objective-C SDK](sdk_setup-objc.html).
 {% endif %}
 {% if platform_name === "JavaScript" %}
-See [How to Install JavaScript SDK](sdk_setup-js.html).
+See [How to Install the JavaScript SDK](sdk_setup-js.html).
 {% endif %}
 {% if platform_name === "Python" %}
-See [How to Install Python SDK](sdk_setup-python.html).
+See [How to Install the Python SDK](sdk_setup-python.html).
 {% endif %}
 {% if platform_name === "PHP" %}
-See [How to Install PHP SDK](sdk_setup-php.html).
+See [How to Install the PHP SDK](sdk_setup-php.html).
 {% endif %}
 {% if platform_name === "Java" %}
-See [How to Install Java SDK](sdk_setup-java.html).
+See [How to Install the Java SDK](sdk_setup-java.html).
 {% endif %}
 {% if platform_name === "Swift" %}
-See [How to Install Swift SDK](sdk_setup-swift.html).
+See [How to Install the Swift SDK](sdk_setup-swift.html).
 {% endif %}
 {% if platform_name === "Flutter" %}
-See [How to Install Flutter SDK](sdk_setup-flutter.html)。
+See [How to Install the Flutter SDK](sdk_setup-flutter.html)。
 {% endif %}
 
 {% if platform_name === "JavaScript" %}
@@ -953,7 +953,7 @@ LeanCloud automatically figures out which data has changed and only the fields w
 To view which attributes have unsaved changes, you can invoke the `dirtyKeys` method:
 
 ```js
-todo.dirtyKeys() // ['content'] 
+todo.dirtyKeys() // ['content']
 ```
 
 To revert unsaved changes, you can invoke the `revert` method.
@@ -2837,7 +2837,7 @@ If you are looking for string values that do not contain a particular string, us
 {% if platform_name === "Objective-C" %}
 <pre><code class="lang-objc">AVQuery *query = [AVQuery queryWithClassName:@"Todo"];
 // "title" without "ticket" (case-insensitive)
-[query whereKey:@"title" matchesRegex:@"{{ regex() | safe }}];    
+[query whereKey:@"title" matchesRegex:@"{{ regex() | safe }}];
 </code></pre>
 {% endif %}
 {% if platform_name === "JavaScript" %}
@@ -3996,7 +3996,7 @@ LCQuery<LCObject> priority3Query = LCQuery('Todo');
 priorityQuery.whereEqualTo('priority', 3);
 
 LCQuery<LCObject> priorityQuery = LCQuery.or([priority2Query, priority3Query]);
-LCQuery<LCObject> timeLocationQuery = LCQuery.or([locationQuery, createdAtQuery]); 
+LCQuery<LCObject> timeLocationQuery = LCQuery.or([locationQuery, createdAtQuery]);
 LCQuery<LCObject> query = LCQuery.and([priorityQuery, timeLocationQuery]);
 ```
 {% endif %}
@@ -6465,7 +6465,7 @@ await LCUser.verifyMobilePhone('+19490008888','123456');
 
 {# ### CAPTCHA Code
 
-Using [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) is a common and effective practice to protest your application from spam and abuse. CAPTCHA offers more than just spam protection. It also helps  reduce fraud and associated costs by blocking bots that could trigger bulk SMS sending.   
+Using [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) is a common and effective practice to protest your application from spam and abuse. CAPTCHA offers more than just spam protection. It also helps  reduce fraud and associated costs by blocking bots that could trigger bulk SMS sending.
 
 LeanCloud CAPTCHA aims to keep bots or other automated software from engaging in abusive activities while letting your valid users pass through with ease.
 
@@ -7150,7 +7150,7 @@ The code below illustrates this security policy:
                 // This will work since the user is authenticated
 
                 // Get the user with a non-authenticated method
-                AVQuery *query = [AVQuery queryWithClassName:@"_User"]; 
+                AVQuery *query = [AVQuery queryWithClassName:@"_User"];
                 [query getObjectInBackgroundWithId:user.objectId block:^(AVObject *unauthenticatedUser, NSError *error) {
                     [unauthenticatedUser setObject:@"Toodle" forKey:@"username"];
                     [unauthenticatedUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {

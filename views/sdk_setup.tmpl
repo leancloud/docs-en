@@ -1,6 +1,6 @@
 {% import "views/_helper.njk" as docs %}
 
-# How to Install {{platform_name}} SDK
+# How to Install the {{platform_name}} SDK
 
 ## Installing SDK
 
@@ -10,12 +10,12 @@ There are several ways for you to install our SDK and the most convenient one is
 ### Installing with Package Manager
 
 {% if platform_name === "Objective-C" %}
-The easiest way to integrate our SDK into your project is to use [CocoaPods](https://cocoapods.org). 
+The easiest way to integrate our SDK into your project is to use [CocoaPods](https://cocoapods.org).
 
 Add the following pods into the `target` of `Podfile`:
 
 ```ruby
-pod 'AVOSCloud'   # (required) LeanStorage, SMS, LeanEngine etc. 
+pod 'AVOSCloud'   # (required) LeanStorage, SMS, LeanEngine etc.
 pod 'AVOSCloudIM' # (optional) LeanMessage
 pod 'AVOSCloudLiveQuery' # (optional) LiveQuery
 ```
@@ -47,9 +47,9 @@ pod 'LeanCloud'
 or use the [Subspecs](https://guides.cocoapods.org/syntax/podspec.html#subspec) way:
 
 ```ruby
-pod 'LeanCloud/Foundation' # (required) LeanStorage, SMS, LeanEngine etc. 
+pod 'LeanCloud/Foundation' # (required) LeanStorage, SMS, LeanEngine etc.
 pod 'LeanCloud/RTM' # (optional) LeanMessage, LiveQuery
-# LeanCloud/RTM depends on LeanCloud/Foundation, so their versions must be consistent. 
+# LeanCloud/RTM depends on LeanCloud/Foundation, so their versions must be consistent.
 ```
 
 Then install the SDK with the following command:
@@ -359,14 +359,14 @@ Installing:
 $ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
 # for React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59 
+# for React Native <= 0.59
 # npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 ```LeanStorage(LiveQuery)
 $ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
 # for React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59 
+# for React Native <= 0.59
 # npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 ```LeanMessage
@@ -376,7 +376,7 @@ yarn add leancloud-realtime @leancloud/platform-adapters-react-native
 $ yarn add leancloud-realtime leancloud-realtime-plugin-typed-message leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
 # for React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59 
+# for React Native <= 0.59
 # npx react-native link @react-native-community/async-storage-backend-legacy
 ```
 
