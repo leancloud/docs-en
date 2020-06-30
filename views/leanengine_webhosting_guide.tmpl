@@ -205,7 +205,7 @@ By default, a PHP-FPM Worker is assigned to every 64 MB memory of a PHP project.
 
 The extension `mcrypt` has been removed from the core of PHP 7.2 and is made optional in LeanEngine. You may enable it by adding `ext-mcrypt: *` into `require` of `composer.json`. Note that the time consumed for deployment will increase if `mcrypt` is enabled, so you may keep it off if you do not need it.
 
-If your project directory contains `composer.lock`, dependencies will be installed according to versions specified in this file.
+If your project directory contains `composer.lock`, dependencies will be installed according to the versions specified in this file.
 
 {% endif %}
 {% if platformName === "Java" %}
