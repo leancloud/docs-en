@@ -139,7 +139,7 @@ We recommend that you create your `package.json` with our [project template](htt
 
 We also support `package-lock.json` and `yarn.lock`:
 
-- If your project directory contains `package-lock.json`, dependencies will be installed according to versions specified in the file (requires Node.js 8.0 or higher).
+- If your project directory contains `package-lock.json`, dependencies will be installed according to the versions specified in the file (requires Node.js 8.0 or higher).
 - If your project directory contains `yarn.lock`, then `yarn install` will be used instead of `npm install` to install dependencies (requires Node.js 4.8 or higher).
 - If your project directory contains both `package-lock.json` and `yarn.lock`, `yarn install` will be used.
 {% endif %}
@@ -204,6 +204,9 @@ LeanEngine PHP does not depend on any third-party frameworks, so you may use any
 By default, a PHP-FPM Worker is assigned to every 64 MB memory of a PHP project. You can change the setting in "Custom environment variables" of LeanEngine's settings page by adding an environment variable with `PHP_WORKERS` as the name and a number as the value. Keep in mind that if the value is too low, there may be insufficient Workers for new requests, and if the value is too high, requests may not be successfully processed due to low memory space.
 
 The extension `mcrypt` has been removed from the core of PHP 7.2 and is made optional in LeanEngine. You may enable it by adding `ext-mcrypt: *` into `require` of `composer.json`. Note that the time consumed for deployment will increase if `mcrypt` is enabled, so you may keep it off if you do not need it.
+
+If your project directory contains `composer.lock`, dependencies will be installed according to the versions specified in this file.
+
 {% endif %}
 {% if platformName === "Java" %}
 Your project has to follow the following structure to be recognized by LeanEngine and operate properly.
