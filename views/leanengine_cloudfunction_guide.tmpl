@@ -321,7 +321,7 @@ See [LeanEngine REST API Guide](leanengine-rest-api.html).
 
 ### Calling Cloud Functions on LeanEngine
 
-You can call the cloud functions defined by `{% if platformName === "Node.js" %}AV.Cloud.define{% endif %}{% if platformName === "Python" %}engine.define{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::define{% endif %}{% if platformName === "Java" %}@EngineFunction{% endif %}` with `{% if platformName === "Node.js" %}AV.Cloud.run{% endif %}{% if platformName === "Python" %}leancloud.cloudfunc.run{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::run{% endif %}{% if platformName === "Java" %}AVCloud.callFunction{% endif %}`:
+You can call the cloud functions defined by `{% if platformName === "Node.js" %}AV.Cloud.define{% endif %}{% if platformName === "Python" %}engine.define{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::define{% endif %}{% if platformName === "Java" %}@EngineFunction{% endif %}` with `{% if platformName === "Node.js" %}AV.Cloud.run{% endif %}{% if platformName === "Python" %}leancloud.cloudfunc.run{% endif %}{% if platformName === "PHP" %}LeanCloudEngineCloud::run{% endif %}{% if platformName === "Java" %}AVCloud.callFunctionInBackground{% endif %}`:
 
 {% if platformName === "Node.js" %}
 ```js
