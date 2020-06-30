@@ -64,6 +64,9 @@ LeanClient::useProduction(false); // Staging environment
 ```java
 AVCloud.setProductionMode(false); // Staging environment
 ```
+```dart
+LCCloud.setProduction(false); // Staging environment 
+```
 
 Apps with only [trial instances](leanengine_plan.html#trial-instances) would only have production environments. Please do not attempt to switch to staging environments.
 
@@ -314,6 +317,14 @@ AVCloud.callFunctionWithCacheInBackground("averageStars", dicParameters, AVQuery
   public void onComplete() {}
 });
 ```
+```dart
+try {
+  Map response = await LCCloud.run('averageStars', params: { 'movie': '夏洛特烦恼' });
+  // deal with results
+} on LCException catch (e) {
+  // deal with exceptions
+}
+```
 
 ### Calling Cloud Functions with REST API
 
@@ -451,6 +462,14 @@ AVCloud.callRPCWithCacheInBackground("averageStars", dicParameters, AVQuery.Cach
   @Override
   public void onComplete() {}
 });
+```
+```dart
+try {
+  LCObject response = await LCCloud.rpc('averageStars', params: { 'movie': '夏洛特烦恼' });
+  // deal with results
+} on LCException catch (e) {
+  // deal with exceptions
+}
 ```
 
 
