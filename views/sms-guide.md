@@ -241,7 +241,7 @@ It is becoming quite common that apps rely on SMS for signing up, logging in, an
   ```
   ```dart
   try {
-  await LCSMSClient.requestSMSCode('18200008888',
+  await LCSMSClient.requestSMSCode('+19490008888',
     variables: {'name': 'App Name', 'ttl': 10, 'op': 'some operation'});
   } on LCException catch (e) {
     print(e.message);
@@ -591,7 +591,7 @@ cloud.request_sms_code("+19490008888",
 ```
 ```dart
 try {
-  await LCSMSClient.requestSMSCode('18200008888',
+  await LCSMSClient.requestSMSCode('+19490008888',
     template: 'Order_Notice',
     signature: 'sign_BuyBuyBuy',
     // Plug the actual value into the template
@@ -1023,7 +1023,7 @@ cloud.request_sms_code("+19490008888",
 ```
 ```dart
 try {
-  await LCSMSClient.requestSMSCode('18200008888',
+  await LCSMSClient.requestSMSCode('+19490008888',
       template: 'Order_Notice',
       signature: 'sign_BuyBuyBuy',
       variables: {'validate_token': validate_token});
