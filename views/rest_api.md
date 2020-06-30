@@ -1919,8 +1919,9 @@ The `authData` for an arbitrary platform:
 ```
 
 `authData` can have other additional keys, but it must contain both `uid` and `access_token`.
-Often you need to verify `authData` yourself (except for certain platforms, see below).
-Also, to avoid binding a third-party account to multiple users, you need to create a unique index for `authData.platform_name.uid` in Dashboard (LeanStorage > `_User`).
+LeanCloud will automatically create a unique index for `authData.platform_name.uid`.
+This avoids binding a third-party account to multiple users.
+However, you need to verify `authData` yourself (except for certain platforms, see below).
 
 LeanCloud has built-in support for some popular social networks in China, such as [Weibo](http://weibo.com/), [WeChat](https://www.wechat.com/en) (*weixin* in Chinese pinyin), and [QQ](https://imqq.com/English1033.html):
 
