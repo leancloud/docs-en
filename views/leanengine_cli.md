@@ -351,7 +351,7 @@ If you want to fetch the logs generated within a certain period of time, you can
 $ lean logs --from=2017-07-01 --to=2017-07-07
 ```
 
-If you want to fetch the logs for a single day, you can just use `--from`:
+If you want to fetch the logs from a certain day to now: 
 
 ```sh
 $ lean logs --from=2017-07-01
