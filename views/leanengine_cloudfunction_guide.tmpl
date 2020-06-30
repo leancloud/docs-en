@@ -282,20 +282,28 @@ Map<String, String> dicParameters = new HashMap<String, String>();
 dicParameters.put("movie", "Despicable Me");
 
 // Call averageStars with parameters
-AVCloud.callFunctionInBackground("averageStars", dicParameters, new FunctionCallback() {
-    public void done(Object object, AVException e) {
-        if (e == null) {
-            // Success; object is the returned value from the cloud function
-        } else {
-            // Error handling
-        }
-    }
+AVCloud.<AVObject>callRPCInBackground("averageStars", dicParameters).subscribe(new Observer<AVObject>() {
+  @Override
+  public void onSubscribe(Disposable disposable) {
+
+  }
+  @Override
+  public void onNext(AVObject avObject) {
+    // succeed.
+  }
+  @Override
+  public void onError(Throwable throwable) {
+    // failed
+  }
+  @Override
+  public void onComplete() {
+  }
 });
 
 // Java SDK also supports caching results returned by cloud function, similar to AVQuery.
 // For example, the following calls will use cached results if available,
 // and the cached results will expire in 30 seconds (30000 ms).
-AVCloud.callFunctionWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
+AVCloud.<AVObject>callFunctionWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
 .subscribe(new Observer<Object>() {
   @Override
   public void onSubscribe(Disposable disposable) {}
