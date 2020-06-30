@@ -95,6 +95,15 @@ SMS::requestSMSCode("+19490008888", $options);
 from leancloud import cloud
 cloud.request_sms_code("+19490008888", template="Register_Notice", sign="LeanCloud")
 ```
+```dart
+try {
+  await LCSMSClient.requestSMSCode('+19490008888',
+      template: 'Register_Notice',
+      signature: 'LeanCloud');
+} on LCException catch (e) {
+  print(e.message);
+}
+```
 
 The actual message received by the user looks like this:
 
@@ -230,6 +239,14 @@ It is becoming quite common that apps rely on SMS for signing up, logging in, an
   }
   cloud.request_sms_code("+19490008888", sign="App Name", params=options)
   ```
+  ```dart
+  try {
+  await LCSMSClient.requestSMSCode('18200008888',
+    variables: {'name': 'App Name', 'ttl': 10, 'op': 'some operation'});
+  } on LCException catch (e) {
+    print(e.message);
+  }
+  ```
 
 3. **The user receives the text message and enters the code**  
   Before continuing, we suggest that you implement verification on the client side to check if the code entered is in a valid format (has valid length and does not contain invalid characters). This helps your app avoid making unnecessary requests to the server and could potentially enhance the user experience.
@@ -295,6 +312,13 @@ It is becoming quite common that apps rely on SMS for signing up, logging in, an
   from leancloud import cloud
   # Note that the sequence of the parameters for Python SDK is different than that of many other SDKs. Here verification code goes after phone number.
   cloud.verify_sms_code('+19490008888', '123456')
+  ```
+  ```dart
+  try {
+    await LCSMSClient.verifyMobilePhone('+19490008888', '123456');
+  } on LCException catch (e) {
+    print(e.message);
+  }
   ```
 
 The same verification logic can be applied to other scenarios like logging in at unusual locations or updating sensitive information. You would call the same API and follow the same steps. The only thing you need to do is to design a UI that fits your requirements.
@@ -369,6 +393,13 @@ SMS::requestSMSCode("+19490008888", $options);
 from leancloud import cloud
 cloud.request_sms_code("+19490008888", sms_type="voice")
 ```
+```dart
+try {
+  await LCSMSClient.requestVoiceCode('+19490008888');
+} on LCException catch (e) {
+  print(e.message);
+}
+```
 
 Now the user would receive a phone call telling them the 6-digit verification code. Call the following method to complete the verification:
 
@@ -428,6 +459,13 @@ SMS::verifySmsCode('+19490008888', '123456');
 ```python
 from leancloud import cloud
 cloud.verify_sms_code('+19490008888', '123456')
+```
+```dart
+try {
+    await LCSMSClient.verifyMobilePhone('+19490008888', '123456');
+} on LCException catch (e) {
+    print(e.message);
+}
 ```
 
 The method verifies if the code entered is correct.
@@ -550,6 +588,17 @@ options = {
 }
 cloud.request_sms_code("+19490008888",
   template="Order_Notice", sign="sign_BuyBuyBuy", params=options)
+```
+```dart
+try {
+  await LCSMSClient.requestSMSCode('18200008888',
+    template: 'Order_Notice',
+    signature: 'sign_BuyBuyBuy',
+    // Plug the actual value into the template
+    variables: {'order_id': '7623432424540'}); 
+} on LCException catch (e) {
+  print(e.message);
+}
 ```
 
 The actual text message received by the user would look like this:
@@ -804,6 +853,15 @@ AVCloud.RequestCaptchaAsync(width:85, height:30).ContinueWith(t =>{
 from leancloud import cloud
 captcha = cloud.request_captcha(width=100, height=50)
 ```
+```dart
+try {
+  LCCaptcha captcha = await LCCaptchaClient.requestCaptcha();
+  String token = captcha.token;
+  String url = captcha.url;
+} on LCException catch (e) {
+  print(e.message);
+}
+```
 
 #### Verifying User Inputs
 
@@ -861,6 +919,14 @@ AVCloud.VerifyCaptchaAsync("Plug user input here, for example: AM8N",'Plug captc
 ```python
 # captcha is the CAPTCHA instance obtained earlier
 validate_token = captcha.verify("Plug user input here, for example: AM8N")
+```
+```dart
+try {
+  LCCaptcha verifyCaptcha = await LCCaptchaClient.verifyCaptcha('Plug user input here, for example: AM8N', captcha.token);
+  String validate_token = verifyCaptcha.token;
+} on LCException catch (e) {
+  print(e.message);
+}
 ```
 
 #### Sending SMS Verification Codes with `validate_token`
@@ -954,6 +1020,16 @@ from leancloud import cloud
 options = { "validate_token": validate_token }
 cloud.request_sms_code("+19490008888",
   template="New_Series", sign="sign_BuyBuyBuy", params=options)
+```
+```dart
+try {
+  await LCSMSClient.requestSMSCode('18200008888',
+      template: 'Order_Notice',
+      signature: 'sign_BuyBuyBuy',
+      variables: {'validate_token': validate_token});
+} on LCException catch (e) {
+  print(e.message);
+}
 ```
 
 ## International Text Messages
