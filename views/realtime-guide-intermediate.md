@@ -1468,11 +1468,13 @@ func client(_ client: IMClient, event: IMClientEvent) {
 }
 ```
 ```objc
--(void)client:(AVIMClient *)client didOfflineWithError:(NSError *)error{
-    if ([error code]  == 4111) {
-        // Tell the user that the same clientId is logged in on another device
+- (void)imClientClosed:(AVIMClient *)imClient error:(NSError * _Nullable)error
+{
+    if ([error.domain isEqualToString:kLeanCloudErrorDomain] &&
+        error.code == 4111) {
+            // Tell the user that the same clientId is logged in on another device
     }
-};
+}
 ```
 ```java
 public class AVImClientManager extends AVIMClientEventHandler {
@@ -1518,13 +1520,15 @@ realtime.createIMClient('Tom', { tag: 'Mobile', isReconnect: true }).then(functi
 ```
 ```swift
 do {
-    let client = try IMClient(ID: "CLIENT_ID", tag: "Mobile")
-    client.open([.reconnect]) { (result) in
+    let client = try IMClient(ID: "Tom", tag: "Mobile")
+    client.open(options: [.reconnect]) { (result) in
         switch result {
         case .success:
             break
         case .failure(error: let error):
-            print(error)
+            if error.code == 4111 {
+                // Current login failed.
+                // The previous logged in device will not be kicked off.
         }
     }
 } catch {
@@ -1532,12 +1536,19 @@ do {
 }
 ```
 ```objc
-AVIMClient *currentClient = [[AVIMClient alloc] initWithClientId:@"Tom" tag:@"Mobile"];
-[currentClient openWithOption:AVIMClientOpenOptionReopen callback:^(BOOL succeeded, NSError *error) {
-    if (succeeded) {
-        // connected to cloud
-    }
-}];
+NSError *err;
+AVIMClient *currentClient = [[AVIMClient alloc] initWithClientId:@"Tom" tag:@"Mobile" error:&err];
+if (err) {
+    NSLog(@"init failed with error: %@", err);
+} else {
+    [currentClient openWithOption:AVIMClientOpenOptionReopen callback:^(BOOL succeeded, NSError * _Nullable error) {
+        if ([error.domain isEqualToString:kLeanCloudErrorDomain] &&
+            error.code == 4111) {
+            // Current login failed.
+            // The previous logged in device will not be kicked off.
+        }
+    }];
+}
 ```
 ```java
 AVIMClientOpenOption openOption = new AVIMClientOpenOption();
