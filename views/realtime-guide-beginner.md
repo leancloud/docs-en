@@ -3949,9 +3949,9 @@ func client(_ client: IMClient, event: IMClientEvent) {
     // Reconnecting to the server.
     case .sessionDidResume:
         break
-    // The connection is closed and there will no auto reconnection.
+    // The connection is closed and there will be no auto reconnection.
     // Possible causes:
-    // - There is a single device login confilict.
+    // - There is a single device login conflict.
     // - The client has been kicked off by the server.
     case .sessionDidClose(error: let error):
         print(error)
@@ -3968,7 +3968,7 @@ The following events will be populated on `AVIMClientDelegate`:
 - `imClientResumed` occurs when the connection is recovered. 
 - `imClientResuming` occurs when trying to reconnect.
 - `imClientPaused` occurs when the connection is lost. Possible causes include a network problem occurred and the application goes into background.
-- `imClientClosed` occurs when the connection is closed and there will no auto reconnection. Possible causes include there is a single device login confilict or the client has been kicked off by the server.
+- `imClientClosed` occurs when the connection is closed and there will be no auto reconnection. Possible causes include there is a single device login conflict or the client has been kicked off by the server.
 
 ```objc
 - (void)imClientResumed:(AVIMClient *)imClient
