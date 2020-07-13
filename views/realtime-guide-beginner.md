@@ -47,16 +47,24 @@ realtime.createIMClient('Tom').then(function(tom) {
 }).catch(console.error);
 ```
 ```swift
+// global variable
+var tom: IMClient
 do {
-    let tom = try IMClient(ID: "Tom")
+    tom = try IMClient(ID: "Tom")
 } catch {
     print(error)
 }
 ```
 ```objc
+// global variable
 @property (nonatomic, strong) AVIMClient *tom;
-// clientId is Tom
-tom = [[AVIMClient alloc] initWithClientId:@"Tom"]
+NSError *error;
+tom = [[AVIMClient alloc] initWithClientId:@"Tom" error:&error];
+if (error) {
+    NSLog(@"init failed with error: %@", error);
+} else {
+    NSLog(@"init succeeded");
+}
 ```
 ```java
 // clientId is Tom
@@ -82,8 +90,9 @@ realtime.createIMClient('Tom').then(function(tom) {
 }).catch(console.error);
 ```
 ```swift
+var tom: IMClient
 do {
-    let tom = try IMClient(ID: "Tom")
+    tom = try IMClient(ID: "Tom")
     tom.open { (result) in
         switch result {
         case .success:
@@ -97,14 +106,18 @@ do {
 }
 ```
 ```objc
-// Tom creates a client and logs in with his name as clientId
-AVIMClient *tom = [[AVIMClient alloc] initWithClientId:@"Tom"];
-// Tom logs in
-[tom openWithCallback:^(BOOL succeeded, NSError *error) {
-  if(succeeded) {
-    // Successfully connected
-  }
-}];
+@property (nonatomic) AVIMClient *tom;
+NSError *error;
+tom = [[AVIMClient alloc] initWithClientId:@"Tom" error:&error];
+if (error) {
+    NSLog(@"init failed with error: %@", error);
+} else {
+    [tom openWithCallback:^(BOOL succeeded, NSError * _Nullable error) {
+        if (succeeded) {
+            // open succeeded
+        }
+    }];
+}
 ```
 ```java
 // Tom creates a client and logs in with his name as clientId
@@ -136,18 +149,42 @@ AV.User.logIn('username', 'password').then(function(user) {
 }).catch(console.error.bind(console));
 ```
 ```swift
-// Not supported yet
+var client: IMClient
+
+LCUser.logIn(username: USER_NAME, password: PASSWORD) { (result) in
+    switch result {
+    case .success(object: let user):
+        do {
+            client = try IMClient(user: user)
+            client.open { (result) in
+                // handle result
+            }
+        } catch {
+            print(error)
+        }
+    case .failure(error: let error):
+        print(error)
+    }
+}
 ```
 ```objc
-// Log in to LeanMessage with the username and password of an AVUser
-[AVUser logInWithUsernameInBackground:username password:password block:^(AVUser * _Nullable user, NSError * _Nullable error) {
-    // Create a client with AVUser instance
-    AVIMClient *client = [[AVIMClient alloc] initWithUser:user];
-    // Open the client to connect to the cloud
-    [client openWithCallback:^(BOOL succeeded, NSError * _Nullable error) {
-        // Do something you like
-    }];
-}];
+@property (nonatomic) AVIMClient *client;
+
+[AVUser logInWithUsernameInBackground:USER_NAME password:PASSWORD block:^(AVUser * _Nullable user, NSError * _Nullable error) {
+    if (user) {
+        NSError *err;
+        client = [[AVIMClient alloc] initWithUser:user error:&err];
+        if (err) {
+            NSLog(@"init failed with error: %@", err);
+        } else {
+            [client openWithCallback:^(BOOL succeeded, NSError * _Nullable error) {
+                if (succeeded) {
+                    // open succeeded
+                }
+            }];
+        }
+    }
+}];     
 ```
 ```java
 // Log in to LeanMessage with the username and password of an AVUser
@@ -3900,12 +3937,22 @@ realtime.on(Event.RECONNECT, function() {
 ```swift
 func client(_ client: IMClient, event: IMClientEvent) {
     switch event {
+    // Network is recovered. 
     case .sessionDidOpen:
         break
+    // Connection to the server is lost.
+    // Possible causes:
+    // - A network problem occurred.
+    // - The application goes into background.
     case .sessionDidPause(error: let error):
         print(error)
+    // Reconnecting to the server.
     case .sessionDidResume:
         break
+    // The connection is closed and there will no auto reconnection.
+    // Possible causes:
+    // - There is a single device login confilict.
+    // - The client has been kicked off by the server.
     case .sessionDidClose(error: let error):
         print(error)
     }
@@ -3918,9 +3965,28 @@ func client(_ client: IMClient, event: IMClientEvent) {
 
 The following events will be populated on `AVIMClientDelegate`:
 
-- `imClientPaused:(AVIMClient *)imClient` occurs when the connection is lost. The messaging service is unavailable at this time.
-- `imClientResuming:(AVIMClient *)imClient` occurs when trying to reconnect. The messaging service is still unavailable at this time.
-- `imClientResumed:(AVIMClient *)imClient` occurs when the connection is recovered. The messaging service is available at this time.
+- `imClientResumed` occurs when the connection is recovered. 
+- `imClientResuming` occurs when trying to reconnect.
+- `imClientPaused` occurs when the connection is lost. Possible causes include a network problem occurred and the application goes into background.
+- `imClientClosed` occurs when the connection is closed and there will no auto reconnection. Possible causes include there is a single device login confilict or the client has been kicked off by the server.
+
+```objc
+- (void)imClientResumed:(AVIMClient *)imClient
+{  
+}
+
+- (void)imClientResuming:(AVIMClient *)imClient
+{
+}
+
+- (void)imClientPaused:(AVIMClient *)imClient error:(NSError * _Nullable)error
+{
+}
+
+- (void)imClientClosed:(AVIMClient *)imClient error:(NSError * _Nullable)error
+{
+}
+```
 
 {{ docs.langSpecEnd('objc') }}
 
