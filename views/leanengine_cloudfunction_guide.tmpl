@@ -285,7 +285,7 @@ Map<String, String> dicParameters = new HashMap<String, String>();
 dicParameters.put("movie", "Despicable Me");
 
 // Call averageStars with parameters
-AVCloud.<AVObject>callRPCInBackground("averageStars", dicParameters).subscribe(new Observer<AVObject>() {
+AVCloud.callFunctionInBackground("averageStars", dicParameters).subscribe(new Observer<AVObject>() {
   @Override
   public void onSubscribe(Disposable disposable) {
 
@@ -306,7 +306,7 @@ AVCloud.<AVObject>callRPCInBackground("averageStars", dicParameters).subscribe(n
 // Java SDK also supports caching results returned by cloud function, similar to AVQuery.
 // For example, the following calls will use cached results if available,
 // and the cached results will expire in 30 seconds (30000 ms).
-AVCloud.<AVObject>callFunctionWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
+AVCloud.callFunctionWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
 .subscribe(new Observer<Object>() {
   @Override
   public void onSubscribe(Disposable disposable) {}
@@ -439,20 +439,33 @@ cloud.rpc('averageStars', movie='Despicable Me')
 ```
 ```java
 // Construct parameters
-Map<String, String> dicParameters = new HashMap<String, String>();
+Map<String, Object> dicParameters = new HashMap<>();
 dicParameters.put("movie", "Despicable Me");
 
-AVCloud.rpcFunctionInBackground("averageStars", dicParameters,
-  new FunctionCallback<AVObject>() {
-    @Override
-    public void done(AVObject object, AVException e) {
-      Assert.assertNull(e);
-    }
+AVCloud.<AVObject>callRPCInBackground("averageStars", dicParameters).subscribe(new Observer<AVObject>() {
+  @Override
+  public void onSubscribe(Disposable disposable) {
+
   }
-);
+
+  @Override
+  public void onNext(AVObject avObject) {
+    // succeed.
+  }
+
+  @Override
+  public void onError(Throwable throwable) {
+    // failed
+  }
+
+  @Override
+  public void onComplete() {
+
+  }
+});
 
 // cached version (see "Calling Cloud Functions with SDK" section above)
-AVCloud.callRPCWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
+AVCloud.<AVObject>callRPCWithCacheInBackground("averageStars", dicParameters, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000)
 .subscribe(new Observer<AVObject>() {
   @Override
   public void onSubscribe(Disposable disposable) {}
