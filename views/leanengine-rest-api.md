@@ -14,18 +14,8 @@ You can use HTTP header `X-LC-Prod` to specify LeanEngine environment:
 
 ## Cloud Functions
 
-To invoke a cloud function, send a POST request to `/functions/:name`:
-
-```sh
-curl -X POST \
-  -H "X-LC-Id: {{appid}}" \
-  -H "X-LC-Key: {{appkey}}" \
-  -H "Content-Type: application/json" \
-  -d '{}' \
-  https://{{host}}/1.1/functions/hello
-```
-
-Parameters and result are in JSON format:
+To invoke a cloud function, send a POST request to `/functions/:name`.
+Its parameters and result are both in JSON format:
 
 ```sh
 curl -X POST -H "Content-Type: application/json; charset=utf-8" \
@@ -46,6 +36,20 @@ Response:
 }
 ```
 
+If the cloud function needs to associate with a user,
+you can pass the corresponding `sessionToken` in the `X-LC-Session` HTTP header:
+
+
+```sh
+curl -X POST \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -H "X-LC-Session: qmdj8pdidnmyzp0c7yqil91oc" \
+  -H "Content-Type: application/json" \
+  -d '{}' \
+  https://{{host}}/1.1/functions/hello
+```
+
 Alternatively, you can send a POST request to `/call/:name`,
 whose parameters and result are in AVObject format (JSON with metadata):
 
@@ -58,7 +62,7 @@ curl -X POST \
   https://{{host}}/1.1/call/addPost
 ```
 
-Respones:
+Response:
 
 ```json
 {
@@ -70,7 +74,7 @@ Respones:
 }
 ```
 
-Besides an simple AVObject, the result can be data structures consist of AVObjects.
+Besides a simple AVObject, the result can be data structures consist of AVObjects.
 For example, an array with a number and a Todo object:
 
 ```json
