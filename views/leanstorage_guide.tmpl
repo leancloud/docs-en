@@ -6463,6 +6463,116 @@ await LCUser.verifyMobilePhone('+19490008888','123456');
 ```
 {% endif %}
 
+#### Verify Phone Numbers Before Updating and Binding
+
+LeanCloud also supports verifying the number *before* a user binds or updates a number.
+
+{% if platform_name === "JavaScript" %}
+```js
+AV.User.requestChangePhoneNumber('+19490008888');
+
+AV.User.changePhoneNumber('+19490008888', '123456').then(() => {
+    // update local data
+    const currentUser = AV.User.current();
+    currentUser.setMobilePhoneNumber('+19490008888');
+}, (error) => {
+    // verification code is invalid
+});
+```
+{% endif %}
+{% if platform_name === "Objective-C" %}
+```objc
+[AVUser requestVerificationCodeForUpdatingPhoneNumber:@"+19490008888" withBlock:^(BOOL succeeded, NSError * _Nullable error) {
+    if (succeeded) {
+        // success
+    } else {
+        // fail
+    }
+}];
+
+[AVUser verifyCodeToUpdatePhoneNumber:@"+19490008888" code:@"123456" withBlock:^(BOOL succeeded, NSError * _Nullable error) {
+    if (succeeded) {
+        // mobilePhoneNumber changes to +19490008888
+        // mobilePhoneVerified changes to true
+    } else {
+        // verification code is invalid 
+    }
+}];
+```
+{% endif %}
+{% if platform_name === "Swift" %}
+```swift
+_ = LCUser.requestVerificationCode(forUpdatingMobilePhoneNumber: "+19490008888") { result in
+    switch result {
+    case .success:
+        break
+    case .failure(error: let error):
+        print(error)
+    }
+}
+
+_ = LCUser.verifyVerificationCode("123456", toUpdateMobilePhoneNumber:"+19490008888") { result in
+    switch result {
+    case .success:
+        // mobilePhoneNumber changes to +19490008888
+        // mobilePhoneVerified changes to true 
+        break
+    case .failure(error: let error):
+        // verification code is invalid
+        print(error)
+    }
+}
+```
+{% endif %}
+{% if platform_name === "Android / Java" %}
+```java
+AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("+19490008888").blockingSubscribe();
+
+AVUser.verifySMSCodeForUpdatingPhoneNumberInBackground("123456", "+19490008888").subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // update local data 
+        AVUser currentUser = AVUser.getCurrentUser();
+        currentUser.setMobilePhoneNumber("+19490008888");
+    }
+    public void onError(Throwable throwable) {
+        // verification code is invalid 
+    }
+    public void onComplete() {}
+});
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+await LCUser.requestSMSCodeForUpdatingPhoneNumber('+19490008888');
+
+await LCUser.verifyCodeForUpdatingPhoneNumber('+19490008888', '123456');
+// update local data 
+LCUser currentUser = await LCUser.getCurrent();
+user.mobile = '+19490008888';
+```
+{% endif %}
+{% if platform_name === "Python" %}
+```python
+User.request_change_phone_number("+19490008888")
+
+User.change_phone_number("123456", "+19490008888")
+# update local data
+current_user = leancloud.User.get_current()
+current_user.set_mobile_phone_number("+19490008888")
+```
+{% endif %}
+{% if platform_name === "PHP" %}
+```php
+User::requestChangePhoneNumber("+19490008888");
+
+User::changePhoneNumber("123456", "+19490008888");
+// update local data
+$currentUser = User::getCurrentUser();
+$user->setMobilePhoneNumber("+19490008888");
+```
+{% endif %}
+
 {# ### CAPTCHA Code
 
 Using [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) is a common and effective practice to protest your application from spam and abuse. CAPTCHA offers more than just spam protection. It also helps  reduce fraud and associated costs by blocking bots that could trigger bulk SMS sending.
