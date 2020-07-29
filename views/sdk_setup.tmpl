@@ -520,6 +520,41 @@ dependencies:
 [leancloud_storage]: https://pub.dev/packages/leancloud_storage
 
 You can run `flutter pub get` to install dependencies.
+
+#### LeanMessage
+
+Specify [leancloud_official_plugin] as dependency in `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  ...
+  leancloud_official_plugin: ^{{ version.flutter_official_plugin }}
+```
+
+[leancloud_official_plugin]: https://pub.dev/packages/leancloud_official_plugin
+
+[leancloud_official_plugin] is based on native SDKs, so you also need to configure them.
+
+Android:
+
+```yaml
+# android/app/build.gradle
+dependencies {
+  implementation 'cn.leancloud:storage-android:{{ version.unified }}'
+  implementation 'cn.leancloud:realtime-android:{{ version.unified }}'
+  implementation 'io.reactivex.rxjava2:rxandroid:{{ version.unified }}'
+}
+```
+
+iOS:
+
+```sh
+$ cd ios/
+$ pod update
+```
+
 {% endif %}
 {% if platform_name === ".NET" %}
 ### Unity
@@ -767,6 +802,63 @@ LeanCloud.initialize(
     '{{appid}}', '{{appkey}}',
     queryCache: new LCQueryCache())
 ```
+
+### Initializing LeanMessage
+
+Import `package:leancloud_official_plugin/leancloud_plugin.dart` in `lib/main.dart` of your project:
+
+```dart
+import 'package:leancloud_official_plugin/leancloud_plugin.dart';
+```
+
+Import `cn.leancloud.AVOSCloud`, `cn.leancloud.AVLogger`, and `cn.leancloud.im.AVIMOptions` in `YourApplication.java` of your project:
+
+```java
+import io.flutter.app.FlutterApplication;
+import cn.leancloud.AVOSCloud;
+import cn.leancloud.AVLogger;
+import cn.leancloud.im.AVIMOptions;
+
+public class YourApplication extends FlutterApplication {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    AVIMOptions.getGlobalOptions().setUnreadNotificationEnabled(true);
+    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
+    AVOSCloud.initialize(this, "{{appid}}", "{{appkey}}");
+  }
+}
+```
+
+Note that you also need to declare required permissions in `AndroidManifest.xml`.
+Refer to [Java SDK Setup Guide](sdk_setup-java.html#initializing-your-project) for details.
+
+Import `LeanCloud` in `AppDelegate.swift` of your project:
+
+```swift
+import Flutter
+import LeanCloud
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        do {
+            LCApplication.logLevel = .all
+            try LCApplication.default.set(
+                id: "{{appid}}",
+                key: "{{appkey}}")
+            GeneratedPluginRegistrant.register(with: self)
+            return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        } catch {
+            fatalError("\(error)")
+        }
+    }
+}
+```
+
 {% endif %}
 
 ## Enabling Debug Logs
@@ -792,6 +884,11 @@ LCApplication.logLevel = .all
 // Place the line after LeanCloud.initialize
 LCLogger.setLevel(LCLogger.DebugLevel);
 ```
+
+### LeanStorage
+
+Refer to [Swift SDK Setup Guide](sdk_setup-swift.html#debugging) and [Java SDK Setup Guide](sdk_setup-java.html#debugging) for information on how to enable debug logs on iOS and Android platforms.
+
 {% endif %}
 {% if platform_name === "JavaScript" %}
 
