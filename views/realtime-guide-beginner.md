@@ -74,6 +74,9 @@ AVIMClient tom = AVIMClient.getInstance("Tom");
 var realtime = new AVRealtime('your-app-id','your-app-key');
 var tom = await realtime.CreateClientAsync('Tom');
 ```
+```dart
+Client tom = Client(id: 'Tom');
+```
 
 Keep in mind that an `IMClient` refers to an actual user. It should be stored globally since all the further actions done by this user will have to access it.
 
@@ -135,6 +138,10 @@ tom.open(new AVIMClientCallback() {
 ```cs
 var realtime = new AVRealtime('your-app-id','your-app-key');
 var tom = await realtime.CreateClientAsync('Tom');
+```
+```dart
+Client tom = Client(id: 'Tom');
+await tom.open();
 ```
 
 ### Logging in with `_User`
@@ -212,6 +219,9 @@ AVUser.logIn("Tom", "cat!@#123").subscribe(new Observer<AVUser>() {
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
 
 ### Creating Conversations
 
@@ -266,6 +276,14 @@ tom.createConversation(Arrays.asList("Jerry"), "Tom & Jerry", null, false, true,
 ```cs
 var tom = await realtime.CreateClientAsync('Tom');
 var conversation = await tom.CreateConversationAsync("Jerry", name:"Tom & Jerry", isUnique:true);
+```
+```dart
+try {
+  Conversation conversation = await tom.createConversation(
+      isUnique: true, members: {'Jerry'}, name: 'Tom & Jerry');
+} catch (e) {
+  print('Failed to create a conversation: $e');
+}
 ```
 
 `createConversation` creates a new conversation and stores it into the `_Conversation` table which can be found in your app's [Dashboard > LeanStorage > Data](https://console.leancloud.app/data.html?appid={{appid}}#/). Below are the interfaces offered by different SDKs for creating conversations:
@@ -416,6 +434,48 @@ public Task<AVIMConversation> CreateConversationAsync(string member = null,
     bool isUnique = true,
     IDictionary<string, object> options = null);
 ```
+```dart
+/// To create a normal [Conversation].
+///
+/// [isUnique] is a special parameter that defaults to `true`; it affects the creation behavior and the property [Conversation.isUnique].
+///   * When it is `true` and the relevant unique [Conversation] does not exist in the server, this method will create a new unique [Conversation].
+///   * When it is `true` and the relevant unique [Conversation] exists in the server, this method will return that existing unique [Conversation].
+///   * When it is `false`, this method always creates a new non-unique [Conversation].
+///
+/// [members] is the [Conversation.members].
+/// [name] is the [Conversation.name].
+/// [attributes] is the [Conversation.attributes].
+///
+/// Returns an instance of [Conversation].
+Future<Conversation> createConversation({
+  bool isUnique = true,
+  Set<String> members,
+  String name,
+  Map<String, dynamic> attributes,
+}) async {}
+
+/// To create a new [ChatRoom].
+///
+/// [name] is the [Conversation.name].
+/// [attributes] is the [Conversation.attributes].
+///
+/// Returns an instance of [ChatRoom].
+Future<ChatRoom> createChatRoom({
+  String name,
+  Map<String, dynamic> attributes,
+}) async {}
+
+/// To create a new [TemporaryConversation].
+///
+/// [members] is the [Conversation.members].
+/// [timeToLive] is the [TemporaryConversation.timeToLive].
+///
+/// Returns an instance of [TemporaryConversation].
+Future<TemporaryConversation> createTemporaryConversation({
+  Set<String> members,
+  int timeToLive,
+}) async {}
+```
 
 Although SDKs for different languages/platforms share different interfaces, they take in the similar set of parameters when creating a conversation:
 
@@ -481,6 +541,15 @@ conversation.sendMessage(msg, new AVIMConversationCallback() {
 var textMessage = new AVIMTextMessage("Get up, Jerry!");
 await conversation.SendMessageAsync(textMessage);
 ```
+```dart
+try {
+  TextMessage textMessage = TextMessage();
+  textMessage.text = 'Get up, Jerry!';
+  await conversation.send(message: textMessage);
+} catch (e) {
+  print(e);
+}
+```
 
 `Conversation#send` sends a message to the conversation specified. All the other members who are online will immediately receive the message.
 
@@ -532,6 +601,10 @@ jerry.open(new AVIMClientCallback(){
 ```cs
 var realtime = new AVRealtime('your-app-id','your-app-key');
 var jerry = await realtime.CreateClientAsync('Jerry');
+```
+```dart
+Client jerry = Client(id: 'Jerry');
+await jerry.open();
 ```
 
 As the receiver of the message, Jerry doesn't have to create a conversation with Tom and may as well not know that Tom created a conversation with him. Jerry needs to set up a callback function to get notified for the things Tom did.
@@ -656,6 +729,17 @@ private void Jerry_OnMessageReceived(object sender, AVIMMessageEventArgs e)
 }
 jerry.OnMessageReceived += Jerry_OnMessageReceived;
 ```
+```dart
+jerry.onMessage = ({
+  Client client,
+  Conversation conversation,
+  Message message,
+}) {
+  if (message.stringContent != null) {
+    print('Received message: ${message.stringContent}');
+  }
+};
+```
 
 With the two event handling functions above, Jerry will be able to receive messages from Tom. Jerry can send messages to Tom as well, as long as Tom has the same functions on his side.
 
@@ -755,6 +839,26 @@ var conversation = await tom.GetConversationAsync("CONVERSATION_ID");
 // Invite Mary
 await tom.InviteAsync(conversation, "Mary");
 ```
+```dart
+// Get the conversation with ID
+List<Conversation> conversations;
+try {
+  ConversationQuery query = tom.conversationQuery();
+  query.whereEqualTo('objectId', 'CONVERSATION_ID');
+  conversations = await query.find();
+} catch (e) {
+  print(e);
+}
+// Invite Mary
+try {
+  Conversation conversation = conversations.first;
+  MemberResult addResult = await conversation.addMembers(
+    members: {'Mary'},
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 On Jerry's side, he can add a listener for handling events regarding "new members being added". With the code below, he will be notified once Tom invites Mary to the conversation:
 
@@ -825,6 +929,17 @@ private void OnMembersJoined(object sender, AVIMOnInvitedEventArgs e)
     Debug.Log(string.Format("{0} invited {1} to the conversation {2}", e.InvitedBy,e.JoinedMembers, e.ConversationId));
 }
 jerry.OnMembersJoined += OnMembersJoined;
+```
+```dart
+jerry.onMembersJoined = ({
+  Client client,
+  Conversation conversation,
+  List members,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('${members.toString()} joined the conversation.');
+};
 ```
 
 {{ docs.langSpecStart('js') }}
@@ -907,6 +1022,16 @@ tom.createConversation(Arrays.asList("Jerry","Mary"), "Tom & Jerry & friends", n
 ```cs
 var conversation = await tom.CreateConversationAsync(new string[]{ "Jerry","Mary" }, name:"Tom & Jerry & friends", isUnique:true);
 ```
+```dart
+try {
+  Conversation conversation = await jerry.createConversation(
+      isUnique: true,
+      members: {'Jerry', 'Mary'},
+      name: 'Tom & Jerry & friends');
+} catch (e) {
+  print(e);
+}
+```
 
 ### Sending Group Messages
 
@@ -955,6 +1080,15 @@ conversation.sendMessage(msg, new AVIMConversationCallback() {
 ```cs
 var textMessage = new AVIMTextMessage("Welcome everyone!");
 await conversation.SendMessageAsync(textMessage);
+```
+```dart
+try {
+  TextMessage textMessage = TextMessage();
+  textMessage.text = 'Welcome everyone!';
+  await conversation.send(message: textMessage);
+} catch (e) {
+  print(e);
+}
 ```
 
 Both Jerry and Mary will have `Event.MESSAGE` event triggered which can be used to retrieve the message and have it displayed on the UI.
@@ -1006,6 +1140,13 @@ conv.kickMembers(Arrays.asList("Mary"),new AVIMConversationCallback(){
 ```
 ```cs
 await conversation.RemoveMembersAsync("Mary");
+```
+```dart
+try {
+  MemberResult removeMemberResult = await conversation.removeMembers(members: {'Mary'});
+} catch (e) {
+  print(e);
+}
 ```
 
 The following process will be triggered:
@@ -1117,6 +1258,26 @@ private void OnKicked(object sender, AVIMOnInvitedEventArgs e)
 jerry.OnMembersLeft += OnMembersLeft;
 jerry.OnKicked += OnKicked;
 ```
+```dart
+jerry.onMembersLeft = ({
+  Client client,
+  Conversation conversation,
+  List members,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('$byClientID removed ${members.toString()}.');
+};
+
+jerry.onKicked = ({
+  Client client,
+  Conversation conversation,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('You are removed by $byClientID');
+};
+```
 
 ### Joining Conversations
 
@@ -1180,6 +1341,23 @@ conv.join(new AVIMConversationCallback(){
 ```cs
 await william.JoinAsync("CONVERSATION_ID");
 ```
+```dart
+List<Conversation> conversations;
+try {
+  ConversationQuery query = william.conversationQuery();
+  query.whereEqualTo('objectId', 'CONVERSATION_ID');
+  conversations = await query.find();
+} catch (e) {
+  print(e);
+}
+
+try {
+  Conversation conversation = conversations.first;
+  MemberResult joinResult = await conversation.join();
+} catch (e) {
+  print(e);
+}
+```
 
 The following process will be triggered:
 
@@ -1234,6 +1412,17 @@ private void OnMembersJoined(object sender, AVIMOnInvitedEventArgs e)
 }
 jerry.OnMembersJoined += OnMembersJoined;
 ```
+```dart
+jerry.onMembersJoined = ({
+  Client client,
+  Conversation conversation,
+  List members,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('${members.toString()} joined');
+};
+```
 
 ### Leaving Conversations
 
@@ -1277,6 +1466,13 @@ conversation.quit(new AVIMConversationCallback(){
 ```
 ```cs
 await jerry.LeaveAsync(conversation);
+```
+```dart
+try {
+  MemberResult quitResult = await conversation.quit();
+} catch (e) {
+  print(e);
+}
 ```
 
 After leaving the conversation, Jerry will no longer receive messages from it. Here is the sequence diagram of the operation:
@@ -1329,6 +1525,17 @@ private void OnMembersLeft(object sender, AVIMOnMembersLeftEventArgs e)
     // e.KickedBy is the operator; e.ConversationId is the ID of the conversation
     Debug.Log(string.Format("{0} left {1}; operated by {2}",e.JoinedMembers, e.ConversationId, e.KickedBy));
 }
+```
+```dart
+mary.onMembersLeft = ({
+  Client client,
+  Conversation conversation,
+  List members,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('${members.toString()} left');
+};
 ```
 
 ### Summary of Event Notifications Regarding Changes of Members
@@ -1383,7 +1590,7 @@ All of them are derived from `AVIMMessage`, with the following properties availa
 
 {{ docs.langSpecStart('swift') }}
 
-| 属性 | 类型 | 描述 |
+| Name | Type | Description |
 | --- | --- | --- |
 | `content`                  | `IMMessage.Content`    | The content of the message. Could be `String` or `Data`. |
 | `fromClientID`             | `String`               | The `clientId` of the sender. |
@@ -1462,7 +1669,7 @@ File messages | `-6`
 
 #### Sending Image Files
 
-A image message can be constructed from either binary data or a local path. The diagram below shows the sequence of it:
+An image message can be constructed from either binary data or a local path. The diagram below shows the sequence of it:
 
 ```seq
 Tom-->Local: 1. Get the content of the image
@@ -1546,6 +1753,24 @@ imageMessage.File = image;
 imageMessage.TextContent = "Sent via Windows.";
 await conversation.SendMessageAsync(imageMessage);
 ```
+```dart
+import 'package:flutter/services.dart' show rootBundle;
+
+// Assuming there is an `assets` directory under project root,
+// and this directory is included in pubspec.yaml.
+ByteData imageData = await rootBundle.load('assets/test.png');
+// image message
+ImageMessage imageMessage = ImageMessage.from(
+  binaryData: imageData.buffer.asUint8List(),
+  format: 'png',
+  name: 'image.png',
+);
+try {
+  conversation.send(message: imageMessage);
+} catch (e) {
+  print(e);
+}
+```
 
 #### Sending Image URLs
 
@@ -1611,6 +1836,18 @@ var imageMessage = new AVIMImageMessage();
 imageMessage.File = image;
 imageMessage.TextContent = "Sent via Windows.";
 await conversation.SendMessageAsync(imageMessage);
+```
+```dart
+ImageMessage imageMessage = ImageMessage.from(
+  url: 'http://ww3.sinaimg.cn/bmiddle/596b0666gw1ed70eavm5tg20bq06m7wi.gif',
+  format: 'png',
+  name: 'image.png',
+);
+try {
+  conversation.send(message: imageMessage);
+} catch (e) {
+  print(e);
+}
 ```
 
 #### Receiving Image Messages
@@ -1701,6 +1938,17 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
     }
 }
 ```
+```dart
+lient.onMessage = ({
+  Client client,
+  Conversation conversation,
+  Message message,
+}) {
+  if (message is ImageMessage) {
+    print('Received an image: ${message.url}');
+  }
+};
+```
 
 ### Sending Audios, Videos, and Files
 
@@ -1787,6 +2035,21 @@ audioMessage.File = audio;
 audioMessage.TextContent = "I heard this song became a meme.";
 await conversation.SendMessageAsync(audioMessage);
 ```
+```dart
+import 'package:flutter/services.dart' show rootBundle;
+
+ByteData audioData = await rootBundle.load('assets/test.mp3');
+AudioMessage audioMessage = AudioMessage.from(
+  binaryData: audioData.buffer.asUint8List(),
+  format: 'mp3',
+);
+audioMessage.text = 'I heard this song became a meme.';
+try {
+  await conversation.send(message: audioMessage);
+} catch (e) {
+  print(e);
+}
+```
 
 Similar to image messages, you can construct audio messages from URLs as well:
 
@@ -1794,7 +2057,7 @@ Similar to image messages, you can construct audio messages from URLs as well:
 var AV = require('leancloud-storage');
 var { AudioMessage } = require('leancloud-realtime-plugin-typed-messages');
 
-var file = new AV.File.withURL('apple.acc', 'https://some.website.com/apple.acc');
+var file = new AV.File.withURL('apple.aac', 'https://some.website.com/apple.aac');
 file.save().then(function() {
   var message = new AudioMessage(file);
   message.setText('Here is the recording from Apple Special Event.');
@@ -1805,8 +2068,8 @@ file.save().then(function() {
 ```
 ```swift
 do {
-    if let url = URL(string: "https://some.website.com/apple.acc") {
-        let audioMessage = IMAudioMessage(url: url, format: "acc")
+    if let url = URL(string: "https://some.website.com/apple.aac") {
+        let audioMessage = IMAudioMessage(url: url, format: "aac")
         audioMessage.text = "Here is the recording from Apple Special Event."
         try conversation.send(message: audioMessage, completion: { (result) in
             switch result {
@@ -1822,7 +2085,7 @@ do {
 }
 ```
 ```objc
-AVFile *file = [AVFile fileWithRemoteURL:[NSURL URLWithString:@"https://some.website.com/apple.acc"]];
+AVFile *file = [AVFile fileWithRemoteURL:[NSURL URLWithString:@"https://some.website.com/apple.aac"]];
 AVIMAudioMessage *message = [AVIMAudioMessage messageWithText:@"Here is the recording from Apple Special Event." file:file attributes:nil];
 [conversation sendMessage:message callback:^(BOOL succeeded, NSError *error) {
     if (succeeded) {
@@ -1831,7 +2094,7 @@ AVIMAudioMessage *message = [AVIMAudioMessage messageWithText:@"Here is the reco
 }];
 ```
 ```java
-AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", null);
+AVFile file = new AVFile("apple.aac", "https://some.website.com/apple.aac", null);
 AVIMAudioMessage m = new AVIMAudioMessage(file);
 m.setText("Here is the recording from Apple Special Event.");
 conv.sendMessage(m, new AVIMConversationCallback() {
@@ -1844,11 +2107,22 @@ conv.sendMessage(m, new AVIMConversationCallback() {
 });
 ```
 ```cs
-var audio = new AVFile("apple.acc", "https://some.website.com/apple.acc");
+var audio = new AVFile("apple.aac", "https://some.website.com/apple.aac");
 var audioMessage = new AVIMAudioMessage();
 audioMessage.File = audio;
 audioMessage.TextContent = "Here is the recording from Apple Special Event.";
 await conversation.SendMessageAsync(audioMessage);
+```
+```dart
+AudioMessage audioMessage = AudioMessage.from(
+  url: 'https://some.website.com/apple.aac',
+  name: 'apple.aac',
+);
+try {
+  await conversation.send(message: audioMessage);
+} catch (e) {
+  print(e);
+}
 ```
 
 ### Sending Location Messages
@@ -1909,6 +2183,17 @@ conversation.sendMessage(locationMessage, new AVIMConversationCallback() {
 var locationMessage = new AVIMLocationMessage();
 locationMessage.Location = new AVGeoPoint(31.3753285, 120.9664658);
 await conversation.SendMessageAsync(locationMessage);
+```
+```dart
+LocationMessage locationMessage = LocationMessage.from(
+  latitude: 22,
+  longitude: 33,
+);
+try {
+  await conversation.send(message: locationMessage);
+} catch (e) {
+  print(e);
+}
 ```
 
 ### Back to Receiving Messages
@@ -2284,8 +2569,41 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
     {
         Debug.Log(string.Format("Received a customized message {0} {1}", inputtingMessage.TextContent, inputtingMessage.Ecode));
     }
-    // Messages with unknon types will be discarded.
+    // Messages with unknown types will be discarded.
 }
+```
+```dart
+jerry.onMessage = ({
+  Client client,
+  Conversation conversation,
+  Message message,
+}) {
+  if (message.binaryContent != null) {
+    print('Received a binary message: ${message.binaryContent.toString()}');
+  } else if (message is TextMessage) {
+    print('Received a text message: ${message.text}');
+  } else if (message is LocationMessage) {
+    print('Received a location message: ${message.latitude},${message.longitude}');
+  } else if (message is FileMessage) {
+    if (message is ImageMessage) {
+      print('Received an image message: ${message.url}');
+    } else if (message is AudioMessage) {
+      print('Received an audio message: ${message.duration}');
+    } else if (message is VideoMessage) {
+      print('Received a video message: ${message.duration}');
+    } else {
+      print('Received a file message: ${message.url}');
+    }
+  } else if (message is CustomMessage) {
+    // CustomMessage is a customized message type
+    print('Received a custom message');
+  } else {
+    print('Received an unknown message');
+    if (message.stringContent != null) {
+      print('with message string content: ${message.stringContent}');
+    }
+  }
+};
 ```
 
 ## Custom Attributes
@@ -2410,6 +2728,25 @@ A `Conversation` object holds some built-in properties which match the fields in
 | `LastMessageAt` | `lm` | The time the last message is sent. |
 
 {{ docs.langSpecEnd('cs') }}
+{{ docs.langSpecStart('dart') }}
+| Property of `Conversation` | Field in `_Conversation` | Description |
+| --- | --- | --- |
+| `attributes`                    | `attr`             | Custom attributes. |
+| `client`                        | N/A                | The `Client` the conversation belongs to. |
+| `createdAt`                     | `createdAt`        | The time the conversation is created. |
+| `creator`                       | `c`                | The creator of the conversation. |
+| `id`                            | `objectId`         | A globally unique `ID`. |
+| `isMuted`                       | N/A                | Whether the current user muted the conversation. |
+| `isUnique`                      | `unique`           | Whether it is a `Unique Conversation`. |
+| `lastDeliveredAt` .             | N/A                | The time the last message being delivered is sent (for one-on-one chatting only). |
+| `lastMessage`                   | N/A                | The last message. Could be empty. |
+| `lastReadAt` | N/A | The time the last message being read is sent (for one-on-one chatting only). |
+| `members`                       | `m`                | The list of members. |
+| `name`                          | `name`             | The name of the conversation. |
+| `uniqueID`                      | `uniqueId`         | A globally unique `ID` for `Unique Conversation`. |
+| `unreadMessageCount`            | N/A                | The number of unread messages. |
+| `unreadMessagesMentioned` | N/A                | Whether an unread message mentions the current `Client`. |
+| `updatedAt`                     | `updatedAt`        | The time the conversation is updated. |
 
 Beside these built-in properties, you can also define your custom attributes to store more data with each conversation.
 
@@ -2476,6 +2813,22 @@ options.Add("type", "private");
 options.Add("pinned",true);
 var conversation = await tom.CreateConversationAsync("Jerry", name:"Tom & Jerry", isUnique:true, options:options);
 ```
+```dart
+try {
+  Conversation conversation = await jerry.createConversation(
+    members: {'client1.id', 'client2.id'},
+    attributes: {
+      'members': ['Jerry'],
+      'name': 'Tom & Jerry',
+      'unique': true,
+      'type': 'private',
+      'pinned': true,
+    },
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 **The SDK allows everyone in a conversation to access its custom attributes.** You can even query conversations that satisfy certain attributes. See [Querying Conversations with Custom Conditions](#querying-conversations-with-custom-conditions).
 
@@ -2524,6 +2877,15 @@ conversation.updateInfoInBackground(new AVIMConversationCallback(){
 ```cs
 conversation.Name = "Tom is Smart";
 await conversation.SaveAsync();
+```
+```dart
+try {
+  await conversation.updateInfo(attributes: {
+    'name': 'Tom is Smart',
+  });
+} catch (e) {
+  print(e);
+}
 ```
 
 Custom attributes can also be retrieved or updated by all the members:
@@ -2585,6 +2947,18 @@ var type = conversation["attr.type"];
 conversation["attr.pinned"] = false;
 // Save
 await conversation.SaveAsync();
+```
+```dart
+try {
+// Retrieve custom attribute 
+  String type = conversation.attributes['type'];
+// Set new value for pinned 
+  await conversation.updateInfo(attributes: {
+    'pinned': false,
+  });
+} catch (e) {
+  print(e);
+}
 ```
 
 > Notes about custom attributes:
@@ -2649,6 +3023,18 @@ public void onInfoChanged(AVIMClient client, AVIMConversation conversation, JSON
 ```cs
 // Not supported yet
 ```
+```dart
+jerry.onInfoUpdated = ({
+  Client client,
+  Conversation conversation,
+  Map updatingAttributes,
+  Map updatedAttributes,
+  String byClientID,
+  DateTime atDate,
+}) {
+  print('Conversation ${conversation.id} updated');
+};
+```
 
 > Notes:
 >
@@ -2700,6 +3086,9 @@ conversation.fetchInfoInBackground(new AVIMConversationCallback() {
 });
 ```
 ```cs
+// Not supported yet
+```
+```dart
 // Not supported yet
 ```
 
@@ -2760,6 +3149,15 @@ query.findInBackground(new AVIMConversationQueryCallback(){
 ```cs
 var query = tom.GetQuery();
 var conversation = await query.GetAsync("551260efe4b01608686c3e0f");
+```
+```dart
+try {
+  ConversationQuery query = tom.conversationQuery();
+  query.whereEqualTo('objectId', '551260efe4b01608686c3e0f');
+  await query.find();
+} catch (e) {
+  print(e);
+}
 ```
 
 ### Querying by Conditions
@@ -2823,6 +3221,15 @@ query.findInBackground(new AVIMConversationQueryCallback(){
 //   var query = tom.GetQuery().WhereEqualTo("attr.type","private");
 var query = tom.GetQuery().WhereEqualTo("attr.type","private");
 await query.FindAsync();
+```
+```dart
+try {
+  ConversationQuery query = jerry.conversationQuery();
+  query.whereEqualTo('attr.type', 'private');
+  List<Conversation> conversations = await query.find();
+} catch (e) {
+  print(e);
+}
 ```
 
 The interface for querying conversations is very similar to that for querying objects in LeanStorage. If you're already familiar with LeanStorage, it shouldn't be hard for you to learn how to query conversations:
@@ -2922,6 +3329,9 @@ query.whereMatches("language","[\\u4e00-\\u9fa5]"); // language is Chinese chara
 ```cs
 query.WhereMatches("language","[\\u4e00-\\u9fa5]"); // language is Chinese characters
 ```
+```dart
+// Not supported yet
+```
 
 ### Queries on String Values
 
@@ -2942,6 +3352,9 @@ query.whereStartsWith("name","education");
 ```cs
 query.WhereStartsWith("name","education");
 ```
+```dart
+// Not supported yet
+```
 
 You can also look for conversations with string values that **include** a particular string, which is similar to `LIKE '%keyword%'` in SQL. For example, to look for all conversations with names including `education`:
 
@@ -2959,6 +3372,9 @@ query.whereContains("name","education");
 ```
 ```cs
 query.WhereContains("name","education");
+```
+```dart
+// Not supported yet
 ```
 
 If you want to look for conversations with string values that **exclude** a particular string, you can use [regular expressions](#using-regular-expressions). For example, to look for all conversations with names excluding `education`:
@@ -2978,6 +3394,9 @@ query.whereMatches("name","^((?!education).)* $ ");
 ```
 ```cs
 query.WhereMatches("name","^((?!education).)* $ ");
+```
+```dart
+// Not supported yet
 ```
 
 ### Queries on Array Values
@@ -3001,6 +3420,9 @@ List<string> members = new List<string>();
 members.Add("Tom");
 query.WhereContainedIn("m", members);
 ```
+```dart
+// Not supported yet
+```
 
 ### Queries on Existence
 
@@ -3021,6 +3443,9 @@ query.whereDoesNotExist("lm");
 ```cs
 query.WhereDoesNotExist("lm");
 ```
+```dart
+// Not supported yet
+```
 
 Or, to look for all conversations with `lm` not to be empty:
 
@@ -3038,6 +3463,9 @@ query.whereExists("lm");
 ```
 ```cs
 query.WhereExists("lm");
+```
+```dart
+// Not supported yet
 ```
 
 ### Compound Queries
@@ -3062,6 +3490,9 @@ query.whereLessThan("age", 18);
 ```
 ```cs
 query.WhereContains("keywords", "'education'").WhereLessThan("age", 18);
+```
+```dart
+// Not supported yet
 ```
 
 You can also connect two queries with `and` or `or` to form a new query.
@@ -3109,6 +3540,9 @@ var keywordsQuery = tom.GetQuery().WhereContains('keywords', 'education').
 
 var query = AVIMConversationQuery.or(new AVIMConversationQuery[] { ageQuery, keywordsQuery});
 ```
+```dart
+// Not supported yet
+```
 
 ### Sorting
 
@@ -3154,6 +3588,9 @@ tom.open(new AVIMClientCallback() {
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
 
 ### Excluding Member Lists from Results
 
@@ -3193,6 +3630,9 @@ public void queryConversationCompact() {
 ```
 ```cs
 // Not supported yet
+```
+```dart
+query.excludeMembers = true;
 ```
 
 ### Including Latest Messages in Results
@@ -3235,6 +3675,9 @@ public void queryConversationWithLastMessage() {
 ```
 ```cs
 // Not supported yet
+```
+```dart
+query.includeLastMessage = true;
 ```
 
 Keep in mind that what this option really does is to refresh the latest messages of conversations. Due to the existence of cache, it is still possible for you to retrieve the outdated "latest messages" even though you set the option to be `false`.
@@ -3396,6 +3839,11 @@ query.findInBackground(new AVIMConversationQueryCallback() {
 Not supported yet.
 
 {{ docs.langSpecEnd('cs') }}
+{{ docs.langSpecStart('dart') }}
+
+Not supported yet.
+
+{{ docs.langSpecEnd('dart') }}
 
 ### Optimizing Performance
 
@@ -3467,6 +3915,16 @@ foreach (var message in messages)
   {
     var textMessage = (AVIMTextMessage)message;
   }
+}
+```
+```dart
+// limit could be any number from 1 to 100 (defaults to 20) 
+try {
+  List<Message> messages = await conversation.queryMessage(
+    limit: 10,
+  );
+} catch (e) {
+  print(e);
 }
 ```
 
@@ -3552,6 +4010,29 @@ var messages = await conversation.QueryMessageAsync(limit: 10);
 var oldestMessage = messages.ToList()[0];
 var messagesInPage = await conversation.QueryMessageAsync(beforeMessageId: oldestMessage.Id, beforeTimeStamp: oldestMessage.ServerTimestamp); 
 ```
+```dart
+List<Message> messages;
+try {
+  // first query
+  messages = await conversation.queryMessage(
+    limit: 10,
+  );
+} catch (e) {
+  print(e);
+}
+
+try {
+  Message oldMessage = messages.first;
+  List<Message> messages2 = await conversation.queryMessage(
+    startTimestamp: oldMessage.sentTimestamp,
+    startMessageID: oldMessage.id,
+    startClosed: true,
+    limit: 10,
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 ### Retrieving Messages by Types
 
@@ -3596,6 +4077,13 @@ conversation.queryMessagesByType(msgType, limit, new AVIMMessagesQueryCallback()
 ```cs
 // Pass in a generic type parameter and the SDK will automatically read the type and send it to the server for searching messages
 var imageMessages = await conversation.QueryMessageAsync<AVIMImageMessage>();
+```
+```dart
+try {
+  List<Message> messages = await conversation.queryMessage(type: -2);
+} catch (e) {
+  print(e);
+}
 ```
 
 To retrieve more images, follow the way introduced in the previous section to go through different pages.
@@ -3646,6 +4134,15 @@ conversation.queryMessages(interval, AVIMMessageQueryDirectionFromOldToNew, limi
 ```
 ```cs
 var earliestMessages = await conversation.QueryMessageAsync(direction: 0);
+```
+```dart
+try {
+  List<Message> messages = await conversation.queryMessage(
+    direction: MessageQueryDirection.oldToNew,
+  );
+} catch (e) {
+  print(e);
+}
 ```
 
 It is a bit more complicated to implement pagination with this method. See the next section for more explanations.
@@ -3715,6 +4212,19 @@ conversation.queryMessages(interval, direction, limit,
 var earliestMessages = await conversation.QueryMessageAsync(direction: 0, limit: 1);
 // Get messages sent after earliestMessages.Last()
 var nextPageMessages = await conversation.QueryMessageAfterAsync(earliestMessages.Last());
+```
+```dart
+try {
+  List<Message> messages = await conversation.queryMessage(
+    startTimestamp: textMessage.sentTimestamp,
+    startMessageID: textMessage.id,
+    startClosed: true,
+    direction: MessageQueryDirection.oldToNew,
+    limit: 10,
+  );
+} catch (e) {
+  print(e);
+}
 ```
 
 ### Retrieving Messages Within a Period of Time
@@ -3787,6 +4297,20 @@ var latestMessage = await conversation.QueryMessageAsync(limit: 1);
 // messagesInInterval can get at most 100 messages
 var messagesInInterval = await conversation.QueryMessageInIntervalAsync(earliestMessage.FirstOrDefault(), latestMessage.FirstOrDefault());
 ```
+```dart
+try {
+  List<Message> messages = await conversation.queryMessage(
+    startTimestamp: textMessage.sentTimestamp,
+    startMessageID: textMessage.id,
+    startClosed: true,
+    endTimestamp: fileMessage.sentTimestamp,
+    endMessageID: fileMessage.id,
+    endClosed: true,
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 ### Caching Messages
 
@@ -3847,6 +4371,10 @@ AVIMClient.setMessageQueryCacheEnable(false)
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
+
 
 ## Logging out and Network Changes
 
@@ -3888,6 +4416,9 @@ tom.close(new AVIMClientCallback(){
 ```
 ```cs
 await tom.CloseAsync();
+```
+```dart
+await tom.close();
 ```
 
 After the function is called, the connection between the client and the server will be terminated. If you check the status of the corresponding `clientId` on the cloud, it would show as "offline".
@@ -4010,6 +4541,17 @@ The following events will be populated on `AVRealtime`:
 - `OnReconnectFailed` occurs when it fails to reconnect. The messaging service is unavailable at this time.
 
 {{ docs.langSpecEnd('cs') }}
+
+{{ docs.langSpecStart('dart') }}
+
+The following events will be populated on `Client`:
+
+- `onOpened` occurs when the connection is established. 
+- `onClosed` occurs when the connection is closed.
+- `onResuming` occurs when trying to reconnect. The messaging service is still unavailable at this time. 
+- `onDisconnected` occurs when the the connection is lost. 
+
+{{ docs.langSpecEnd('dart') }}
 
 ## More Suggestions
 
