@@ -437,10 +437,10 @@ public Task<AVIMConversation> CreateConversationAsync(string member = null,
 ```dart
 /// To create a normal [Conversation].
 ///
-/// [isUnique] is a special parameter, default is `true`, it affects the creation behavior and property [Conversation.isUnique].
-///   * When it is `true` and the relevant unique [Conversation] not exists in the server, this method will create a new unique [Conversation].
+/// [isUnique] is a special parameter that defaults to `true`; it affects the creation behavior and the property [Conversation.isUnique].
+///   * When it is `true` and the relevant unique [Conversation] does not exist in the server, this method will create a new unique [Conversation].
 ///   * When it is `true` and the relevant unique [Conversation] exists in the server, this method will return that existing unique [Conversation].
-///   * When it is `false`, this method always create a new non-unique [Conversation].
+///   * When it is `false`, this method always creates a new non-unique [Conversation].
 ///
 /// [members] is the [Conversation.members].
 /// [name] is the [Conversation.name].
@@ -2094,7 +2094,7 @@ AVIMAudioMessage *message = [AVIMAudioMessage messageWithText:@"Here is the reco
 }];
 ```
 ```java
-AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.aac", null);
+AVFile file = new AVFile("apple.aac", "https://some.website.com/apple.aac", null);
 AVIMAudioMessage m = new AVIMAudioMessage(file);
 m.setText("Here is the recording from Apple Special Event.");
 conv.sendMessage(m, new AVIMConversationCallback() {
@@ -2107,7 +2107,7 @@ conv.sendMessage(m, new AVIMConversationCallback() {
 });
 ```
 ```cs
-var audio = new AVFile("apple.acc", "https://some.website.com/apple.aac");
+var audio = new AVFile("apple.aac", "https://some.website.com/apple.aac");
 var audioMessage = new AVIMAudioMessage();
 audioMessage.File = audio;
 audioMessage.TextContent = "Here is the recording from Apple Special Event.";
@@ -2116,7 +2116,7 @@ await conversation.SendMessageAsync(audioMessage);
 ```dart
 AudioMessage audioMessage = AudioMessage.from(
   url: 'https://some.website.com/apple.aac',
-  name: 'apple.acc',
+  name: 'apple.aac',
 );
 try {
   await conversation.send(message: audioMessage);
@@ -2569,7 +2569,7 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
     {
         Debug.Log(string.Format("Received a customized message {0} {1}", inputtingMessage.TextContent, inputtingMessage.Ecode));
     }
-    // Messages with unknon types will be discarded.
+    // Messages with unknown types will be discarded.
 }
 ```
 ```dart
