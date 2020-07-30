@@ -1383,7 +1383,7 @@ All of them are derived from `AVIMMessage`, with the following properties availa
 
 {{ docs.langSpecStart('swift') }}
 
-| 属性 | 类型 | 描述 |
+| Name | Type | Description |
 | --- | --- | --- |
 | `content`                  | `IMMessage.Content`    | The content of the message. Could be `String` or `Data`. |
 | `fromClientID`             | `String`               | The `clientId` of the sender. |
@@ -1462,7 +1462,7 @@ File messages | `-6`
 
 #### Sending Image Files
 
-A image message can be constructed from either binary data or a local path. The diagram below shows the sequence of it:
+An image message can be constructed from either binary data or a local path. The diagram below shows the sequence of it:
 
 ```seq
 Tom-->Local: 1. Get the content of the image
@@ -1794,7 +1794,7 @@ Similar to image messages, you can construct audio messages from URLs as well:
 var AV = require('leancloud-storage');
 var { AudioMessage } = require('leancloud-realtime-plugin-typed-messages');
 
-var file = new AV.File.withURL('apple.acc', 'https://some.website.com/apple.acc');
+var file = new AV.File.withURL('apple.aac', 'https://some.website.com/apple.aac');
 file.save().then(function() {
   var message = new AudioMessage(file);
   message.setText('Here is the recording from Apple Special Event.');
@@ -1805,8 +1805,8 @@ file.save().then(function() {
 ```
 ```swift
 do {
-    if let url = URL(string: "https://some.website.com/apple.acc") {
-        let audioMessage = IMAudioMessage(url: url, format: "acc")
+    if let url = URL(string: "https://some.website.com/apple.aac") {
+        let audioMessage = IMAudioMessage(url: url, format: "aac")
         audioMessage.text = "Here is the recording from Apple Special Event."
         try conversation.send(message: audioMessage, completion: { (result) in
             switch result {
@@ -1822,7 +1822,7 @@ do {
 }
 ```
 ```objc
-AVFile *file = [AVFile fileWithRemoteURL:[NSURL URLWithString:@"https://some.website.com/apple.acc"]];
+AVFile *file = [AVFile fileWithRemoteURL:[NSURL URLWithString:@"https://some.website.com/apple.aac"]];
 AVIMAudioMessage *message = [AVIMAudioMessage messageWithText:@"Here is the recording from Apple Special Event." file:file attributes:nil];
 [conversation sendMessage:message callback:^(BOOL succeeded, NSError *error) {
     if (succeeded) {
@@ -1831,7 +1831,7 @@ AVIMAudioMessage *message = [AVIMAudioMessage messageWithText:@"Here is the reco
 }];
 ```
 ```java
-AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", null);
+AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.aac", null);
 AVIMAudioMessage m = new AVIMAudioMessage(file);
 m.setText("Here is the recording from Apple Special Event.");
 conv.sendMessage(m, new AVIMConversationCallback() {
@@ -1844,7 +1844,7 @@ conv.sendMessage(m, new AVIMConversationCallback() {
 });
 ```
 ```cs
-var audio = new AVFile("apple.acc", "https://some.website.com/apple.acc");
+var audio = new AVFile("apple.acc", "https://some.website.com/apple.aac");
 var audioMessage = new AVIMAudioMessage();
 audioMessage.File = audio;
 audioMessage.TextContent = "Here is the recording from Apple Special Event.";
