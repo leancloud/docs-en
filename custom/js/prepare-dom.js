@@ -219,6 +219,7 @@ var codeBlockTabber = (function () {
   function checkCodeBlocks() {
     var $codeBlocks = $('.prettyprint');
     var langLabelMap = {
+      'lang-dart': 'Flutter',
       'lang-swift': 'Swift',
       'lang-android': 'Android',
       'lang-objc': 'Objective-C',
