@@ -4551,7 +4551,7 @@ The following events will be populated on `Client`:
 - `onResuming` occurs when trying to reconnect. The messaging service is still unavailable at this time. 
 - `onDisconnected` occurs when the the connection is lost. 
 
-{{ docs.langSpecEnd('dart') }
+{{ docs.langSpecEnd('dart') }}
 
 ## More Suggestions
 
