@@ -91,6 +91,16 @@ var textMessage = new AVIMTextMessage("@Tom Come back early.")
 };
 await conversation.SendMessageAsync(textMessage);
 ```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = '@Tom Come back early.';
+  message.mentionMembers = ['Tom'];
+  await conversation.send(message: message);
+} catch (e) {
+  print(e);
+}
+```
 
 You can also mention everyone by setting `mentionAll`:
 
@@ -144,6 +154,16 @@ var textMessage = new AVIMTextMessage("@all")
 };
 await conv.SendMessageAsync(textMessage);
 ```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = 'content';
+  message.mentionAll = true;
+  await conversation.send(message: message);
+} catch (e) {
+  print(e);
+}
+```
 
 The receiver of the message can call the getters of `mentionList` and `mentionAll` to see the members being mentioned:
 
@@ -194,6 +214,15 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
         var mentionedList = e.Message.MentionList;
     }
 }
+```
+```dart
+jerry.onMessage = ({
+  Client client,
+  Conversation conversation,
+  Message message,
+}) {
+  List mentionList = message.mentionMembers;
+};
 ```
 
 To make it easier to display things on the UI, the following two flags are offered by `AVIMMessage` to indicate the status of mentioning:
@@ -252,6 +281,9 @@ private void OnMessageReceived(object sender, AVIMMessageEventArgs e)
          var mentioned = e.Message.MentionAll || e.Message.MentionList.Contains("Tom");
     }
 }
+```
+```dart
+// Not supported yet.
 ```
 
 ### Modify a Message
@@ -314,6 +346,16 @@ imConversation.updateMessage(oldMessage, textMessage, new AVIMMessageUpdatedCall
 var newMessage = new AVIMTextMessage("The new message.");
 await conversation.UpdateAsync(oldMessage, newMessage);
 ```
+```dart
+try {
+  Message updatedMessage = await conversation.updateMessage(
+    oldMessage: oldMessage,
+    newMessage: newMessage,
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 If the modification succeeded, other members in the conversation will receive a `MESSAGE_UPDATE` event:
 
@@ -370,6 +412,17 @@ void onMessageUpdated(AVIMClient client, AVIMConversation conversation, AVIMMess
 tom.OnMessageUpdated += (sender, e) => {
   var message = (AVIMTextMessage) e.Message; // e.Messages contains the messages being updated; it is a collection of messages since the SDK may combine multiple operations into a single request
   Debug.Log(string.Format("Message with ID {1} is updated to {0}", message.TextContent, message.Id));
+};
+```
+```dart
+tom.onMessageUpdated = ({
+  Client client,
+  Conversation conversation,
+  Message updatedMessage,
+  int patchCode,
+  String patchReason,
+}) {
+  // handle updatedMessage
 };
 ```
 
@@ -430,6 +483,15 @@ conversation.recallMessage(message, new AVIMMessageRecalledCallback() {
 ```cs
 await conversation.RecallAsync(message);
 ```
+```dart
+try {
+  RecalledMessage recalledMessage = await conversation.recallMessage(
+    message: oldMessage,
+  );
+} catch (e) {
+  print(e);
+}
+```
 
 Once recalling a message succeeded, other members in the conversation will receive the `MESSAGE_RECALL` event:
 
@@ -485,6 +547,15 @@ private void Tom_OnMessageRecalled(object sender, AVIMMessagePatchEventArgs e)
     // e.Messages contains the messages being edited; it is a collection of messages since the SDK may combine multiple operations into a single request
 }
 ```
+```dart
+tom.onMessageRecalled = ({
+  Client client,
+  Conversation conversation,
+  RecalledMessage recalledMessage,
+}) {
+  // recalledMessage is the message recalled
+};
+```
 
 For Android and iOS SDKs, if caching is enabled (enabled by default), the SDKs will first delete the recalled message from the cache and then trigger an event to the app. This ensures the consistency of data internally. When you receive such event, simply refresh the chatting page to reflect the latest collection of messages. Based on your implementation, either the total amount of messages would become less or a message indicating message being recalled would be displayed.
 
@@ -538,6 +609,11 @@ public void sendMessage(AVIMMessage message, final AVIMConversationCallback call
 ```cs
 public static Task<T> SendAsync<T>(this AVIMConversation conversation, T message)
             where T : IAVIMMessage
+```
+```dart
+Future<Message> send({
+  @required Message message,
+}) async {}
 ```
 
 In fact, an additional parameter `AVIMMessageOption` can be provided when sending a message. Here is a complete list of interfaces offered by `AVIMConversation`:
@@ -611,6 +687,16 @@ public void sendMessage(final AVIMMessage message, final AVIMMessageOption messa
 /// <returns></returns>
 public Task<IAVIMMessage> SendMessageAsync(IAVIMMessage avMessage, AVIMSendOptions options);
 ```
+```dart
+Future<Message> send({
+  @required Message message,
+  bool transient,
+  bool receipt,
+  bool will,
+  MessagePriority priority,
+  Map pushData,
+}) async {}
+```
 
 With `AVIMMessageOption`, we can specify:
 
@@ -671,6 +757,15 @@ var textMessage = new AVIMTextMessage("Tom is typing…")
 var option = new AVIMSendOptions(){Transient = true};
 await conv.SendAsync(textMessage, option);
 ```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = 'Tom is typing…';
+  await conversation.send(message: message, transient: true);
+} catch (e) {
+  print(e);
+}
+```
 
 The procedure for receiving transient messages is also the same as that for basic messages. You can run different logic based on the types of messages. The example above sets the type of the message to be text message, but it would be better if you assign a distinct type to it. Our SDK doesn't offer a type for transient messages, so you may build your own depending on what you need. See [Custom Message Types](#custom-message-types) for more details.
 
@@ -723,6 +818,15 @@ imConversation.sendMessage(message, messageOption, new AVIMConversationCallback(
 var textMessage = new AVIMTextMessage("A very important message.");
 var option = new AVIMSendOptions(){Receipt = true};
 await conv.SendAsync(textMessage, option);
+```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = 'A very important message.';
+  await conversation.send(message: message, receipt: true);
+} catch (e) {
+  print(e);
+}
 ```
 
 > Note:
@@ -793,6 +897,17 @@ conversaion.OnMessageDeliverd += (s, e) =>
 // Send message
 await conversaion.SendTextMessageAsync("Wanna go to bakery tonight?");
 ```
+```dart
+tom.onMessageDelivered = ({
+  Client client,
+  Conversation conversation,
+  String messageID,
+  String toClientID,
+  DateTime atDate,
+}) {
+  // sent
+};
+```
 
 The content included in the receipt will not be a specific message. Instead, it will be the time the messages in the current conversation are last delivered (`lastDeliveredAt`). We have mentioned earlier that messages are delivered according to the sequence they are pushed to the cloud. Therefore, given the time of the last delivery, we can infer that all the messages sent before it are delivered. On the UI of the app, you can mark all the messages sent before `lastDeliveredAt` to be "delivered".
 
@@ -836,6 +951,9 @@ public void read();
 ```
 ```cs
 // Not supported yet
+```
+```dart
+await conversation.read();
 ```
 
 After the receiver has read the latest messages, the sender will get a receipt indicating that the messages they have sent out are read.
@@ -899,6 +1017,16 @@ So if Tom is chatting with Jerry and wants to know if Jerry has read the message
     ```cs
     // Not supported yet
     ```
+    ```dart
+    try {
+      TextMessage message = TextMessage();
+      message.text = 'A very important message.';
+      await conversation.send(message: message, receipt: true);
+    } catch (e) {
+      print(e);
+    }
+    ```
+
 
 2. Jerry reads Tom's message and call `read` on the conversation to mark the latest messages as read:
   
@@ -919,6 +1047,9 @@ So if Tom is chatting with Jerry and wants to know if Jerry has read the message
     ```cs
     // Not supported yet
     ```
+    ```dart
+    await conversation.read();
+    ```  
 
 3. Tom gets a read receipt with the conversation's `lastReadAt` updated. The UI can be updated to mark all messages sent before `lastReadAt` to be read:
   
@@ -965,11 +1096,19 @@ So if Tom is chatting with Jerry and wants to know if Jerry has read the message
       }
     }
 
-    // Set up global event handler
+    // Set up the global event handler
     AVIMMessageManager.setConversationEventHandler(new CustomConversationEventHandler());
     ```
     ```cs
     // Not supported yet
+    ```
+    ```dart
+    jerry.onLastReadAtUpdated = ({
+    Client client,
+    Conversation conversation,
+    }) {
+      // Update the UI to mark all the messages before lastReadAt to be "read"
+    };
     ```
 
 > Note:
@@ -1050,6 +1189,15 @@ var sendOptions = new AVIMSendOptions()
 };
 await conversation.SendAsync(message, sendOptions);
 ```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = 'I am a will message. I will be sent out to other members in the conversation when the sender goes offline unexpectedly.';
+  await conversation.send(message: message, will: true);
+} catch (e) {
+  print(e);
+}
+```
 
 Once the sender goes offline unexpectedly, other members will immediately receive the will message. You can design your own way to display it on the UI.
 
@@ -1086,6 +1234,9 @@ conversation.addToLocalCache(message);
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
 
 The code below removes a message from the cache:
 
@@ -1102,6 +1253,9 @@ The code below removes a message from the cache:
 conversation.removeFromLocalCache(message);
 ```
 ```cs
+// Not supported yet
+```
+```dart
 // Not supported yet
 ```
 
@@ -1216,6 +1370,21 @@ The highlight of this feature is that you can **customize the contents of push n
       }
   };
   ```
+  ```dart
+  try {
+    TextMessage message = TextMessage();
+    message.text = 'Hey Jerry, me and Kate are going to a bar to watch a game tonight. Do you wanna come?';
+    await conversation.send(message: message, pushData: {
+        "alert", "New message received",
+        "category", "Message",
+        "badge", 1,
+        "sound", "message.mp3", // The name of the sound file; has to be present in the app
+        "custom-key", "This is a custom attribute. custom-key is just an example. You can use your own names for keys."
+    });
+  } catch (e) {
+    print(e);
+  }
+  ```
 
 3. Generating contents dynamically on the server side
 
@@ -1317,6 +1486,9 @@ AVIMClient.setUnreadNotificationEnabled(true);
 ```cs
 // Not supported yet
 ```
+```dart
+// See Swift SDK and Java SDK.
+```
 
 The SDK will maintain an `unreadMessagesCount` field on each `AVIMConversation` to track the number of unread messages in the conversation.
 
@@ -1365,6 +1537,14 @@ onUnreadMessagesCountUpdated(AVIMClient client, AVIMConversation conversation) {
 ```
 ```cs
 // Not supported yet
+```
+```dart
+tom.onUnreadMessageCountUpdated = ({
+  Client client,
+  Conversation conversation,
+}) {
+  // conversation.unreadMessageCount is the number of unread messages in conversation
+};
 ```
 
 When responding to an `UNREAD_MESSAGES_COUNT_UPDATE` event, you get a `Conversation` object containing the `lastMessage` property which is the last message received by the current user from the conversation. To display the actual unread messages, [fetch the messages](realtime-guide-beginner.html#retrieving-messages) that come after it.
@@ -1442,6 +1622,14 @@ currentClient.open(new AVIMClientCallback() {
 ```cs
 AVIMClient tom = await realtime.CreateClientAsync("Tom", tag: "Mobile", deviceId: "your-device-id");
 ```
+```dart
+try {
+  Client tom = Client(id: 'Tom', tag: 'Mobile');
+  await tom.open();
+} catch (e) {
+  print(e);
+}
+```
 
 With the code above, if a user logs in on one mobile device and then logs in on another one (with the same `tag`), the user will be logged out from the former one.
 
@@ -1502,6 +1690,17 @@ private void Tom_OnSessionClosed(object sender, AVIMSessionClosedEventArgs e)
 {
 }
 ```
+```dart
+tom.onClosed = ({
+  Client client,
+  RTMException exception,
+}) {
+  if (exception.code == '4111') {
+    // Tell the user that the same clientId is logged in on another device. 
+  }
+};
+```
+
 
 The reason a device gets logged out will be included in the event so that you can display a message to the user with that.
 
@@ -1566,6 +1765,14 @@ currentClient.open(openOption, new AVIMClientCallback() {
 ```cs
 // Not supported yet
 ```
+```dart
+try {
+  Client tom = Client(id: 'Tom', tag: 'Mobile');
+  await tom.open(reconnect: true);
+} catch (e) {
+  print(e);
+}
+```
 
 
 ## Custom Message Types
@@ -1607,6 +1814,11 @@ messageWithCity.setAttrs(attr);
 ```cs
 var messageWithCity = new AVIMTextMessage("It's too cold now.");
 messageWithCity["city"] = "Montreal";
+```
+```dart
+TextMessage message = TextMessage();
+message.text = "It's too cold now.";
+message.attributes = {'city': 'Montreal'};
 ```
 
 ### Creating Your Own Message Types
@@ -1667,6 +1879,11 @@ By inheriting from `AVIMTypedMessage`, you can define your own types of messages
 * Register the subclass when initializing.
 
 {{ docs.langSpecEnd('cs') }}
+{{ docs.langSpecStart('dart') }}
+
+You can define your own message type with a subclass inherited from `TypedMessage`.
+
+{{ docs.langSpecEnd('dart') }}
 
 ```js
 // TypedMessage, messageType, messageField are provided by leancloud-realtime
@@ -1774,6 +1991,21 @@ public class InputtingMessage : AVIMTypedMessage
 
 // Register subclass
 realtime.RegisterMessageType<InputtingMessage>();
+```
+```dart
+class CustomMessage extends TypedMessage {
+  @override
+
+  int get type => 123;
+  CustomMessage() : super();
+  CustomMessage.from({
+    @required String text,
+    //...
+  }) {
+    this.text = text;
+  }
+}
+TypedMessage.register(() => CustomMessage());
 ```
 
 See [Back to Receiving Messages](realtime-guide-beginner.html#back-to-receiving-messages) in the previous chapter for more details on how to receive messages with custom types.
