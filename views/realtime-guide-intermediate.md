@@ -1101,6 +1101,7 @@ So if Tom is chatting with Jerry and wants to know if Jerry has read the message
     ```
     ```cs
     // Not supported yet
+    ```
     ```dart
     jerry.onLastReadAtUpdated = ({
     Client client,
