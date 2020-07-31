@@ -1,4 +1,4 @@
-# Realtime Message REST API User Guide
+# LeanMessage REST API Guide
 
 ## Request Format
 
