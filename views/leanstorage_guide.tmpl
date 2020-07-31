@@ -7578,8 +7578,71 @@ A user who has GitHub linked may have the following object as `authData`:
 
 LeanCloud automatically validates the access tokens for certain services to prevent data forge attack. When the validation fails, LeanCloud will respond with `invalid authData` error and the linking will not be established. For services that are not recognized by LeanCloud, you are responsible for [validating access tokens by yourself](leanengine_cloudfunction_guide-node.html#onLogin). You can turn off the **Validate access tokens when logging in with third-party accounts** option in your app's [Dashboard > LeanStorage > Settings](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf) if you prefer not to have LeanCloud validate access tokens for you.
 
-{% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Swift" %}
-{# #### 扩展需求 #}
+{% if platform_name in ["Swift", "Objective-C"] %}
+##### Sign in with Apple
+
+The `authData` of Apple Sign-in is as below:
+
+```json
+{
+  "lc_apple": {
+    "uid" : "user identifier", // required
+    "identity_token" : "identity token" // optional
+    "code" : "authorization code" // optional
+  }
+}
+```
+
+If your application wants to support Apple Sign-in, you need to enable it in the dashboard first.
+In **Dashboard > LeanStorage > Users > Settings > Third-party accounts**, enable **Apple**, and fill in the following information:
+
+- **Client ID**: [Apple application identifier], e.g. `com.mytest.app`.
+- **Team ID**: You can find it in **Apple Member Center > Membership**.
+- **Private key ID** and **Private Key**: Refer to [Apple Developer Documentation][apple-private-key] for details.
+
+[Apple application identifier]: https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens 
+[apple-private-key]: https://help.apple.com/developer-account/#/dev77c875b7e
+
+On the client side, sign in with Apple as below:
+{% endif %}
+
+{% if platform_name === "Objective-C" %}
+```objc
+NSDictionary *appleAuthData = @{
+                            // required
+                            @"uid":@"USER IDENTIFIER",
+                            // optional
+                            @"identity_token":@"IDENTITY TOKEN",
+                            @"code":@"AUTHORIZATION CODE",
+                            };
+AVUser *user = [AVUser user];
+[user loginWithAuthData:appleAuthData platformId:"lc_apple" options:nil callback:^(BOOL succeeded, NSError * _Nullable error) {
+    if (succeeded) {
+        NSLog(@"Success");
+    }else{
+        NSLog(@"Fail: %@",error.localizedFailureReason);
+    }
+}];
+```
+{% endif %}
+
+{% if platform_name === "Swift" %}
+let appleData: [String: Any] = [
+    // required
+    "uid":        "USER IDENTIFIER",
+    // optional
+    "identity_token": "IDENTITY TOKEN",
+    "code":         "AUTHORIZATION CODE"
+]
+let user = LCUser()
+user.logIn(authData: appleData, platform: .custom("lc_apple")) { (result) in
+    switch result {
+    case .success:
+        assert(user.objectId != nil)
+    case .failure(error: let error):
+        print(error)
+    }
+}
 {% endif %}
 
 #### Unlinking

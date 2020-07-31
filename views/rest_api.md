@@ -1923,9 +1923,19 @@ LeanCloud will automatically create a unique index for `authData.platform_name.u
 This avoids binding a third-party account to multiple users.
 However, you need to verify `authData` yourself (except for certain platforms, see below).
 
-LeanCloud has built-in support for some popular social networks in China, such as [Weibo](http://weibo.com/), [WeChat](https://www.wechat.com/en) (*weixin* in Chinese pinyin), and [QQ](https://imqq.com/English1033.html):
+LeanCloud has built-in support for Apple and some popular social networks in China ([Weibo](http://weibo.com/), [WeChat](https://www.wechat.com/en) (*weixin* in Chinese pinyin), and [QQ](https://imqq.com/English1033.html)).
 
 ```json
+{
+  "authData": {
+    "lc_apple": {
+      "uid": "user identifier",
+      "identity_token": "identity token",
+      "code": "authorization code"
+    }
+  }
+}
+
 {
   "authData": {
     "weibo": {
