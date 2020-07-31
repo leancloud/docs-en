@@ -213,7 +213,197 @@ The image below shows the inheritance relationships among them:
 
 ![TypedMessage is inherited from Message. TextMessage, ImageMessage, AudioMessage, VideoMessage, LocationMessage, and other types of messages are inherited from TypedMessage.](images/realtime_v2_message_types.svg)
 
-See [LeanMessage REST API · Formats of Rich Media Messages](realtime_rest_api.html#formats-of-rich-media-messages) for more information regarding formats. You can even define your own types of messages based on our framework.
+As mentioned above, rich media messages are based on the JSON format.
+Thus they need to be serialized to a JSON string containing the following properties when sent via the REST API.
+Client-side SDKs will do the conversion automatically when sending messages.
+
+Properties | Constraints| Description
+--- |--|----
+`_lctype` || type of the rich media message<table><thead><tr><th>message</th><th>type</th></tr></thead><tbody><tr><td>text message</td><td>-1</td></tr><tr><td>image message</td ><td>-2</td></tr><tr><td>audio message</td><td>-3</td></tr><tr><td>video message</td><td>-4</td></tr><tr><td>location message</td><td>-5</td></tr><tr><td>file message</td>. td><td>-6</td></td></tr></tbody></table> All the above types use negative numbers. Positive numbers are reserved for custom types, and zero is reserved for "no type".
+`_lctext` || text description of the rich media message
+`_lcattrs` || a JSON string containing custom attributes
+`_lcfile` || If the message contains a file (image, audio, video, generic file), <br/>`_lcfile` contains information about that file.
+`url` || The URL of the file after it is uploaded. Note that the URL in historical messages will not be updated when you bind or re-bind a custom domain name.
+`objId` | Optional | The objectId of the file in the `_File` class.
+`metaData` | Optional | metadata of the file
+
+The above properties are common to all types of rich media messages.
+
+Developers can easily extend their own message types based on our framework.
+
+Here we provide some examples of the serialized JSON of built-in rich media messages.
+
+##### Text Messages
+
+```json
+{
+  "_lctype": -1,
+  "_lctext": "a plain text message",
+  "_lcattrs": {
+    "a": "user-defined key-value pairs"
+  }
+}
+```
+
+##### Image Messages
+
+```json
+{
+  "_lctype": -2, // required
+  "_lctext": "description of the image",
+  "_lcattrs": {
+    "a": "some user-defined key-value pairs",
+    "b": true,
+    "c": 12
+  },
+  "_lcfile": {
+    "url": "http://ac-p2bpmgci.clouddn.com/246b8acc-2e12-4a9d-a255-8d17a3059d25", // required
+    "objId": "54699d87e4b0a56c64f470a4", // corresponding AVFile.objectId.
+    "metaData": {
+      "name": "IMG_20141223.jpeg", // image name
+      "format": "png", // image format
+      "height": 768, // in pixels
+      "width": 1024, // in pixels
+      "size": 18 // it bytes
+    }
+  }
+}
+```
+
+The above is a full example.
+If you want to simply send an image URL:
+
+``json''
+{
+  "_lctype": -2,
+  "_lcfile": {
+    "url": "http://ac-p2bpmgci.clouddn.com/246b8acc-2e12-4a9d-a255-8d17a3059d25"
+  }
+}
+```
+
+##### Audio Messages
+
+```json
+{
+  "_lctype": -3,
+  "_lctext": "an audio message",
+  "_lcattrs": {
+    "a": "user-defined key-value pairs"
+  },
+  "_lcfile": {
+    "url": "http://ac-p2bpmgci.clouddn.com/246b8acc-2e12-4a9d-a255-8d17a3059d25",
+    "objId": "54699d87e4b0a56c64f470a4, // corresponding AVFile.objectId
+    "metaData": {
+      "name": "myskates.wav",
+      "format": "wav",
+      "duration": 26, // in seconds
+      "size": 2738 // in bytes
+    }
+  }
+}
+```
+
+Abbreviated version:
+
+```json
+{
+  "_lctype": -3,
+  "_lcfile": {
+    "url": "http://www.somemusic.com/x.mp3"
+  }
+}
+```
+
+##### Video Messages
+
+```json
+{
+  "_lctype": -4,
+  "_lctext": "video message",
+  "_lcattrs": {
+    "a": "user-defined key-value pairs"
+  },
+  "_lcfile": {
+    "url": "http://ac-p2bpmgci.clouddn.com/99de0f45-171c-4fdd-82b8-1877b29bdd12",
+    "objId": "54699d87e4b0a56c64f470a4", // corresponding AVFile.objectId
+    "metaData": {
+      "name": "recorded video.mov",
+      "format": "avi",
+      "duration": 168, // in seconds
+      "size": 18689 // in bytes
+    }
+  }
+}
+```
+
+Abbreviated version:
+
+```json
+{
+  "_lctype": -4,
+  "_lcfile": {
+    "url": "http://www.somevideo.com/Y.flv"
+  }
+}
+```
+
+##### Generic File Messages
+
+```json
+{
+  "_lctype": -6,
+  "_lctext": "a normal file type",
+  "_lcattrs": {
+    "a": "user-defined key-value pairs"
+  },
+  "_lcfile": {
+    "url": "http://www.somefile.com/jianli.doc",
+    "name": "my_resume.doc",
+    "size": 18689 // in bytes
+  }
+}
+```
+
+Abbreviated version:
+
+``json''
+{
+  "_lctype": -6,
+  "_lcfile": {
+    "url": "http://www.somefile.com/jianli.doc",
+    "name": "my_resume.doc"
+  }
+}
+```
+
+##### Geo-location messages
+
+```json
+{
+  "_lctype": -5,
+  "_lctext": "a geolocation message",
+  "_lcattrs": {
+    "a": "user-defined key-value pairs"
+  },
+  "_lcloc": {
+    "_lcloc": { "longitude": 23.2,
+    "latitude": 45.2
+  }
+}
+```
+
+Abbreviated version.
+
+``json''
+{
+  "_lctype": -5,
+  "_lcloc": {
+    "_lcloc": { "longitude": 23.2,
+    "latitude": 45.2
+  }
+}
+```
 
 #### Advanced Features
 
