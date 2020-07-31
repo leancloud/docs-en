@@ -239,7 +239,7 @@ You can read [Advanced Messaging Features](realtime-guide-intermediate.html#adva
 * The same ID is not supposed to be logged in on too many devices. If we detect that an ID is logged in on more than 5 IP addresses at the same time, this ID will be billed with each IP as an independent user on that day.
 * If a user has more than 50 conversations containing unread messages, the cloud will **randomly** pick 50 of them and deliver their unread messages (or the amounts of them) to the user when the user logs in. The undelivered messages will not be lost but need to be manually retrieved.
 * If a user has a conversation containing more than 100 offline messages, the former messages will not be automatically delivered when the user logs in and the user will not see the amount of them. The undelivered messages can be manually retrieved.
-* There are request frequency and quantity limitations on invoking LeanMessage related REST API. See [LeanMessage REST API Guide](realtime_rest_api.html#interface-requests-frequency-limitation) for details.
+* There are request frequency and quantity limitations on invoking LeanMessage-related REST API. See [LeanMessage REST API Guide](realtime_rest_api.html#interface-requests-frequency-limitation) for details.
 
 ### Lifespan of Conversations
 
