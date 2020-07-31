@@ -217,15 +217,15 @@ As mentioned above, rich media messages are based on the JSON format.
 Thus they need to be serialized to a JSON string containing the following properties when sent via the REST API.
 Client-side SDKs will do the conversion automatically when sending messages.
 
-Properties | Constraints| Description
---- |--|----
-`_lctype` || type of the rich media message<table><thead><tr><th>message</th><th>type</th></tr></thead><tbody><tr><td>text message</td><td>-1</td></tr><tr><td>image message</td ><td>-2</td></tr><tr><td>audio message</td><td>-3</td></tr><tr><td>video message</td><td>-4</td></tr><tr><td>location message</td><td>-5</td></tr><tr><td>file message</td>. td><td>-6</td></td></tr></tbody></table> All the above types use negative numbers. Positive numbers are reserved for custom types, and zero is reserved for "no type".
-`_lctext` || text description of the rich media message
-`_lcattrs` || a JSON string containing custom attributes
-`_lcfile` || If the message contains a file (image, audio, video, generic file), <br/>`_lcfile` contains information about that file.
-`url` || The URL of the file after it is uploaded. Note that the URL in historical messages will not be updated when you bind or re-bind a custom domain name.
-`objId` | Optional | The objectId of the file in the `_File` class.
-`metaData` | Optional | metadata of the file
+Properties| Description
+- | -
+`_lctype` |type of the rich media message<table><thead><tr><th>Message</th><th>Type</th></tr></thead><tbody><tr><td>text message</td><td>-1</td></tr><tr><td>image message</td><td>-2</td></tr><tr><td>audio message</td><td>-3</td></tr><tr><td>video message</td><td>-4</td></tr><tr><td>location message</td><td>-5</td></tr><tr><td>file message</td><td>-6</td></tr></tbody></table>All the above types use negative numbers. Positive numbers are reserved for custom types, and zero is reserved for "no type".
+`_lctext` |text description of the rich media message
+`_lcattrs` |a JSON string containing custom attributes
+`_lcfile` |If the message contains a file (image, audio, video, generic file), <br/>`_lcfile` contains information about that file.
+`url` |The URL of the file after it is uploaded. Note that the URL in historical messages will not be updated when you bind or re-bind a custom domain name.
+`objId` |Optional. The objectId of the file in the `_File` class.
+`metaData` |Optional. File metadata.
 
 The above properties are common to all types of rich media messages.
 
@@ -273,7 +273,7 @@ Here we provide some examples of the serialized JSON of built-in rich media mess
 The above is a full example.
 If you want to simply send an image URL:
 
-``json''
+```json
 {
   "_lctype": -2,
   "_lcfile": {
@@ -348,7 +348,7 @@ Abbreviated version:
 }
 ```
 
-##### Generic File Messages
+##### File Messages
 
 ```json
 {
@@ -367,7 +367,7 @@ Abbreviated version:
 
 Abbreviated version:
 
-``json''
+```json
 {
   "_lctype": -6,
   "_lcfile": {
@@ -377,7 +377,7 @@ Abbreviated version:
 }
 ```
 
-##### Geo-location messages
+##### Location messages
 
 ```json
 {
@@ -395,7 +395,7 @@ Abbreviated version:
 
 Abbreviated version.
 
-``json''
+```json
 {
   "_lctype": -5,
   "_lcloc": {
