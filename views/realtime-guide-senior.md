@@ -361,6 +361,9 @@ var config = new AVRealtime.Configuration()
 };
 var realtime = new AVRealtime(config);
 ```
+```dart
+<!-- Todo -->
+```
 
 {{ docs.alert("You should never perform signing using your Master Key on the client side. If your Master Key is leaked out, the data in your app would be accessible by anyone who gets it. Therefore, we highly recommend that you host the signing program on a server that is well-secured (like LeanEngine).") }}
 
@@ -411,6 +414,9 @@ AVUser.logInInBackground("username", "password", new LogInCallback<AVUser>() {
 });
 ```
 ```cs
+// Not supported yet
+```
+```dart
 // Not supported yet
 ```
 
@@ -475,6 +481,9 @@ public void updateMemberRole(final String memberId, final ConversationMemberRole
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
 
 ### Getting Member Permissions
 
@@ -522,6 +531,9 @@ A `Conversation` object offers two ways for getting permission information of me
   ```cs
   // Not supported yet
   ```
+  ```dart
+  // Not supported yet
+  ```
 
 - `Conversation#getMemberInfo(memberId)` can be used to get a specific member's permission information
 
@@ -553,6 +565,9 @@ A `Conversation` object offers two ways for getting permission information of me
   public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback);
   ```
   ```cs
+  // Not supported yet
+  ```
+  ```dart
   // Not supported yet
   ```
 
@@ -641,6 +656,9 @@ public void unmuteMembers(final List<String> memberIds, final AVIMOperationParti
 public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback);
 ```
 ```cs
+// Not supported yet
+```
+```dart
 // Not supported yet
 ```
 
@@ -746,6 +764,10 @@ public void queryBlockedMembers(int offset, int limit, final AVIMConversationSim
 ```cs
 // Not supported yet
 ```
+```dart
+// Not supported yet
+```
+
 
 > The result of the operation is similar to that for muting members. You get the clientIds that are operated successfully, plus the failures occurred and the clientIds associated with each of them.
 
@@ -811,6 +833,9 @@ tom.createChatRoom(null, "Chat Room", null,
 // Pass in the name of the chat room
 tom.CreateChatRoomAsync("Chat Room");
 ```
+```dart
+ChatRoom chatRoom = await jerry.createChatRoom(name: 'Chat Room');
+```
 
 When creating a chat room, you can specify its name and optional attributes. The interface for creating chat rooms has the following differences comparing to [that for creating basic conversations](realtime-guide-beginner.html#creating-conversations):
 
@@ -866,6 +891,15 @@ query.findInBackground(new AVIMConversationQueryCallback() {
 ```
 ```cs
 var query = tom.GetChatRoomQuery();
+```
+```dart
+try {
+  ConversationQuery query = tom.conversationQuery();
+  query.whereEqualTo('tr', true);
+  List<Conversation> conversations = await query.find();
+} catch (e) {
+  print(e);
+}
 ```
 
 > Java, Android, and C# SDKs offer their `AVIMClient#getChatRoomQuery` methods that are dedicated for querying chat rooms. By using them, you won't need to deal with the `transient` attribute of conversations.
@@ -959,6 +993,9 @@ public async void CountMembers_SampleCode()
     AVIMConversation conversation = (await client.GetQuery().FindAsync()).FirstOrDefault(); // Get the first conversation in the list
     int membersCount = await conversation.CountMembersAsync();
 }
+```
+```dart
+int count = await chatRoom.countMembers();
 ```
 
 ### Message Priorities
@@ -1060,6 +1097,15 @@ AVIMClient tom = AVIMClient.getInstance("Tom");
 ```cs
 // Not supported yet
 ```
+```dart
+try {
+  TextMessage message = TextMessage();
+  message.text = 'The score is still 0:0. China definitely needs a substitution for the second half.';
+  await chatRoom.send(message: message, priority: MessagePriority.high);
+} catch (e) {
+  print(e);
+}
+```
 
 > Note:
 >
@@ -1132,6 +1178,9 @@ tom.open(new AVIMClientCallback(){
 ```
 ```cs
 // Not supported yet
+```
+```dart
+await chatRoom.mute();
 ```
 
 After a conversation is muted, the current user will not get push notifications from it anymore. To unmute a conversation, use `Conversation#unmute`.
@@ -1231,6 +1280,24 @@ tom.createTemporaryConversation(Arrays.asList(members), 3600, new AVIMConversati
 ```cs
 var temporaryConversation = await tom.CreateTemporaryConversationAsync();
 ```
+```dart
+TemporaryConversation temporaryConversation;
+try {
+  temporaryConversation = await jerry.createTemporaryConversation(
+    members: {'Jerry', 'William'},
+  );
+} catch (e) {
+  print(e);
+}
+
+try {
+  TextMessage message = TextMessage();
+  message.text = 'This is a temporary conversation.';
+  await temporaryConversation.send(message: message);
+} catch (e) {
+  print(e);
+}
+```
 
 Temporary conversations have an **important** attribute that differentiates themselves from others: TTL. It is set to 1 day by default, but you can change it to any time within 30 days. If you want a conversation to survive for more than 30 days, make it a basic conversation instead. The code below creates a temporary conversation with a custom TTL:
 
@@ -1241,7 +1308,7 @@ realtime.createIMClient('Tom').then(function(tom) {
     ttl: 3600,
   });
 }).then(function(conversation) {
-  return conversation.send(new AV.TextMessage('This is a temporary conversation. The conversation will expire in 1 hour.'));
+  return conversation.send(new AV.TextMessage('This is a temporary conversation expiring in 1 hour.'));
 }).catch(console.error);
 ```
 ```swift
@@ -1270,7 +1337,7 @@ AVIMClient *client = [[AVIMClient alloc] initWithClientId:@"Tom"];
                                                 callback:
             ^(AVIMTemporaryConversation *tempConv, NSError *error) {
                 
-                AVIMTextMessage *textMessage = [AVIMTextMessage messageWithText:@"This is a temporary conversation. The conversation will expire in 1 hour."
+                AVIMTextMessage *textMessage = [AVIMTextMessage messageWithText:@"This is a temporary conversation expiring in 1 hour."
                                                                     attributes:nil];
                 
                 [tempConv sendMessage:textMessage callback:^(BOOL success, NSError *error) {
@@ -1295,7 +1362,7 @@ client.open(new AVIMClientCallback() {
         public void done(AVIMConversation conversation, AVIMException e) {
             if (null == e) {
             AVIMTextMessage msg = new AVIMTextMessage();
-            msg.setText("This is a temporary conversation. The conversation will expire in 1 hour.");
+            msg.setText("This is a temporary conversation expiring in 1 hour.");
             conversation.sendMessage(msg, new AVIMConversationCallback(){
                 @Override
                 public void done(AVIMException e) {
@@ -1310,6 +1377,25 @@ client.open(new AVIMClientCallback() {
 ```
 ```cs
 var temporaryConversation = await tom.CreateTemporaryConversationAsync();
+```
+```dart
+TemporaryConversation temporaryConversation;
+try {
+  temporaryConversation = await jerry.createTemporaryConversation(
+    members: {'Jerry', 'William'},
+    timeToLive: 3600,
+  );
+} catch (e) {
+  print(e);
+}
+
+try {
+  TextMessage message = TextMessage();
+  message.text = 'This is a temporary conversation expiring in 1 hour.';
+  await temporaryConversation.send(message: message);
+} catch (e) {
+  print(e);
+}
 ```
 
 Beside this, a temporary conversation shares the same functionality with a basic conversation.
