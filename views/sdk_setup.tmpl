@@ -356,28 +356,43 @@ React Native support is provided by a separate adapter library (`@leancloud/plat
 Installing:
 
 ```LeanStorage
-$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
-# for React Native 0.60+
+# Step 1: Install
+$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage@1
+
+# Step 2: Link
+# For React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59
-# npx react-native link @react-native-community/async-storage-backend-legacy
+# For React Native <= 0.59
+# npx react-native link @react-native-community/async-storage
+# For Expo >= 38
+# No need to link.
 ```
 ```LeanStorage(LiveQuery)
-$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
-# for React Native 0.60+
+# Step 1: Install
+$ yarn add leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage@1
+
+# Step 2: Link
+# For React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59
-# npx react-native link @react-native-community/async-storage-backend-legacy
+# For React Native <= 0.59
+# npx react-native link @react-native-community/async-storage
+# For Expo >= 38
+# No need to link.
 ```
 ```LeanMessage
 yarn add leancloud-realtime @leancloud/platform-adapters-react-native
 ```
 ```LeanMessage(RichMediaMessage)
-$ yarn add leancloud-realtime leancloud-realtime-plugin-typed-messages leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage-backend-legacy@^2.0.0-rc.3
-# for React Native 0.60+
+# Step 1: Install
+$ yarn add leancloud-realtime leancloud-realtime-plugin-typed-messages leancloud-storage @leancloud/platform-adapters-react-native @react-native-community/async-storage@1
+
+# Step 2: Link
+# For React Native 0.60+
 $ npx pod-install
-# for React Native <= 0.59
-# npx react-native link @react-native-community/async-storage-backend-legacy
+# For React Native <= 0.59
+# npx react-native link @react-native-community/async-storage
+# For Expo >= 38
+# No need to link.
 ```
 
 Referencing:
