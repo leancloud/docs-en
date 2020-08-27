@@ -124,7 +124,7 @@ $acl->setPublicReadAccess(true);
 $acl->setWriteAccess(User::getCurrentUser(), true);
 $coauthor = LeanObject::create("_User", "55f1572460b2ce30e8b7afde");
 $acl->setWriteAccess($coauthor, true);
-$post->setACL($acl) 
+$post->setACL($acl); 
 ```
 ```dart
 LCACL acl = LCACL();
