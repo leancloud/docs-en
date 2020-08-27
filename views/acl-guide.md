@@ -6,7 +6,7 @@ For example:
 
 ```json
 {
-  // everyone
+  // anyone
   "*":{
     "read":true,
     "write":false
@@ -25,23 +25,37 @@ For example:
 
 ## Default ACL
 
+The initial default ACL value for all classes is:
+
+```json
+{
+  "*":{
+    "read":true,
+    "write":true
+  }
+}
+```
+
+In other words, anyone can read and write.
+
 When creating a new class on the dashboard, you can configure its default ACL in the dialog box.
 
 ![create class dialog box](images/security/acl_template.png)
 
 You can also modify default ACL for existing classes.
 To do so, simply go to **Dashboard > LeanStorage > Objects**, select the class, and click the **Permission** tab.
+Be aware that modifying default ACL will only take effect on new objects.
+It will not affect the ACL field of existing objects. 
 
 You can also configure ACL for a single object on the dashboard.
 However, configure ACL for every object manually is too tedious, sometimes impossible.
 Thus it is recommended that you configure **default ACL** on the dashboard, ensuring that all new objects have proper initial ACL, and configure finer ACL for a single object via setting its `ACL` field in code.
 
-
 For example, a `Post` class may have the following default ACL:
 
 ![default ACL](images/acl.png)
 
-Therefore, everyone can read the post but only the author can write the post.
+Therefore, anyone can read the post but only the author can write the post.
 Here the object creator refers to the corresponding user to the session token carried in the HTTP header of the object creation request, that is, the author of the post.
 
 ## ACL with Users
@@ -51,7 +65,7 @@ Suppose you want to also allow a coauthor to modify a post:
 
 ```objc
 AVACL *acl = [AVACL ACL];
-// Everyone can read.
+// anyone can read.
 [acl setPublicReadAccess:YES];
 // The author and coauthor can write.
 [acl setWriteAccess:YES forUser:[AVUser currentUser]];
@@ -61,7 +75,7 @@ post.ACL = acl;
 ```
 ```swift
 let acl = LCACL()
-// Everyone can read.
+// anyone can read.
 acl.setAccess([.read], allowed: true)
 // The author and coauthor can write.
 if let currentUserID = LCApplication.default.currentUser?.objectId?.value {
@@ -73,7 +87,7 @@ post.ACL = acl
 ```
 ```java
 AVACL acl = new AVACL();
-// Everyone can read.
+// anyone can read.
 acl.setPublicReadAccess(true);
 // The author and coauthor can write.
 acl.setWriteAccess(AVUser.getCurrentUser(), true);
@@ -83,7 +97,7 @@ post.setACL(acl);
 ```
 ```js
 const acl = new AV.ACL();
-// Everyone can read.
+// anyone can read.
 acl.setPublicReadAccess(true);
 // The author and coauthor can write.
 acl.setWriteAccess(AV.User.current(),true);
@@ -93,7 +107,7 @@ post.setACL(acl);
 ```
 ```python
 acl = leancloud.ACL()
-# Everyone can read.
+# anyone can read.
 acl.set_public_read_access(True)
 # The author and coauthor can write.
 current_user_id = leancloud.User.get_current().id
@@ -104,7 +118,7 @@ post.set_acl(acl)
 ```
 ```php
 $acl = new ACL();
-# Everyone can read.
+# anyone can read.
 $acl->setPublicReadAccess(true);
 # The author and coauthor can write.
 $acl->setWriteAccess(User::getCurrentUser(), true);
@@ -114,7 +128,7 @@ $post->setACL($acl)
 ```
 ```dart
 LCACL acl = LCACL();
-// Everyone can read.
+// anyone can read.
 acl.setPublicReadAccess(true);
 // The author and coauthor can write.
 acl.setUserWriteAccess(currentUser, true);
