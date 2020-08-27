@@ -102,6 +102,16 @@ coauthor_id = '55f1572460b2ce30e8b7afde'
 acl.set_write_access(coauthor_id, True)
 post.set_acl(acl)
 ```
+```php
+$acl = new ACL();
+# Everyone can read.
+$acl->setPublicReadAccess(true);
+# The author and coauthor can write.
+$acl->setWriteAccess(User::getCurrentUser(), true);
+$coauthor = LeanObject::create("_User", "55f1572460b2ce30e8b7afde");
+$acl->setWriteAccess($coauthor, true);
+$post->setACL($acl) 
+```
 ```dart
 LCACL acl = LCACL();
 // Everyone can read.
@@ -128,5 +138,33 @@ The `ACL` field of this post will be something like:
   }
 }
 ```
+
+Similarly, if you want to allow the administrator to modify and delete all posts, you can grant write permission to them for every post:
+
+```objc
+[acl setWriteAccess:YES forUser:anAdministrator];
+```
+```swift
+acl.setAccess([.write], allowed: true, forUserID: anAdministratorID)
+```
+```java
+acl.setWriteAccess(anAdministrator, true);
+```
+```js
+acl.setWriteAccess(anAdministrator, true);
+```
+```python
+acl.set_write_access(an_administrator_id, True)
+```
+```php
+$acl->setReadAccess($anAdministrator, true);
+```
+```dart
+acl.setUserWriteAccess(anAdministrator, true);
+```
+
+However, this is inflexible in practice.
+There may be multiple administrators and administrators come and go.
+Thus let's introduce a new concept for ACL, *role*.
 
 ## ACL with Roles
