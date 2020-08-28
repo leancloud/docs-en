@@ -531,3 +531,8 @@ LCQuery subroleQuery = moderator.roles.query();
 You can also query roles based on other attributes,
 just like querying a normal object.
 
+## Special Rules
+
+The `_User` class has a special rule.
+Without using masterKey (which will skip all permission checks), each user can only modify their user data, no matter what write permission granted in the ACL.
+
