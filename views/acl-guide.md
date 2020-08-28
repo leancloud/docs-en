@@ -536,3 +536,30 @@ just like querying a normal object.
 The `_User` class has a special rule.
 Without using masterKey (which will skip all permission checks), each user can only modify their user data, no matter what write permission granted in the ACL.
 
+## Retrieving ACL value
+
+The ACL value will not return to the client-side by default.
+To also retrieve the ACL field of an object, you have to enable **Include ACL with objects being queried** in **Dashboard > LeanStorage > Settings**, and explicitly specify so when constructing a query:
+
+```objc
+query.includeACL = YES;
+```
+```swift
+query.includeACL = true
+```
+```java
+query.includeACL(true);
+```
+```js
+query.includeACL(true);
+```
+```python
+query.include_acl(True)
+```
+```php
+// not supported yet
+```
+```dart
+query.includeACL(true);
+```
+
