@@ -563,3 +563,12 @@ query.include_acl(True)
 query.includeACL(true);
 ```
 
+## Best Practice
+
+If the permissions of your application are simple, we recommend you configure [class permissions](data_securityhtml#class), [field permissions](data_security.html#field), and [default ACL](#default-acl) on the dashboard.
+Occasionally, when finer permission control is needed, you can specify the ACL in the client-side code correspondingly.
+
+If the permissions of your application are complex, we recommend setting class permissions, field permissions, and default ACLs on the dashboard, and then implement the ACL-related logic via [LeanEngine](leanengine_overview.html).
+Thus you do not need to continuously update and maintain similar code logic on all platforms, which is tedious and prone to inconsistency.
+LeanEngine also offers the opportunity to impose more flexible control, such as disallowing lengthy posts to publish.
+Please refer to [Using ACLs in Cloud Engine](acl_guide_leanengine.html).
