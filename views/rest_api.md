@@ -1271,6 +1271,7 @@ order | Order by. Prefix `-` for descending.
 limit | The number of returned objects. Defaults to 100 and the max is 1000.
 skip | Skipped results. Used for pagination.
 keys | Only return specified keys. Prefix `-` for not including.
+returnACL | Provided that you have enabled **Include ACL with objects being queried** in **Dashboard > LeanStorage > Settings**, when this parameter is true, the returned objects will also include their ACL fields.
 
 To query posts ordered by creation time:
 
@@ -2129,16 +2130,7 @@ curl -X PUT \
 
 ## Roles
 
-Role is an abstraction to control data access based on ACL.
-Roles are objects containing users and other roles.
-For example, moderators and administrators are common roles in an application.
-
-LeanCloud has a preserved class `_Role` for roles.
-Roles have some specific attributes:
-
-- `name`: Required. The name of the role, which can only be set on creation. The name can only contain alphanumeric characters, spaces, dashes, and underscores.
-- `users`: A relation to a set of users.
-- `roles`: A relation to a set of child roles.
+LeanCloud has a preserved class `_Role` for [roles](acl-guide.html#acl-with-roles).
 
 For security concerns, roles are typically created and managed manually or via a separate management interface, not directly in your applications.
 
@@ -2203,9 +2195,9 @@ curl -X POST \
 ```
 
 You may have noticed that there is a new operator `AddRelation` we have not seen before.
-This operator adds a relation to an object.
-The actual implementation of relation is quite complicated for performance issues,
-but conceptually you can consider them as arrays of pointers, and they are only used in roles.
+This operator adds a Relation to an object.
+The actual implementation of Relation is quite complicated for performance issues,
+but conceptually you can consider a Relation as an array of pointers, and they are only used in roles.
 
 ### Retrieving Roles
 
@@ -2237,19 +2229,31 @@ The response body will be a JSON object:
 }
 ```
 
-To query for the specific users and roles in a role, you need to send another query using the `$relatedTo` operator:
+### Querying Roles
+
+To find the roles a user belongs to:
 
 ```sh
-where={
-  "$relatedTo":{
-    "object":{
-      "__type":"Pointer",
-      "className":"_Role",
-      "objectId":"objectId of a role"
-  },
-  "key":"users"}
-}
+curl -X GET \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -G \
+  --data-urlencode 'where={"users": {"__type": "Pointer", "className": "_User", "objectId": "5e03100ed4b56c008e4a91dc"}}' \
+  https://{{host}}/1.1/roles
 ```
+
+To find the users contained in a rule (users contained in sub-roles not counted):
+
+```sh
+curl -X GET \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -G \
+  --data-urlencode '"$relatedTo":{"object":{"__type":"Pointer","className":"_Role","objectId":"5f3dea7b7a53400006b13886"},"key":"users"}' \
+  https://{{host}}/1.1/users
+```
+
+You can also query roles based on other attributes, just like querying a normal object.
 
 ### Updating Roles
 
@@ -2343,7 +2347,7 @@ Therefore, since they will inherit read permissions, we did not grant them the r
 
 Let's look at another example of permission inherence among roles.
 In UGC applications such as forums, `Administrators` typically have all the permissions of `Moderators`.
-Thus `Administrators` should be a child role of `Moderators`.
+Thus `Administrators` should be a sub-role of `Moderators`.
 
 ```sh
 curl -X PUT \
