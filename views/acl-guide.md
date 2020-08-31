@@ -1,7 +1,7 @@
 # ACL Guide
 
 ACL stands for Access Control List.
-It defines access permissions for an object.
+It defines the access permissions for an object.
 For example:
 
 ```json
@@ -25,7 +25,7 @@ For example:
 
 ## Default ACL
 
-The initial default ACL value for all classes is:
+The default ACL value for all classes is:
 
 ```json
 {
@@ -44,19 +44,19 @@ When creating a new class on the dashboard, you can configure its default ACL in
 
 You can also modify default ACL for existing classes.
 To do so, simply go to **Dashboard > LeanStorage > Objects**, select the class, and click the **Permission** tab.
-Be aware that modifying default ACL will only take effect on new objects.
+Be aware that the modified default ACL will only apply to new objects.
 It will not affect the ACL field of existing objects. 
 
-You can also configure ACL for a single object on the dashboard.
-However, configure ACL for every object manually is too tedious, sometimes impossible.
-Thus it is recommended that you configure **default ACL** on the dashboard, ensuring that all new objects have proper initial ACL, and configure finer ACL for a single object via setting its `ACL` field in code.
+You can also configure the ACL for a single object on the dashboard.
+However, configuring ACL for every object manually is too tedious, and sometimes impossible.
+Thus it is recommended that you configure **default ACL** on the dashboard, ensuring that all new objects have proper initial ACL, and configure finer ACL for a single object by setting its `ACL` field in code.
 
 For example, a `Post` class may have the following default ACL:
 
 ![default ACL](images/acl.png)
 
 Therefore, anyone can read the post but only the author can write the post.
-Here the object creator refers to the corresponding user to the session token carried in the HTTP header of the object creation request, that is, the author of the post.
+Here the object creator refers to the corresponding user associated with the session token carried in the HTTP header of the object creation request, that is, the author of the post.
 
 ## ACL with Users
 
@@ -184,11 +184,10 @@ Thus let's introduce a new concept for ACL, *role*.
 
 ## ACL with Roles
 
-A role is a group of users.
-Roles can be nested.
+A role is a group of users, and roles can be nested.
 In other words, the member of a role is either a user or another role.
 
-Each role has an immutable name, consist of alphanumerics and underscores.
+Each role has an immutable name, consisting of alphanumerics and underscores.
 
 Continuing the example above, let's see how to grant write permission to the administrator role (assuming there is an existing role named "admin"):
 
@@ -364,7 +363,7 @@ admin.removeRelation('users', currentUser);
 ```
 
 As mentioned above, a member of a role can be another role.
-Suppose that we have created two roles `admin` and `moderator`, and we want to make `admin` a sub-role of `moderator` since every admin should also be a moderator:
+Suppose that we have created two roles, `admin` and `moderator`, and we want to make `admin` a sub-role of `moderator` since every admin should also be a moderator:
 
 ```objc
 [[moderator roles] addObject:admin];
@@ -424,7 +423,7 @@ Lastly, do not forget to save it after modifying a role.
 
 ### Role Query
 
-Often we want to know the roles a user belongs to:
+Often we want to know the roles a user belongs to:
 
 ```objc
 AVUser *user = [AVUser currentUser];
@@ -477,7 +476,7 @@ try {
 }
 ```
 
-Sometimes we want to know the users contained in a rule.
+Sometimes we want to know the users contained in a role.
 To do so, we can construct a query as below:
 
 ```objc
@@ -503,7 +502,7 @@ LCQuery userQuery = moderator.users.query();
 ```
 
 However, the above queries do not consider users in the sub-roles of the moderator role.
-To query all users belongs to the moderator role, directly and indirectly, we need to recursively query all sub-roles of the moderator roles (including sub-sub-roles and so on), then query users of all these roles.
+To query all the users belonging to the moderator role, directly and indirectly, we need to recursively query all sub-roles of the moderator roles (including sub-sub-roles and so on), then query users of all these roles.
 For brevity, we only demonstrate how to query direct sub-roles of a role here:
 
 ```objc
@@ -533,13 +532,12 @@ just like querying a normal object.
 
 ## Special Rules
 
-The `_User` class has a special rule.
-Without using masterKey (which will skip all permission checks), each user can only modify their user data, no matter what write permission granted in the ACL.
+The `_User` class has a special rule: without using masterKey (which will skip all permission checks), each user can only modify their user data, no matter what write permission has been granted in the ACL.
 
-## Retrieving ACL value
+## Retrieving ACL Value
 
-The ACL value will not return to the client-side by default.
-To also retrieve the ACL field of an object, you have to enable **Include ACL with objects being queried** in **Dashboard > LeanStorage > Settings**, and explicitly specify so when constructing a query:
+The ACL value will not be returned to the client-side by default.
+To also retrieve the ACL field of an object, you have to enable **Include ACL with objects being queried** in **Dashboard > LeanStorage > Settings**, and explicitly specify it when constructing a query:
 
 ```objc
 query.includeACL = YES;
@@ -570,5 +568,5 @@ Occasionally, when finer permission control is needed, you can specify the ACL i
 
 If the permissions of your application are complex, we recommend setting class permissions, field permissions, and default ACLs on the dashboard, and then implement the ACL-related logic via [LeanEngine](leanengine_overview.html).
 Thus you do not need to continuously update and maintain similar code logic on all platforms, which is tedious and prone to inconsistency.
-LeanEngine also offers the opportunity to impose more flexible control, such as disallowing lengthy posts to publish.
+LeanEngine also offers the opportunity to impose more flexible control, such as disallowing lengthy posts to be published.
 Please refer to [Using ACLs in Cloud Engine](acl_guide_leanengine.html).
