@@ -2242,7 +2242,7 @@ curl -X GET \
   https://{{host}}/1.1/roles
 ```
 
-To find the users contained in a rule (users contained in sub-roles not counted):
+To find the users contained in a role (users contained in sub-roles not counted):
 
 ```sh
 curl -X GET \
