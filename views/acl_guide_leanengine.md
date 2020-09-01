@@ -57,7 +57,7 @@ public static AVObject postBeforeSaveHook(AVObject post) throws Exception {
 ```
 
 After creating the hook, deploy the code to the cloud.
-Now, after creating a post on the client-side, it will have the following ACL automatically:
+From now on, for each post created on the client-side, it will have the following ACL automatically:
 
 ```json
 {"*":{"read":true},"role:admin":{"write":true}}
