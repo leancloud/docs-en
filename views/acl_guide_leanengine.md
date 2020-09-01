@@ -14,62 +14,51 @@ Imagine that you are building an application for iOS, Android, and web (JavaScri
 Let's say that your application wants the administrators of the website to have the permission to read and write all the posts created by users. The first thing you need to do is to create a [hook](leanengine_cloudfunction_guide-node.html#beforesave) that can be triggered before a post is saved:
 
 ```js
-AV.Cloud.beforeSave('Post', function (request, response) {
-  // If the role Administrator already exists, you can find out the AV.Role instance for it with the following code:
-  /*
-    var roleQuery = new AV.Query(AV.Role);
-    roleQuery.equalTo('name', 'Administrator');
-    roleQuery.find().then(function (results) {
-      var administratorRole = results[0];
-    });
-  */
-  var post = request.object;
+AV.Cloud.beforeSave('Post', (request) => {
+  const post = request.object;
   if (post) {
-    // Create an ACL instance
     var acl = new AV.ACL();
     acl.setPublicReadAccess(true);
-    // Set permission with the name of the role
-    acl.setRoleWriteAccess('Administrator', true);
-    // You can also use an AV.Role instance instead of a name:
-    // acl.setRoleWriteAccess(administratorRole, true);
-
+    // Assuming a role named "admin" exists.
+    acl.setRoleWriteAccess('admin', true);
     post.setACL(acl);
-
-    // Save the object
-    response.success();
   } else {
-    // Return an error without saving
-    response.error('Invalid Post object.');
+    throw new AV.Cloud.Error('Invalid Post object.');
   }
 });
 ```
-
-After creating the hook, [deploy](leanengine_webhosting_guide-node.html#deploying-and-publishing) the code to the cloud. Now try to create a `Post` on a client:
-
-**iOS**
-
-```objc
-// Create a new post
-AVObject *post = [AVObject objectWithClassName:@"Post"];
-[post setObject:@"Hello" forKey:@"title"];
-[post setObject:@"Is there anyone here?" forKey:@"content"]
-[post saveInBackground]; // Save
+```python
+@engine.before_save('Post')
+def before_post_save(post):
+    acl = leancloud.ACL()
+    acl.set_public_read_access(True)
+    # Assuming a role named "admin" exists.
+    admin = leancloud.Role('admin')
+    acl.set_role_write_access(admin, True)
+    post.set_acl(acl)
 ```
-
-**Android**
-
+```php
+Cloud::beforeSave("Post", function($post, $user) {
+  $acl = new ACL();
+  $acl->setPublicReadAccess(true);
+  $acl->setRoleWriteAccess("admin", true);
+  $post->setACL($acl);
+});
+```
 ```java
-// Create a new post
-AVObject post = new AVObject('Post');
-post.put('title', 'Hello');
-post.put('content', 'Is there anyone here?');
-post.saveInBackground(); // Save
+@EngineHook(className = "Post", type = EngineHookType.beforeSave)
+public static AVObject postBeforeSaveHook(AVObject post) throws Exception {
+  AVACL acl = new AVACL();
+  acl.setPublicReadAccess(true);
+  acl.setRoleWriteAccess("admin", true);
+  post.setACL(acl);
+  return post;
+}
 ```
 
-Then open the web console and take a look at the ACL of the new `Post`:
+After creating the hook, deploy the code to the cloud.
+From now on, for each post created on the client-side, it will have the following ACL automatically:
 
 ```json
-{"*":{"read":true},"role:Administrator":{"write":true}}
+{"*":{"read":true},"role:admin":{"write":true}}
 ```
-
-You will see that the permission setting is already applied to the new `Post`.
