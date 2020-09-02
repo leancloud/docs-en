@@ -187,9 +187,9 @@ Thus let's introduce a new concept for ACL, *role*.
 A role is a group of users, and roles can be nested.
 In other words, the member of a role is either a user or another role.
 
-Each role has an immutable name, consisting of alphanumerics and underscores.
+Each role has an immutable and unique name, consisting of alphanumerics and underscores.
 
-Continuing the example above, let's see how to grant write permission to the administrator role (assuming there is an existing role named "admin"):
+Continuing the example above, let's see how to grant write permission to the administrator role (assuming there is an existing role named `admin`):
 
 ```objc
 AVRole *admin = [AVRole objectWithClassName:@"_Role" objectId:@"55fc0eb700b039e44440016c"];
@@ -220,6 +220,14 @@ acl.setRoleWriteAccess(admin, true);
 ### Role Creation
 
 Now let's see how to create a role.
+
+Be aware that the role itself has its ACL.
+Often we need to explicitly specify the ACL value for the role.
+Otherwise, the SDK will set "everyone can read and no one can write" by default.
+In other words, if you do not explicitly specify the ACL, once the role is created, it cannot be modified at the client-side.
+You have to modify it (e.g. add a member) on the dashboard or use the master key at the server-side.
+In the sample below, we grant write permission to the creator of the role (the current user).
+In real projects, you should specify the ACL value according to the need of your application.
 
 ```objc
 // ACL for the role itself.
@@ -570,3 +578,7 @@ If the permissions of your application are complex, we recommend setting class p
 Thus you do not need to continuously update and maintain similar code logic on all platforms, which is tedious and prone to inconsistency.
 LeanEngine also offers the opportunity to impose more flexible control, such as disallowing lengthy posts to be published.
 Please refer to [Using ACLs in Cloud Engine](acl_guide_leanengine.html).
+
+For classes containing sensitive data with very strict security requirements, developers can also consider configuring the corresponding [class permissions](data_security.html#class-permissions), allowing nobody to write or even read the data.
+Thus all requests from the client-side need to be relayed on LeanEngine.
+This provides the same level of security as the traditional backend mode.
