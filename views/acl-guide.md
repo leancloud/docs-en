@@ -223,9 +223,9 @@ Now let's see how to create a role.
 
 Be aware that the role itself has its ACL.
 Often we need to explicitly specify the ACL value for the role.
-Otherwise, SDK will set "everyone can read and everyone cannot write" by default.
+Otherwise, the SDK will set "everyone can read and no one can write" by default.
 In other words, if you do not explicitly specify the ACL, once the role is created, it cannot be modified at the client-side.
-You have to modify it (e.g. adding a member) on the dashboard or use the master key at the server-side.
+You have to modify it (e.g. add a member) on the dashboard or use the master key at the server-side.
 In the sample below, we grant write permission to the creator of the role (the current user).
 In real projects, you should specify the ACL value according to the need of your application.
 
@@ -579,6 +579,6 @@ Thus you do not need to continuously update and maintain similar code logic on a
 LeanEngine also offers the opportunity to impose more flexible control, such as disallowing lengthy posts to be published.
 Please refer to [Using ACLs in Cloud Engine](acl_guide_leanengine.html).
 
-For classes containing sensitive data with very strict security requirements, developers can also consider configuring the corresponding [class permission](data_security.html#class-permissions), allowing nobody to write or even read the data.
+For classes containing sensitive data with very strict security requirements, developers can also consider configuring the corresponding [class permissions](data_security.html#class-permissions), allowing nobody to write or even read the data.
 Thus all requests from the client-side need to be relayed on LeanEngine.
 This provides the same level of security as the traditional backend mode.
