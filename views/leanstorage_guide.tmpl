@@ -2837,7 +2837,7 @@ If you are looking for string values that do not contain a particular string, us
 {% if platform_name === "Objective-C" %}
 <pre><code class="lang-objc">AVQuery *query = [AVQuery queryWithClassName:@"Todo"];
 // "title" without "ticket" (case-insensitive)
-[query whereKey:@"title" matchesRegex:@"{{ regex() | safe }}];
+[query whereKey:@"title" matchesRegex:@"{{ regex() | safe }}, modifiers:"i"];
 </code></pre>
 {% endif %}
 {% if platform_name === "JavaScript" %}
@@ -2851,29 +2851,29 @@ query.matches('title', regExp);
 <pre><code class="lang-python">Todo = leancloud.Object.extend('Todo')
 query = Todo.query
 # 'title' without 'ticket' (case-insensitive)
-query.matched('title', '{{ regex(true) | safe }})
+query.matched('title', '{{ regex(true) | safe }}, ignore_case=True)
 </code></pre>
 {% endif %}
 {% if platform_name === "PHP" %}
 <pre><code class="lang-php">$query = new Query("Todo");
 // "title" without "ticket" (case-insensitive)
-$query->matches("title","{{ regex() | safe }});
+$query->matches("title", "{{ regex() | safe }}, "i");
 </code></pre>
 {% endif %}
 {% if platform_name === "Java" %}
 <pre><code class="lang-java">AVQuery<AVObject> query = new AVQuery<>("Todo");
 // "title" without "ticket" (case-insensitive)
-query.whereMatches("title","{{ regex() | safe }});
+query.whereMatches("title","{{ regex() | safe }}, "i");
 </code></pre>
 {% endif %}
 {% if platform_name === "Swift" %}
 <pre><code class="lang-swift">let query = LCQuery(className: "Todo")
 // "title" without "ticket" (case-insensitive)
-query.whereKey("title", .matchedPattern("{{ regex() | safe }}, option: nil))
+query.whereKey("title", .matchedRegularExpression("{{ regex() | safe }}, option: "i"))
 </code></pre>
 {% endif %}
 {% if platform_name === "Flutter" %}
-<pre><code class="lang-java">LCQuery query = LCQuery('Todo');
+<pre><code class="lang-dart">LCQuery query = LCQuery('Todo');
 // "title" without "ticket" (case-insensitive)
 query.whereMatches('title','{{ regexFlutter() | safe }}', modifiers: 'i');
 </code></pre>
