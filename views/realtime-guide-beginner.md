@@ -2606,6 +2606,8 @@ jerry.onMessage = ({
 };
 ```
 
+Refer to [the second chapter](realtime-guide-intermediate.html#custom-message-types) for more details on the customized message type in the code sample above.
+
 ## Custom Attributes
 
 A `Conversation` object holds some built-in properties which match the fields in the `_Conversation` table. The table below shows these **built-in** properties:
