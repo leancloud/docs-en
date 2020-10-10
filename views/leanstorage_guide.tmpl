@@ -1936,8 +1936,7 @@ query.find().then((students) => {
 {% endif %}
 {% if platform_name === "Python" %}
 ```python
-Student = leancloud.Object.extend('Student')
-query = Student.query
+query = leancloud.Query('Student')
 query.equal_to('lastName', 'Smith')
 student_list = query.find()
 ```
