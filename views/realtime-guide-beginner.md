@@ -2750,6 +2750,16 @@ A `Conversation` object holds some built-in properties which match the fields in
 | `unreadMessagesMentioned` | N/A                | Whether an unread message mentions the current `Client`. |
 | `updatedAt`                     | `updatedAt`        | The time the conversation is updated. |
 
+{{ docs.langSpecEnd('dart') }}
+
+However, direct write operations on the `_Conversation` table are frowned upon:
+
+- The conversation queries sent by client-side SDKs in websocket connections will first reach the LeanMessage server's in-memory cache. Direct write operations on the `_Conversation` table will not update the cache, which may cause cache inconsistency.
+- With direct write operations on the `_Conversation` table, the LeanMessage server has no chance to notify the client-side. Thus the client-side will not receive any corresponding events.
+- If LeanMessage hooks are defined, direct write operations on the `_Conversation` table will not trigger them.
+
+For administrative tasks, [the dedicated LeanMessage REST API interface](realtime_rest_api.html) is recommended.
+
 Beside these built-in properties, you can also define your custom attributes to store more data with each conversation.
 
 ### Creating Custom Attributes
