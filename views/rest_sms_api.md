@@ -178,7 +178,7 @@ They will be ignored when logging in an existing user.
 
 ### Verifying Mobile Phone
 
-As mentioned above, registering a new user with mobile phone will set `mobilePhoneVerified` to `true`.
+As mentioned above, registering a new user with a mobile phone will set `mobilePhoneVerified` to `true`.
 If the user is registered with another method, you can also ask the user to verify their phone:
 
 ```sh
@@ -212,10 +212,6 @@ If the verification succeeded, LeanCloud will set this user's `mobilePhoneNumber
 }
 ```
 
-Instead of manually invoking `POST /requestMobilePhoneVerify`, LeanCloud can automatically send a verification message after a new user is registered or an existing user's mobile phone number is changed.
-To do so, you need to enable **Send verification SMS when users register or change phone numbers from clients** in your application's Dashboard > LeanStorage > User > Setting.
-
-If the option is enabled, LeanCloud will send the verification message **after** the user binds or changes their phone number.
 If you want to make binding/changing mobile phone number an atomic operation, you can use `POST /requestChangePhoneNumber` and `POST /changePhoneNumber` instead:
 
 

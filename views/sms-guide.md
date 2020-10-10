@@ -1051,8 +1051,8 @@ LeanCloud offers a built-in [user system](leanstorage_guide-js.html#users) for y
 You can find the following settings in your app's [Dashboard > LeanStorage > Settings > Account](https://console.leancloud.app/storage.html?appid={{appid}}#/storage/conf):
 
 {{ include.checkbox(true) }}**Send verification SMS when users register or change phone numbers from clients**
-- Enabled: If you pass in a phone number when calling the API to create an `AVUser`, a text message with verification code will be automatically sent. The `mobilePhoneVerified` of the `_User` will be set to `true` once the verification is completed.
-- Disabled: No text message will be sent when creating an `AVUser`.
+- Enabled: If you pass in a phone number when calling user-related API interfaces, a text message with verification code will be automatically sent. However, you still need to manually invoke the `/verifyMobilePhone/<code>` interface to set the `mobilePhoneVerified` field of the `_User` table to `true`. Therefore, it is not recommended to enable this option. If you want to verify the number when binding or updating a phone number, please use the `requestChangePhoneNumber` interface instead.
+- Disabled: No text message will be sent when calling user-related API interfaces.
 
 {{ include.checkbox() }}**Do not allow users with unverified phone numbers to log in**
 - Enabled: An `AVUser` with unverified number cannot log in using **phone number and password** or **phone number and verification code**. This user can still log in with **username and password**.
