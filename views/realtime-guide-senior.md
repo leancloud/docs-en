@@ -1000,13 +1000,15 @@ int count = await chatRoom.countMembers();
 
 ### Message Priorities
 
-To ensure that important messages get delivered promptly, the server would selectively discard certain amount of low-priority messages when the network connection is bad. Below are the priorities supported:
+To ensure that important messages get delivered promptly, the server would selectively discard a certain amount of messages with lower priorities when the network connection is bad. Below are the priorities supported:
 
 | Priority | Description |
 | --- | --- |
 | `MessagePriority.HIGH` | High priority. Used for messages that need to be delivered promptly. |
 | `MessagePriority.NORMAL` | Normal priority. Used for ordinary text messages. |
 | `MessagePriority.LOW` | Low priority. Used for messages that are less important. |
+
+The default priority is `NORMAL`.
 
 The priority of a message can be set when sending the message. The code below shows how you can send a message with high priority:
 
