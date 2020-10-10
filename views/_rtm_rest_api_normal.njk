@@ -197,7 +197,7 @@ message | required | message content (The type of the content should be string, 
 transient | optional | whether the message is transient, default to FALSE
 no_sync | optional | message will get synchronized to the online from_client users, setting this via setting it to TRUE.
 push_data | optional | set the offline push content of this message as attachment. If receiver is an iOS device and offline, we will push offline content according to this paramter. Refer to [offline push notification](./realtime-guide-intermediate.html#offline Push Notification)
-priority | optional | set priority of the message in [high,normal,low]. The parameter is not case-sensitive and default to HIGH. This parameter only works on transient and Chat Rooms messages. High priority messages may still be queued if the connection between server side and client side is blocked.
+priority | optional | set priority of the message (`HIGH`, `NORMAL`, or `LOW`). The parameter is not case-sensitive and defaults to `NORMAL`. This parameter only works on transient and Chat Rooms messages. High priority messages may still be queued if the connection between server side and client side is blocked.
 mention_all| optional | boolean type, remind all the participants to have an eye on this message.
 mention_client_ids | optional | array type, tag the participants who need have eyes. No more than 20 client Ids.
 
