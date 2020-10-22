@@ -4444,7 +4444,7 @@ Given the real-time feature of LiveQuery, developers may find it tempting to use
 
 {% if platform_name === "Android / Java" %}
 Applications that use LiveQuery without using LeanMessage and other push services
-can invoke the static method `startIfRequired` of `PushService` to create WebSocket connections:
+can invoke the static method `startIfRequired` of `PushService` to create WebSocket connections when initializing the SDK:
 
 ```java
 PushService.startIfRequired(android.content.Context context);
