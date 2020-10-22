@@ -110,7 +110,10 @@ You can create multiple groups of instances with different domains assigned to e
 - Having edge systems separated from the main system so that the problems occurring on edge systems won't affect the main system.
 - Having cloud functions and the main website written in different languages. For example, you can write cloud functions in Node.js and the main website in PHP.
 
-Each application will have a primary group that handles cloud functions, hooks, and scheduled tasks. Other groups will be treated as secondary groups that **do not support defining cloud functions (including hooks and scheduled tasks) and can only offer web hosting with second-level domains or custom domains bound**. You can change the primary group at any time through the web console.
+Every group can handle cloud functions, hooks, and scheduled tasks.
+If a cloud function is defined on more than one group, the deployment will be interrupted by default, to avoid accidentally duplicated definitions.
+Although you can force the deployment with the `--overwrite-functions` option of the command-line interface, it is recommended that you keep only one copy of the definition, to reduce the unnecessary mental and maintaining load. 
+
 
 Each group has its own staging environment and can be bound to different custom domains. Configurations like environment variables and Git repositories are also independent. You can deploy your project to a group without affecting the other ones. The methods introduced in [Managing Instances](#managing-instances) can be used to manage instances inside each group as well. If a group doesn't have any instances in it, it won't be able to handle requests. If a group has multiple instances, it will also gain the ability of load balancing and have its availability increased.
 
@@ -141,17 +144,6 @@ Suppose in one day (from 0:00 to 24:00):
 
 The cost on that day is calculated against four `standard-1024` instances.
 
-### Pricing for Group Management
-
-If your application has only one group, you won't be charged for group management.
-
-If your application has 2 or more groups, instances will be billed for 20% more as a group management fee.
-
-If you don't want to be billed anymore, please make sure you only have one group in your application.
-
-{% call docs.noteWrap() %}
-Groups with no instances in it will also count into the total number of groups, so please make sure to delete the groups you are not using.
-{% endcall %}
 
 ### Pricing for Extra Bandwidth
 
