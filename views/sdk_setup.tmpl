@@ -715,6 +715,22 @@ If you are building a basic Java project, add the following lines to the beginni
 AVOSCloud.initialize("{{appid}}", "{{appkey}}");
 ```
 
+Basic Java projects can also use LeanCloud realtime-core library.
+However, unlike Android, you need to explicitly create the websocket.
+
+```java
+AVConnectionManager.getInstance().startConnection(new AVCallback() {
+  @Override
+  protected void internalDone0(Object o, AVException e) {
+    if (e == null) {
+      System.out.println("WebSocket connection established.");  
+    } else {
+      System.out.println("Failed to establish WebSocket connection:" + e.getMessage());
+    }
+  }
+});
+```
+
 If you are building for Android, add the following code into the `onCreate` function of the `Application` class:
 
 ```java
