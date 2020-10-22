@@ -353,7 +353,7 @@ AV.Cloud.run('averageStars', {
 });
 ```
 
-By doing so, a local function call will be triggered without initiating an HTTP request. If you want to call the cloud function through an HTTP request, add `remote: true` as an option. This will be helpful when you use Node.js SDK outside of a LeanEngine environment (including calling cloud functions defined in primary groups from secondary groups):
+By doing so, a local function call will be triggered without initiating an HTTP request. If you want to call the cloud function through an HTTP request, add `remote: true` as an option. This will be helpful when you use Node.js SDK outside of a LeanEngine environment (including calling cloud functions defined in other groups):
 
 ```js
 AV.Cloud.run('averageStars', { movie: 'Despicable Me' }, { remote: true }).then(function (data) {
