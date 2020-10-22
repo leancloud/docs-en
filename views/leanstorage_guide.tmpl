@@ -4200,7 +4200,6 @@ The following types of data changes can be monitored once a subscription is set 
 - `enter`
 - `leave`
 - `delete`
-- `login`
 
 #### `create` Event
 
@@ -4356,37 +4355,6 @@ liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
     @Override
     public void onObjectDeleted(String object) {
         System.out.println("Object deleted.");
-    }
-});
-```
-{% endif %}
-
-#### `login` Event
-
-A `login` event will be triggered when a user successfully logs in to your app. The `user` is the `{{ userObjectName }}` logged in:
-
-{% if platform_name === "Objective-C" %}
-```objc
-- (void)liveQuery:(AVLiveQuery *)liveQuery userDidLogin:(AVUser *)user {
-    if (liveQuery == self.liveQuery) {
-        NSLog(@"User logged in.");
-    }
-}
-```
-{% endif %}
-{% if platform_name === "JavaScript" %}
-```js
-liveQuery.on('login', (user) => {
-  console.log('User logged in.');
-});
-```
-{% endif %}
-{% if platform_name === "Java" %}
-```java
-liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
-    @Override
-    public void onUserLogin(AVUser user) {
-        System.out.println("User logged in.");
     }
 });
 ```
