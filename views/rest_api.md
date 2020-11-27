@@ -1544,6 +1544,21 @@ curl -X GET \
   https://{{host}}/1.1/classes/Post
 ```
 
+### File Queries
+
+Querying files is similar to querying normal objects.
+For example, to query all files (just like querying normal objects, it returns at most 100 results by default):
+
+```sh
+curl -X GET \
+  -H "X-LC-Id: {{appid}}" \
+  -H "X-LC-Key: {{appkey}}" \
+  -H "Content-Type: application/json" \
+  https://{{host}}/1.1/classes/files
+```
+
+{{ data.file_url_query() }}
+
 ### Counting Results
 
 You can pass `count=1` parameter to retrieve the count of matched results.
