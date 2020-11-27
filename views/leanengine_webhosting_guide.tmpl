@@ -1652,6 +1652,7 @@ leancloud:request response(0) +220ms 200 {"results":[{"content":"1","createdAt":
 ```
 
 We do not recommend that you enable it in the production environment, as a huge number of logs may be printed.
+If necessary, you can use `DEBUG=leancloud:request:error` to print failed requests only.
 {% endif %}
 
 LeanEngine's access logs can be exported at [Dashboard > LeanEngine > Access logs](https://console.leancloud.app/cloud.html?appid={{appid}}#/accesslog).
