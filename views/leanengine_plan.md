@@ -64,7 +64,7 @@ To avoid the resources of instances being exhausted, it is recommended that:
 
 See [Usage Data][#usage-data] to learn about how you can view the stress of your application.
 
-You can have at most 12 instances for each application. Please contact us at support@leancloud.rocks if you need more.
+You can have at most 12 instances for each application. Please contact us at ask@leancloud.rocks if you need more.
 
 ### Change Instance Quota
 
