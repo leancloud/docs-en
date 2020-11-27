@@ -190,8 +190,8 @@ curl -X POST \
   https://{{host}}/1.1/requestMobilePhoneVerify
 ```
 
-It will return status code `200 OK` if succeeded.
-And LeanCloud will send the verification code to the user.
+It will return status code `200 OK` if succeeded,
+and LeanCloud will send the verification code to the user.
 After the user receives the code, you can ask the user to submit it in your application,
 and check its validness against LeanCloud via `POST /verifyMobilePhone/<code>`:
 
