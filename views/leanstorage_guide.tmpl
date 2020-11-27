@@ -1,4 +1,5 @@
 {% import "views/_helper.njk" as docs %}
+{% import "views/_data.njk" as data %}
 {% macro regex(useSingleQuotes = false) -%}
 ^((?!ticket).)*&dollar;{% if useSingleQuotes == true %}&apos;{% else %}&quot;{% endif %}
 {%- endmacro %}
@@ -4818,6 +4819,46 @@ todo.add('attachments', file);
 await todo.save();
 ```
 {% endif %}
+
+You can also construct a `{{ baseQueryClassName }}` to query files:
+
+{% if platform_name === "Objective-C" %}
+```objc
+AVQuery *query = [AVQuery queryWithClassName:@"_File"];
+```
+{% endif %}
+{% if platform_name === "JavaScript" %}
+```js
+const query = new AV.Query('_File');
+```
+{% endif %}
+{% if platform_name === "Python" %}
+```python
+query = leancloud.Query('_File')
+```
+{% endif %}
+{% if platform_name === "PHP" %}
+```php
+$query = new Query("_File");
+```
+{% endif %}
+{% if platform_name === "Android / Java" %}
+```java
+AVQuery<AVObject> query = new AVQuery<>("_File");
+```
+{% endif %}
+{% if platform_name === "Swift" %}
+```swift
+let query = LCQuery(className: "_File")
+```
+{% endif %}
+{% if platform_name === "Flutter" %}
+```dart
+LCQuery<LCObject> query = LCQuery('_File');
+```
+{% endif %}
+
+{{ data.file_url_query() }}
 
 {% if platform_name === "Objective-C" or platform_name === "JavaScript" or platform_name === "Java" or platform_name === "Flutter" %}
 On a related note, if the files are referenced in an array field of `{{ baseObjectName }}` and you want to get them within the same query for `{{ baseObjectName }}`, you need to use the `{% if platform_name === "Objective-C" %}includeKey{% endif %}{% if platform_name === "JavaScript" %}include{% endif %}{% if platform_name === "Java"%}include{% endif %}` method with `{{ baseQueryClassName }}`. For example, if you are retrieving all the todos with the same title `Get Cakes` and you want to retrieve their related attachments at the same time:
