@@ -4101,6 +4101,7 @@ query.subscribe().then((liveQuery) => {
 {% if platform_name === "Java" %}
 ```java
 AVQuery<AVObject> query = new AVQuery<>("Todo");
+query.whereEqualTo("isComplete", true);
 AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
 liveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
     @Override
@@ -4147,6 +4148,7 @@ query.subscribe().then((liveQuery) => {
 {% if platform_name === "Java" %}
 ```java
 AVQuery<AVObject> query = new AVQuery<>("Todo");
+query.whereEqualTo("isComplete", true);
 AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
 liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
     @Override
