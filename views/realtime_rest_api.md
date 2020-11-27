@@ -137,11 +137,7 @@ from_client | required | sender ID
 message | required | message content
 timestamp | required | timestamp of the message
 
-It returns:
-
-```
-{"result": {}}
-```
+It will return status code `200 OK` if succeeded.
 
 Frequency limitation:
 
@@ -162,9 +158,7 @@ Parameters | Optionality | Description
 ---|---|---
 message_id | required | target id, String
 
-It returns:
-
-blank JSON object `{}`.
+It will return status code `200 OK` if succeeded.
 
 ### Query the Broadcast Messages
 
