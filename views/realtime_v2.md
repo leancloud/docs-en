@@ -441,7 +441,7 @@ Active conversations will never get deleted.
 
 ### Lifespan of Messages
 
-A message will be stored on the cloud for **6 months**. This means that you can only query the message history of a conversation in the past 6 months. If you would like to pay to extend the period, please contact us at support@leancloud.rocks. You may also synchronize the message history to your own server with REST API.
+A message will be stored on the cloud for **6 months**. This means that you can only query the message history of a conversation in the past 6 months. If you would like to pay to extend the period, please contact us at ask@leancloud.rocks. You may also synchronize the message history to your own server with REST API.
 
 ## Hooks
 
