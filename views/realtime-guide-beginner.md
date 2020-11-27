@@ -133,7 +133,7 @@ tom.open(new AVIMClientCallback() {
       // Successfully connected
     }
   }
-}
+});
 ```
 ```cs
 var realtime = new AVRealtime('your-app-id','your-app-key');
@@ -826,9 +826,9 @@ AVIMConversationQuery *query = [self.client conversationQuery];
 // Get the conversation with ID
 final AVIMConversation conv = client.getConversation("CONVERSATION_ID");
 // Invite Mary
-conv.addMembers(Arrays.asList("Mary"), new AVIMConversationCallback() {
+conv.addMembers(Arrays.asList("Mary"), new AVIMOperationPartiallySucceededCallback() {
     @Override
-    public void done(AVIMException e) {
+    public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
       // Member added
     }
 });
@@ -1132,9 +1132,9 @@ do {
 }];
 ```
 ```java
-conv.kickMembers(Arrays.asList("Mary"),new AVIMConversationCallback(){
+conv.kickMembers(Arrays.asList("Mary"), new AVIMOperationPartiallySucceededCallback() {
     @Override
-    public void done(AVIMException e){
+    public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures){
     }
 });
 ```
