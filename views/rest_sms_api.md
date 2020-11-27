@@ -67,7 +67,7 @@ curl -X POST \
 | validate_token    | Optional | see [CAPTCHA section](#CAPTCHA) below | 
 | other_variable    | Optional | [template variable](#templates), `other_variable` is just an example variable name |
 
-If succeed, an empty json object `{}` will be returned.
+It will return status code `200 OK` if succeeded.
 
 Once the user receives the short message, they can fill in the verification code in your application.
 Then you can send a `POST` request to `/verifySmsCode` to check if the code is valid.
@@ -83,7 +83,7 @@ curl -X POST \
 
 `123456` is the verification code.
 
-If succeed, an empty json object `{}` will be returned.
+It will return status code `200 OK` if succeeded.
 
 ### Sending Verification Code by Calling
 
@@ -190,7 +190,8 @@ curl -X POST \
   https://{{host}}/1.1/requestMobilePhoneVerify
 ```
 
-If succeed, the response body will be an empty json object (`{}`), and LeanCloud will send the verification code to the user.
+It will return status code `200 OK` if succeeded.
+And LeanCloud will send the verification code to the user.
 After the user receives the code, you can ask the user to submit it in your application,
 and check its validness against LeanCloud via `POST /verifyMobilePhone/<code>`:
 
@@ -248,7 +249,7 @@ curl -X POST \
   https://{{host}}/1.1/requestLoginSmsCode
 ```
 
-If succeed, the response body will be an empty json object (`{}`).
+It will return status code `200 OK` if succeeded.
 Now this user can use their mobile phone number and verification code to log in:
 
 ```sh
@@ -277,7 +278,7 @@ curl -X POST \
   https://{{host}}/1.1/requestPasswordResetBySmsCode
 ```
 
-If succeed, the response body will be an empty json object (`{}`).
+It will return status code `200 OK` if succeeded.
 
 After the user fill in the received verification code, you can call `PUT /1.1/resetPasswordBySmsCode/<code>` to reset their password:
 
