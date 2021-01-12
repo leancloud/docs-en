@@ -389,6 +389,17 @@ try {
 ```
 
 By doing so, a local function call will be triggered without initiating an HTTP request.
+
+If you want to invoke a cloud function via HTTP, use the `runRemote` method instead:
+
+```php
+try {
+    $token = User::getCurrentSessionToken(); // invoke with a specific `sessionToken` (optional)
+    $result = Cloud::runRemote("averageStars", array("movie" => "Despicable Me"), $token);
+} catch (\Exception $ex) {
+    // Error handling 
+}
+```
 {% endif %}
 {% if platformName === "Java" %}
 ```java
