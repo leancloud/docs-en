@@ -199,14 +199,20 @@ LeanEngine provides PHP 5.6 by default. If you need a specified version of PHP, 
 
 LeanEngine supports version `5.6`, `7.0`, `7.1`, `7.2`, `7.3`, and `7.4` at this time. We will keep adding supports for new versions released in the future.
 
+By default, all versions of PHP have the following extensions enabled: `fpm`, `curl`, `mysql`, `zip`, `xml`, `mbstring`, `gd`, `soap`.
+PHP 7.0 and above also have the `mongodb` extension enabled by default.
+The extension `mcrypt` has been removed from the core of PHP 7.2 and is made optional in LeanEngine. You may enable it by adding `ext-mcrypt: *` into `require` of `composer.json`. Note that the time consumed for deployment will increase if `mcrypt` is enabled, so you may keep it off if you do not need it.
+If you need to use other extensions, please submit a ticket.
+
 LeanEngine PHP does not depend on any third-party frameworks, so you may use any frameworks you are familiar with for your project or choose not to use one. Make sure your project can be started by running `public/index.php`.
 
 By default, a PHP-FPM Worker is assigned to every 64 MB memory of a PHP project. You can change the setting in "Custom environment variables" of LeanEngine's settings page by adding an environment variable with `PHP_WORKERS` as the name and a number as the value. Keep in mind that if the value is too low, there may be insufficient Workers for new requests, and if the value is too high, requests may not be successfully processed due to low memory space.
 
-The extension `mcrypt` has been removed from the core of PHP 7.2 and is made optional in LeanEngine. You may enable it by adding `ext-mcrypt: *` into `require` of `composer.json`. Note that the time consumed for deployment will increase if `mcrypt` is enabled, so you may keep it off if you do not need it.
 
 If your project directory contains `composer.lock`, dependencies will be installed according to the versions specified in this file.
 
+Local repositories of type `path` are not supported since `composer.json` and/or `composer.lock` will be copied to a dedicated directory to install the dependencies during the build process.
+Therefore, if your project uses `path` local repositories, please change them to other types such as `vcs`.
 {% endif %}
 {% if platformName === "Java" %}
 Your project has to follow the following structure to be recognized by LeanEngine and operate properly.
