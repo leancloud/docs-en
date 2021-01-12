@@ -424,7 +424,7 @@ You can read [Advanced Messaging Features](realtime-guide-intermediate.html#adva
 
 * In **every minute**, a client can send **at most 60 messages**, query history messages for **at most 120 times**, and perform operations like joining conversations, leaving conversations, logging in, and logging out for **at most 30 times**. Incoming requests will be rejected if the limits are exceeded (the callbacks implemented with SDK will not be triggered). If you are performing these operations with REST API, the limits will not apply.
 * For each app, at most 160,000 messages can be delivered to all the clients in each second. The messages exceeding the limit will be discarded. Please [contact us](https://leancloud.app/help/) if your app needs a higher quota.
-* The size of each message shall be less than or equal to 5 KB.
+* The size of each message (including metadata such as `pushData`) shall be less than or equal to 5 KB.
 * Each conversation can hold at most 500 people. If you add more than 500 IDs into the `m` field with LeanStorage API, only the first 500 IDs will be used.
 * The same ID is not supposed to be logged in on too many devices. If we detect that an ID is logged in on more than 5 IP addresses at the same time, this ID will be billed with each IP as an independent user on that day.
 * If a user has more than 50 conversations containing unread messages, the cloud will **randomly** pick 50 of them and deliver their unread messages (or the amounts of them) to the user when the user logs in. The undelivered messages will not be lost but need to be manually retrieved.
