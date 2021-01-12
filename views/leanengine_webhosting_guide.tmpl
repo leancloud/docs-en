@@ -1419,7 +1419,7 @@ Filling in the code repository branch and LeanEngine environment, a correspondin
 The code from the specified branch will be deployed to the specified environment once the webhook URL receives any POST request.
 
 For example, if you are using GitHub, you can go to your repository's **Settings** > **Webhooks** and add the URL as the **Payload URL** of a new webhook (leave other settings as default). By doing so, the **designated** branch will be deployed to LeanEngine each time you make a push to **any** existing branch. The reason we cannot perform a deployment based on the branch you are pushing to is that GitHub doesn't allow you to set up webhooks for specific branches, plus LeanEngine is not designing this feature for any specific platforms so it couldn't read the contents in a POST request.
-However, you can use GitHub Actions to control the timing of your deployment in a more granular way, please refer to the example shown on the dashboard.
+However, you can use GitHub Actions to control the timing of your deployment in a more granular way. Please refer to the example shown on the dashboard.
 
 ### Staging Environment and Production Environment
 
