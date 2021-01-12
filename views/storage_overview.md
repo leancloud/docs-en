@@ -65,7 +65,10 @@ The **keys** in an AVObject can only contain letters, numbers, and underscores. 
 - `Date`
 - `Bytes` (base64-encoded binary data)
 - `File`
-- `Null`
+- `Null` (see notes below)
+
+You cannot set a field to `null` via SDKs. It is **not recommended** to set a field to `null` via REST API.
+You can leave the field unset instead.
 
 An `Object` can contain key-value pairs with each value to be a JSON-compatible object. Keep in mind that the key of an `Object` cannot be `__type` or contain `$` or `.` since they are reserved for special purposes. `ACL`, `className`, `createdAt`, `objectId`, and `updatedAt` are also reserved fields and cannot be used as custom **keys**.
 
