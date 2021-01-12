@@ -27,6 +27,12 @@ For Debian-based Linux distributions, you can download and install the Debian pa
 
 For other distributions, download the pre-compiled file `lean-linux-x64` from our [releases page](https://releases.leanapp.cn/#/leancloud/lean-cli/releases), rename it to `lean`, and move it into any directory that is already declared in PATH.
 
+If using the Linux version of Homebrew:
+
+```sh
+brew install lean-cli
+```
+
 #### Arch Linux
 
 You can install the CLI from this AUR: https://aur.archlinux.org/packages/lean-cli-git/.
