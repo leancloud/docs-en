@@ -1583,6 +1583,13 @@ print(MY_CUSTOM_VARIABLE)
 The environment variables provided by LeanEngine {% if platformName === "Node.js" %}(and the Node.js environment variable `NODE_ENV`){% endif %} cannot be overwritten by custom environment variables.
 {% endcall %}
 
+By default, the built-in and custom environment variables can only be read by the application at runtime.
+If you want to read these environment variables during the installation dependency or compilation phase, add the following line to `leanengine.yaml`:
+
+```yaml
+exposeEnvironmentsOnBuild: true
+```
+
 ### Load Balancing
 
 On LeanEngine, requests from the clients go through a load balancer before they reach to your app. The load balancer handles SSL encryption and decryption, data compression, etc., so you don't have to add HTTPS- or gzip-related functions to your app.
