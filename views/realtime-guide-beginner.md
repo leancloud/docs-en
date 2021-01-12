@@ -3163,12 +3163,16 @@ var query = tom.GetQuery();
 var conversation = await query.GetAsync("551260efe4b01608686c3e0f");
 ```
 ```dart
-try {
-  ConversationQuery query = tom.conversationQuery();
-  query.whereEqualTo('objectId', '551260efe4b01608686c3e0f');
-  await query.find();
-} catch (e) {
-  print(e);
+String convID = '551260efe4b01608686c3e0f';
+Conversation conversation = tom.conversationMap[convID];
+if (conversation == null) {
+  try {
+    ConversationQuery query = tom.conversationQuery();
+    query.whereEqualTo('objectId', convID);
+      conversation = await query.find();
+  } catch (e) {
+    print(e);
+  }
 }
 ```
 
