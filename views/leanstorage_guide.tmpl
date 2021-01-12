@@ -6194,7 +6194,16 @@ SMS::requestSmsCode("+19490008888");
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-AVUser.requestLoginSmsCodeInBackground("+19490008888").blockingSubscribe();
+AVUser.requestLoginSmsCodeInBackground("+19490008888")..subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 ```
 {% endif %}
 {% if platform_name === "Swift" %}
@@ -6335,7 +6344,16 @@ User::requestEmailVerify("tom@leancloud.rocks");
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-AVUser.requestEmailVerifyInBackground("tom@leancloud.rocks").blockingSubscribe();
+AVUser.requestEmailVerifyInBackground("tom@leancloud.rocks").subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 ```
 {% endif %}
 {% if platform_name === "Swift" %}
@@ -6387,7 +6405,16 @@ User::requestMobilePhoneVerify("+19490008888");
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-AVUser.requestMobilePhoneVerifyInBackground("+19490008888").blockingSubscribe();
+AVUser.requestMobilePhoneVerifyInBackground("+19490008888")..subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 ```
 {% endif %}
 {% if platform_name === "Swift" %}
@@ -6537,7 +6564,16 @@ _ = LCUser.verifyVerificationCode("123456", toUpdateMobilePhoneNumber:"+19490008
 {% endif %}
 {% if platform_name === "Android / Java" %}
 ```java
-AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("+19490008888").blockingSubscribe();
+AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("+19490008888").subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 
 AVUser.verifySMSCodeForUpdatingPhoneNumberInBackground("123456", "+19490008888").subscribe(new Observer<AVNull>() {
     public void onSubscribe(Disposable disposable) {}
@@ -6920,7 +6956,16 @@ User::requestPasswordReset("tom@leancloud.rocks");
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-AVUser.requestPasswordResetInBackground("tom@leancloud.rocks").blockingSubscribe();
+AVUser.requestPasswordResetInBackground("tom@leancloud.rocks").subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 ```
 {% endif %}
 {% if platform_name === "Swift" %}
@@ -6977,7 +7022,16 @@ User::requestPasswordResetBySmsCode("+19490008888");
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-AVUser.requestPasswordResetBySmsCodeInBackground("+19490008888").blockingSubscribe();
+AVUser.requestPasswordResetBySmsCodeInBackground("+19490008888").subscribe(new Observer<AVNull>() {
+    public void onSubscribe(Disposable disposable) {}
+    public void onNext(AVNull null) {
+        // success
+    }
+    public void onError(Throwable throwable) {
+        // failure
+    }
+    public void onComplete() {}
+});
 ```
 {% endif %}
 {% if platform_name === "Swift" %}
