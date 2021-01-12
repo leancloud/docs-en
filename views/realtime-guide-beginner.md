@@ -4378,7 +4378,7 @@ avimClient.messageQueryCacheEnabled = false;
 ```
 ```java
 // Need to be set before calling AVIMClient.open(callback)
-AVIMClient.setMessageQueryCacheEnable(false)
+AVIMOptions.getGlobalOptions().setMessageQueryCacheEnabled(false);
 ```
 ```cs
 // Not supported yet
