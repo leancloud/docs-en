@@ -6828,7 +6828,7 @@ User::become("anmlwi96s381m6ca7o7266pzf");
 AVUser.becomeWithSessionTokenInBackground("anmlwi96s381m6ca7o7266pzf").subscribe(new Observer<AVUser>() {
     public void onSubscribe(Disposable disposable) {}
     public void onNext(AVUser user) {
-        // Logged in successfully
+        AVUser.changeCurrentUser(user, true);
     }
     public void onError(Throwable throwable) {
         // Session token is invalid
