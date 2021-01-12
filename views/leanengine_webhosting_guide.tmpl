@@ -1010,39 +1010,35 @@ You can implement a simple login page (`login.jsp`) like this to be used with th
 {% endif %}
 
 {% if platformName === "Node.js" %}
-It is recommended that you use [`request`](https://www.npmjs.com/package/request), a third-party module, to send HTTP requests.
+You can use third-party modules such as [superagent](https://www.npmjs.com/package/superagent) to send HTTP requests.
 
-To install `request`:
+To install `superagent`:
 
 ```sh
-npm install request --save
+npm install superagent --save
 ```
 
 Code example:
 
 ```js
-var request = require('request');
+const superagent = require('superagent');
 
-request({
-  method: 'POST',
-  url: 'http://www.example.com/create_post',
-  json: {
-    title: 'Some Amazing Title',
-    body: 'Some awesome content.'
-  }
-}, function (err, res, body) {
-  if (err) {
-    console.error('Request failed with response code ' + res.statusCode);
-  } else {
-    console.log(body);
-  }
-});
+// Assuming the following url will return a JSON object containing current date, e.g.
+//
+//     {"__type":"Date","iso":"2020-12-11T07:58:23.087Z"}
+const url = "https://api.example.com/1.1/date";
+
+superagent.get(url)
+  .then((resp) => console.log(resp.body.iso))
+  .catch(console.error);
+// Output: 2020-12-11T07:58:23.087Z
 ```
 {% endif %}
 {% if platformName === "Python" %}
-You can use any Python modules to send HTTP requests. The built-in `urllib` would work, but it would be more convenient if you use the third-party module [`requests`](http://www.python-requests.org/).
-
-To install `requests`, add a new line `requests>=2.11.0` into `requirements.txt` and execute `pip install -r requirements.txt` again.
+You can use any Python modules to send HTTP requests. The built-in `urllib` would work, but it would be more convenient if you use the third-party module [`requests`](https://requests.readthedocs.io/en/master/).
+Actually, the LeanCloud Python SDK uses `requests` to invoke LeanCloud REST API interfaces.
+Thus if your project already depends on the LeanCloud Python SDK, you do not need to specify `requests` as a dependency of your project.
+Otherwise you can add a new line `requests` in `requirements.txt` and execute `pip install -r requirements.txt` to install it.
 
 ```python
 import requests
@@ -1056,7 +1052,9 @@ print(response.json())
 ```
 {% endif %}
 {% if platformName === "PHP" %}
-LeanEngine PHP environment supports the built-in `curl` module, but we recommend that you use a third party library like `guzzle` to send HTTP requests.
+LeanEngine PHP environment supports the built-in `curl` module, but we recommend that you use a third-party library like [guzzle] to send HTTP requests.
+
+[guzzle]: https://docs.guzzlephp.org/en/stable/
 
 To install `guzzle`:
 
