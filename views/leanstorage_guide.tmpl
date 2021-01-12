@@ -4669,7 +4669,7 @@ The file we uploaded here is named `avatar.jpg`. There are a couple of things to
 
 {% if platform_name in ["Python", "PHP"] %}
 You can specify the path of the uploaded file via the `key` property.
-For example, use a `robots.txt` to restrict search engines to crawl uploaded files:
+For example, use a `robots.txt` to restrict search engines from crawling uploaded files:
 {% endif %}
 
 {% if platform_name == "Python" %}
@@ -4687,7 +4687,7 @@ $file->setKey("robots.txt");
 {% endif %}
 
 {% if platform_name in ["Python", "PHP"] %}
-For security reasons this operation requires using the masterKey.
+For security reasons, this operation requires using the masterKey.
 {% endif %}
 
 ### Saving Files
