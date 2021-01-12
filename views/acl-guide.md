@@ -542,6 +542,9 @@ just like querying a normal object.
 
 The `_User` class has a special rule: without using masterKey (which will skip all permission checks), each user can only modify their user data, no matter what write permission has been granted in the ACL.
 
+LiveQuery is designed for the client-side, and the MasterKey should not be used on the client-side for security reasons.
+Therefore, LiveQuery should not use the MasterKey when subscribing to events, and even if it does use the MasterKey, permission checks such as ACLs will not be skipped.
+
 ## Retrieving ACL Value
 
 The ACL value will not be returned to the client-side by default.
