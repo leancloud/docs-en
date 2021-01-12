@@ -1004,7 +1004,7 @@ You can implement a simple login page (`login.jsp`) like this to be used with th
 {% endif %}
 
 {% if platformName === "Node.js" %}
-You cas use third-party modules such as [superagent](https://www.npmjs.com/package/superagent) to send HTTP requests.
+You can use third-party modules such as [superagent](https://www.npmjs.com/package/superagent) to send HTTP requests.
 
 To install `superagent`:
 
@@ -1030,8 +1030,8 @@ superagent.get(url)
 {% endif %}
 {% if platformName === "Python" %}
 You can use any Python modules to send HTTP requests. The built-in `urllib` would work, but it would be more convenient if you use the third-party module [`requests`](https://requests.readthedocs.io/en/master/).
-Actually the LeanCloud Python SDK uses `requests` to invoke LeanCloud REST API interfaces.
-Thus if your project already depends on the LeanCloud Python SDK, you do not need to specify `requests` as the dependencies of your project.
+Actually, the LeanCloud Python SDK uses `requests` to invoke LeanCloud REST API interfaces.
+Thus if your project already depends on the LeanCloud Python SDK, you do not need to specify `requests` as a dependency of your project.
 Otherwise you can add a new line `requests` in `requirements.txt` and execute `pip install -r requirements.txt` to install it.
 
 ```python
