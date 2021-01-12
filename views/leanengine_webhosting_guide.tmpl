@@ -1410,15 +1410,16 @@ If the repository is private, you need to provide an SSH address (<code>git&comm
 
 After this, you will be able to deploy your project on the web console. It will deploy the code of the `master` branch by default, but you can specify a branch name, a label, or a specific commit when deploying.
 
-You can also set up a webhook so that each time you make a push to the Git repository, your project will be deployed from it. To do so, go to your app's [Dashboard > LeanEngine > Settings > Deploy from source code](https://console.leancloud.app/cloud.html?appid={{appid}}#/conf) and click on **Generate** under **Webhooks**. You will obtain a webhook URL for automatic deployments:
+If your repository contains submodules, LeanEngine will pull them automatically.
 
-```
-https://us.leancloud.cn/1.1/engine/groups/web/productionImage?token=YOUR_TOKEN&gitTag=master
-```
-
-This URL will trigger a deployment from the designated branch each time it receives a POST request.
+You can also set up a webhook so that each time you make a push to the Git repository, your project will be deployed from it.
+To do so, go to your app's **Dashboard > LeanEngine > Deploy > Deploy from git > Auto deploy** to obtain the deploy token and webhook URL.
+You can use the deploy token to construct HTTP requests to trigger deployments.
+Filling in the code repository branch and LeanEngine environment, a corresponding webhook URL will be generated automatically.
+The code from the specified branch will be deployed to the specified environment once the webhook URL receives any POST request.
 
 For example, if you are using GitHub, you can go to your repository's **Settings** > **Webhooks** and add the URL as the **Payload URL** of a new webhook (leave other settings as default). By doing so, the **designated** branch will be deployed to LeanEngine each time you make a push to **any** existing branch. The reason we cannot perform a deployment based on the branch you are pushing to is that GitHub doesn't allow you to set up webhooks for specific branches, plus LeanEngine is not designing this feature for any specific platforms so it couldn't read the contents in a POST request.
+However, you can use GitHub Actions to control the timing of your deployment in a more granular way. Please refer to the example shown on the dashboard.
 
 ### Staging Environment and Production Environment
 
