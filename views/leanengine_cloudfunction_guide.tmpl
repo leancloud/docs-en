@@ -159,6 +159,9 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/cloud.php'; // Contains the definitions of cloud functions
 Cloud::start();
 ```
+
+Note that `Cloud::start` is only applicable to projects dedicated to cloud functions.
+If the project also uses web hosting features, please do not use `Cloud::start`.
 {% endif %}
 {% if platformName === "Java" %}
 ```java
