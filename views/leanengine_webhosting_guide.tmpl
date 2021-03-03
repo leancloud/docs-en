@@ -246,6 +246,8 @@ If you want to use other versions, you can specify `java.runtime.version` in `sy
 java.runtime.version=11
 ```
 
+The Spring Boot template project currently only supports Java 8, so do not specify a version other than Java 8 in `system.properties`.
+
 ### WAR Projects
 
 First, confirm that [Jetty plugin](https://www.eclipse.org/jetty/documentation/9.4.x/jetty-maven-plugin.html) has been configured in `pom.xml`. The port of the web server can be obtained from the environment variable `LEANCLOUD_APP_PORT`. Please refer to our [example code](https://github.com/leancloud/java-war-getting-started/blob/master/pom.xml) for reference.
