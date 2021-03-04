@@ -221,7 +221,7 @@ def my_cloud_func(foo, bar, baz, **params):
 
 You can access `engine.current` within a cloud function to get additional information regarding the client. Each `engine.current` contains the following properties:
 
-- `engine.current.user: leancloud.User`: The user logged in at the client side (according to the header `LC-Session`).
+- `engine.current.user: leancloud.User`: The user logged in at the client side (according to the header `X-LC-Session`).
 - `engine.current.session_token: str`: The `sessionToken` sent from the client (according to the header `X-LC-Session`).
 - `engine.current.meta: dict`: Other information about the client, including `remote_address` which is the IP address of the client.
 {% endif %}
