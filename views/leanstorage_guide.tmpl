@@ -4667,15 +4667,20 @@ The file we uploaded here is named `avatar.jpg`. There are a couple of things to
 - A correct extension needs to be assigned to each file which the cloud will use to infer the type of a file. For example, if you are storing a PNG image with `{{ fileObjectName }}`, use `.png` as its extension.
 - If the file doesn't have an extension and the content type is not specified, LeanCloud defaults the file's type to be `application/octet-stream`.
 
-{% if platform_name in ["Python", "PHP"] %}
+{% if platform_name in ["Python", "PHP", "JavaScript"] %}
 You can specify the path of the uploaded file via the `key` property.
 For example, use a `robots.txt` to restrict search engines from crawling uploaded files:
 {% endif %}
 
+{% if platform_name == "JavaScript" %}
+```js
+file.save({ key: 'robots.txt' });
+```
+{% endif %}
 {% if platform_name == "Python" %}
 ```python
 with open('/tmp/robots.txt', 'rb') as f:
-    file = leancloud.File('avatar.jpg', f)
+    file = leancloud.File('robots.txt', f)
     file.key = 'robots.txt'
 ```
 {% endif %}
