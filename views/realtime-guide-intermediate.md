@@ -1412,7 +1412,7 @@ Each push notification is only valid for 7 days. This means that if a device doe
 
 ### Advanced Settings for Push Notifications
 
-When push notifications are sent via iOS Token Authentication, if your app has private keys for multiple Team IDs, please confirm the one that should be used for you target devices and fill it into the `_apns_team_id` parameter, since Apple doesn't allow a single request to include push notifications sent to devices belonging to different Team IDs.
+When push notifications are sent via iOS Token Authentication, if your app has private keys for multiple Team IDs, please confirm the one that should be used for your target devices and fill it into the `_apns_team_id` parameter, since Apple doesn't allow a single request to include push notifications sent to devices belonging to different Team IDs.
 
 ```json
 {
