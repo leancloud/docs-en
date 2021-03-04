@@ -221,7 +221,7 @@ def my_cloud_func(foo, bar, baz, **params):
 
 You can access `engine.current` within a cloud function to get additional information regarding the client. Each `engine.current` contains the following properties:
 
-- `engine.current.user: leancloud.User`: The user logged in at the client side (according to the header `LC-Session`).
+- `engine.current.user: leancloud.User`: The user logged in at the client side (according to the header `X-LC-Session`).
 - `engine.current.session_token: str`: The `sessionToken` sent from the client (according to the header `X-LC-Session`).
 - `engine.current.meta: dict`: Other information about the client, including `remote_address` which is the IP address of the client.
 {% endif %}
@@ -236,8 +236,8 @@ The following parameters can be accessed within a cloud function:
 The following parameters can be accessed within a cloud function:
 
 - `@EngineFunctionParam`: The parameters sent from the client.
-- `AVUser.getCurrentUser()`: The user logged in at the client side (according to the header `LC-Session`).
-- `EngineRequestContext`: Other information about the client.
+- `EngineRequestContext`: More information about the client. `EngineRequestContext.getSessionToken()` is the session token associated with the user logged in at the client side (according to the HTTP header `X-LC-Session`); `EngineRequestContext.getRemoteAddress()` is the IP address of the client.
+
 {% endif %}
 
 ### Calling Cloud Functions with SDK
@@ -540,7 +540,11 @@ Cloud::define("errorCode", function($params, $user) {
 ```java
 @EngineFunction("errorCode")
 public static AVUser getCurrentUser() throws Exception {
-  AVUser u = AVUser.getCurrentUser();
+  String sessionToken = EngineRequestContext.getSessionToken();
+  AVUser u = null;
+  if (!StringUtil.isEmpty(sessionToken)) {
+    u = AVUser.becomeWithSessionToken(sessionToken);
+  }
   if (u == null) {
     throw new AVException(211, "Could not find the user.");
   } else {
