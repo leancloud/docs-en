@@ -1600,6 +1600,8 @@ exposeEnvironmentsOnBuild: true
 ### Load Balancing
 
 On LeanEngine, requests from the clients go through a load balancer before they reach to your app. The load balancer handles SSL encryption and decryption, data compression, etc., so you don't have to add HTTPS- or gzip-related functions to your app.
+Since the load balancer handles SSL encryption and decryption, the request URLs received by the web framework always start with `http`.
+You need to check the `X-Forwarded-Proto` HTTP header to detect if the original requests use HTTP or HTTPS.
 
 The load balancer also enforces limitations that the maximum size of each request is 100 MB (including uploading files to LeanEngine), the maximum time for processing each request is 60 seconds, and a WebSocket will be disconnected if no data goes through in the past 60 seconds.
 
