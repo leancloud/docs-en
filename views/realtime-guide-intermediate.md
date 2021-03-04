@@ -1412,16 +1412,7 @@ Each push notification is only valid for 7 days. This means that if a device doe
 
 ### Advanced Settings for Push Notifications
 
-By default, **production certificate** is used for sending push notifications. You can specify the certificate you want to use by adding a `_profile` property into the JSON string:
-
-```json
-{
-  "alert":    "New message received",
-  "_profile": "dev"
-}
-```
-
-Apple doesn't allow a single request to include push notifications sent to devices belonging to different Team IDs. If your app has private keys for multiple Team IDs, please confirm the one that should be used for you target devices and fill it into the `_apns_team_id` parameter:
+When push notifications are sent via iOS Token Authentication, if your app has private keys for multiple Team IDs, please confirm the one that should be used for your target devices and fill it into the `_apns_team_id` parameter, since Apple doesn't allow a single request to include push notifications sent to devices belonging to different Team IDs.
 
 ```json
 {
@@ -1430,7 +1421,20 @@ Apple doesn't allow a single request to include push notifications sent to devic
 }
 ```
 
+When push notifications are sent via certificates, **production certificate** will be used by default.
+You can specify the certificate you want to use by adding a `_profile` property into the JSON string:
+
+```json
+{
+  "alert":    "New message received",
+  "_profile": "dev"
+}
+```
+
+`_profile` is only applicable to push notifications sent via certificates, and is not applicable to push notifications sent via iOS Token Authentication. 
+
 `_profile` and `_apns_team_id` will not be included in the actual contents of push notifications.
+Apple recommends using iOS Token Authentication. 
 
 For the message set up in your app's [Dashboard > Messaging > LeanMessage > Settings > Push notification settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/realtime/conf), you can include the following variables:
 
