@@ -5001,7 +5001,7 @@ file.save({
 {% endif %}
 {% if platform_name === "Java" %}
 ```java
-Observable<AVFile> result = file.saveInBackground(new ProgressCallback() {
+file.saveInBackground(new ProgressCallback() {
     @Override
     public void done(Integer percent) {
         // percent is an integer between 0 and 100, indicating uploading progress
