@@ -190,9 +190,17 @@ session_token | required | sessionToken for AV.User
 
 It returns:
 
+```json
+{
+  "signature":"bc884dbb617aab1efc228229210e487330abfc7d",
+  "nonce":"akywke3f28",
+  "client_id":"5fb4ff18d0deed36ea501c8a",
+  "timestamp":1614237989966
+}
 ```
-{"nonce": "", "timestamp": "", "client_id": "", "signature": ""}
-```
+
+Although this is a GET request, it is **not idempotent**.
+The signature returned will be different on each invocation.
 
 To facilitate the fine-grained control for users, realizing functions self-customized (Blocked List), this interface provides a hook function `_rtmClientSign`. This hook will be invoked after verifying the sessionToken, Its parameter is a JSON object of AV.User.
 ```json
