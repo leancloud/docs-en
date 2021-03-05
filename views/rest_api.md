@@ -1611,6 +1611,12 @@ The query condition expressions are implicitly combined with the `$and` operator
 where=[{"price": {"$ne":199}},{"price":{"$exists":true}}]
 ```
 
+In fact, since both conditions are targeted at the same field (`price`), the above query expression can be further simplified to:
+
+```
+where={"price": {"$ne":199, "$exists":true}}
+```
+
 However, to combine two or more OR-ed queries, you have to use the `$and` operator:
 
 ```
