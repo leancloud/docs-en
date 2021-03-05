@@ -1284,8 +1284,11 @@ The highlight of this feature is that you can **customize the contents of push n
 
   Then whenever there is a new message going to an offline user, the user will receive a push notification saying "New message received".
 
-  Keep in mind that `badge` is for iOS devices only which means to increase the number displayed on the badge of the app. Its value `Increment` is case-sensitive. [iOS Push Notification Guide · Customizing Push Notifications](ios_push_guide.html#customizing-push-notifications) introduces how you can clear the badge. Besides, you can also customize the sounds of push notifications for iOS devices. See [Push Notification Guide · Message Contents](push_guide.html#message-contents) for more details.
-
+  Keep in mind that `badge` is for iOS devices only which means to increase the number displayed on the badge of the app.
+  Its value `Increment` is case-sensitive.
+  Typically, when an end user opens or closes the application, you need to set the value of the badge field of the `_Installation` class to zero, which clears the badge number.
+  Besides, you can also customize the sounds of push notifications for iOS devices.
+  
 2. Specifying contents when sending messages from a client
 
   When using the first way introduced above, the content included in each push notification is the same regardless of the message being sent out. Is it possible to dynamically generate these contents to make them relevant to the actual messages?
