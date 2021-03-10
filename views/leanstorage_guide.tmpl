@@ -7738,27 +7738,118 @@ user.logIn(authData: appleData, platform: .apple) { (result) in
 }
 {% endif %}
 
-#### Unlinking
+#### Linking with Existing Users
 
-You can unlink a service by setting the `authData` for the service to `null`. The code below unlinks a user's GitHub account:
+An existing user can link their third-party accounts.
+Once linked, the third-party account information will be added to the `authData` attribute of that user.
+
+For example, to link a GitHub account:
 
 {% if platform_name === "Objective-C" %}
-{# TODO #}
+```objc
+[user associateWithAuthData:githubData platformId:@"github" options:nil callback:^(BOOL succeeded, NSError * _Nullable error) {
+    if (succeeded) {
+        NSLog(@"succeed");
+    } else{
+        NSLog(@"fail: %@",error.localizedFailureReason);
+    }
+}];
+```
 {% endif %}
 {% if platform_name === "JavaScript" %}
 ```js
-AV.User.loginWithAuthData(null, 'github').then((s) => {
-  // Unlinked successfully
-}, (error) => {
-  // Failed to unlink
+user.associateWithAuthData(githubData, "github").then(function(user) {
+  // linked
+}).catch(function(error) {
+  console.error("error: ", error);
 });
 ```
 {% endif %}
 {% if platform_name === "Python" %}
-{# TODO #}
+```python
+user.link_with("github", github_data)
+```
 {% endif %}
 {% if platform_name === "PHP" %}
-{# TODO #}
+```php
+$user->linkWith("github", $githubData);
+```
+{% endif %}
+{% if platform_name === "Android / Java" %}
+```java
+avUser.associateWithAuthData(githubData, "github").subscribe(new Observer<AVUser>() {
+    @Override
+    public void onSubscribe(Disposable d) {
+    }
+    @Override
+    public void onNext(AVUser avUser) {
+        System.out.println("Linked!");
+    }
+    @Override
+    public void onError(Throwable e) {
+        System.out.println("Failed to link: " + e.getMessage());
+    }
+    @Override
+    public void onComplete() {
+    }
+});
+```
+{% endif %}
+{% if platform_name === "Swift" %}
+```swift
+currentUser.associate(authData: githubData, platform: "github") { (result) in
+    switch result {
+    case .success:
+        // linked
+    case .failure(error: let error):
+        // failed to link
+    }
+}
+```
+{% endif %}
+
+{% if platform_name === "Flutter" %}
+```dart
+await currentUser.associateAuthData(githubData, 'github');
+```
+{% endif %}
+{% if platform_name === ".Net" %}
+```cs
+await currentUser.AssociateAuthData(githubData, "github");
+```
+{% endif %}
+
+
+#### Unlinking
+
+Similarly, a third-party account can be unlinked.
+
+For example, the code below unlinks a user's GitHub account:
+
+{% if platform_name === "Objective-C" %}
+[user disassociateWithPlatform:"github" callback:^(BOOL succeeded, NSError * _Nullable error) {
+    if (succeeded) {
+        NSLog(@"succeed");
+    } else{
+        NSLog(@"fail: %@",error.localizedFailureReason);
+    }
+}];
+{% endif %}
+{% if platform_name === "JavaScript" %}
+```js
+```js
+user.dissociateAuthData('github').then((s) => {
+  // unlinked
+}, (error) => {
+  // failed to unlink
+});
+```
+{% endif %}
+{% if platform_name === "Python" %}
+user.unlink_from("github")
+{% endif %}
+{% if platform_name === "PHP" %}
+$user->unlinkWith("github");
 {% endif %}
 {% if platform_name === "Java" %}
 AVUser avUser = AVUser.currentUser();
@@ -7780,7 +7871,7 @@ avUser.dissociateWithAuthData("github").subscribe(new Observer<AVUser>() {
 });
 {% endif %}
 {% if platform_name === "Swift" %}
-currentUser.disassociate(authData: .github) { (result) in
+currentUser.disassociate(authData: "github") { (result) in
     switch result {
     case .success:
         // Unlinked successfully
