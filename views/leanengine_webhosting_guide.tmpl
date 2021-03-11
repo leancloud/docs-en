@@ -148,6 +148,24 @@ Your project has to follow the following structure to be recognized by LeanEngin
 
 LeanEngine Python runs your project following WSGI standards, so `wsgi.py` and `requirements.txt` must exist in the project root directory, with `.python-version` and `runtime.txt` to be optional files. When running your program on LeanEngine, `wsgi.py` will be loaded and the global variable `application` will be called as a WSGI function, so make sure `application` exists in your `wsgi.py` as a global variable, function, or class, and conforms WSGI standards.
 
+For example, [a minimal Flask application][lean-flask] only contains two files (`requirements.txt` excluded and local debugging unsupported):
+
+```python
+# app.py
+
+from flask import Flask
+app = Flask(__name__)
+@app.route('/')
+def index():
+    return "hi"
+
+# wsgi.py
+from app import app
+application = app
+```
+
+[lean-flask]: https://github.com/leancloud/lean-flask
+
 For more information about **WSGI**, please refer to [PEP333](https://www.python.org/dev/peps/pep-0333/).
 
 ### Adding Third-Party Dependencies
@@ -156,8 +174,8 @@ You can fill in the third-party dependencies of the project in `requirements.txt
 
 ```
 # From # sign to the end of the line are comments
-leancloud>=2.0.0,<3.0.0
-Flask>=0.10.1,<1.0.0                               # Specify version number/range of versions
+leancloud>=2.9.1,<3.0.0
+Flask>=1.0.0                                       # Specify version number/range of versions
 git+https://github.com/foo/bar.git@master#egg=bar  # Use the remote addresses of version management tool such as Git/SVN
 ```
 
