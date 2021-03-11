@@ -482,7 +482,7 @@ public void updateMemberRole(final String memberId, final ConversationMemberRole
 // Not supported yet
 ```
 ```dart
-/// - role: The role will be updated.
+/// - role: The role that will be updated.
 /// - memberId: The ID of the member who will be updated.
 Future<void> updateMemberRole({String role, String memberId})
 ```
@@ -661,13 +661,13 @@ public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpl
 // Not supported yet
 ```
 ```dart
-/// - members: The members will be muted.
+/// - members: The members that will be muted.
 Future<MemberResult> muteMembers({Set<String> members})
-/// - members: The members will be unmuted.
+/// - members: The members that will be unmuted.
 Future<MemberResult> unmuteMembers({Set<String> members})
 /// Get the muted members in the conversation.
 ///
-/// [limit]'s default is `50`, should not more than `100`.
+/// [limit]'s default is `50`, should not be more than `100`.
 /// [next]'s default is `null`.
 ///
 /// Returns a list of members.
@@ -777,13 +777,13 @@ public void queryBlockedMembers(int offset, int limit, final AVIMConversationSim
 // Not supported yet
 ```
 ```dart
-/// - members: The members will be blocked.
+/// - members: The members that will be blocked.
 Future<MemberResult> blockMembers({Set<String> members})
-/// - members: The members will be un unblocked.
+/// - members: The members that will be un unblocked.
 Future<MemberResult> unblockMembers({Set<String> members})
 /// Get the blocked members in the conversation.
 ///
-/// [limit]'s default is `50`, should not more than `100`.
+/// [limit]'s default is `50`, should not be more than `100`.
 /// [next]'s default is `null`.
 ///
 /// Returns a list of members.
