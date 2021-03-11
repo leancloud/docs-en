@@ -15,8 +15,7 @@ After enabling SMS in your app's dashboard (see [Enabling SMS](#enabling-sms)), 
 ```objc
 AVShortMessageRequestOptions *options = [[AVShortMessageRequestOptions alloc] init];
 options.templateName = @"Register_Notice"; // The name of the template stored on dashboard
-options.signatureName = @"LeanCloud";      // The name of the signature stored on dashboard
-// Sending text message to +19490008888 using the template and signature
+// Sending text message to +19490008888 using the template
 [AVSMS requestShortMessageForPhoneNumber:@"+19490008888"
                                 options:options
                                 callback:^(BOOL succeeded, NSError * _Nullable error) {
@@ -30,8 +29,7 @@ options.signatureName = @"LeanCloud";      // The name of the signature stored o
 ```swift
 _ = LCSMSClient.requestShortMessage(
     mobilePhoneNumber: "+19490008888",
-    templateName: "Register_Notice", // The name of the template stored on dashboard
-    signatureName: "LeanCloud")      // The name of the signature stored on dashboard
+    templateName: "Register_Notice") // The name of the template stored on dashboard
 { (result) in
     switch result {
     case .success:
@@ -44,8 +42,7 @@ _ = LCSMSClient.requestShortMessage(
 ```java
 AVSMSOption option = new AVSMSOption();
 option.setTemplateName("Register_Notice"); // The name of the template stored on dashboard
-option.setSignatureName("LeanCloud");      // The name of the signature stored on dashboard
-// Sending text message to +19490008888 using the template and signature
+// Sending text message to +19490008888 using the template
 AVSMS.requestSMSCodeInBackground("+19490008888", option).subscribe(new Observer<AVNull>() {
     @Override
     public void onSubscribe(Disposable disposable) {
@@ -67,8 +64,7 @@ AVSMS.requestSMSCodeInBackground("+19490008888", option).subscribe(new Observer<
 // Sending text message to +19490008888 using the template and signature
 AV.Cloud.requestSmsCode({
   mobilePhoneNumber: '+19490008888', // Target number
-  template: 'Register_Notice',      // The name of the template stored on dashboard
-  sign:'LeanCloud'                  // The name of the signature stored on dashboard
+  template: 'Register_Notice'        // The name of the template stored on dashboard
 }).then(function(){
   // Request completed
 }, function(err){
@@ -76,30 +72,27 @@ AV.Cloud.requestSmsCode({
 });
 ```
 ```cs
-// Sending text message to +19490008888 using the template (Register_Notice) and signature (LeanCloud)
-AVCloud.RequestSMSCodeAsync("+19490008888","Register_Notice",null,"LeanCloud").ContinueWith(t =>
+// Sending text message to +19490008888 using the template (Register_Notice)
+AVCloud.RequestSMSCodeAsync("+19490008888","Register_Notice",null,null).ContinueWith(t =>
 {
     var result = t.Result;
     // result being True means the request is completed
 });
 ```
 ```php
-// Sending text message to +19490008888 using the template (Register_Notice) and signature (LeanCloud)
+// Sending text message to +19490008888 using the template (Register_Notice)
 $options = [
   "template" => "Register_Notice",
-  "name" => "LeanCloud",
 ];
 SMS::requestSMSCode("+19490008888", $options);
 ```
 ```python
 from leancloud import cloud
-cloud.request_sms_code("+19490008888", template="Register_Notice", sign="LeanCloud")
+cloud.request_sms_code("+19490008888", template="Register_Notice")
 ```
 ```dart
 try {
-  await LCSMSClient.requestSMSCode('+19490008888',
-      template: 'Register_Notice',
-      signature: 'LeanCloud');
+  await LCSMSClient.requestSMSCode('+19490008888', template: 'Register_Notice');
 } on LCException catch (e) {
   print(e.message);
 }
@@ -108,11 +101,10 @@ try {
 The actual message received by the user looks like this:
 
 {% call docs.bubbleWrap() -%}
-【LeanCloud】Thanks for joining LeanCloud, the leading backend-as-a-service provider.
+Thanks for joining LeanCloud, the leading backend-as-a-service provider.
 {% endcall %}
 
-- The content of the text message comes from the [template](#templates) named `Register_Notice` which needs to be created in your app's dashboard in advance.
-- `LeanCloud` is the [signature](#signatures) which is required and also needs to be created in your app's dashboard before you use it.
+The content of the text message comes from the [template](#templates) named `Register_Notice` which needs to be created in your app's dashboard in advance.
 
 ## Enabling SMS
 
@@ -129,14 +121,6 @@ Then go to [Dashboard > Messaging > SMS > Settings > SMS settings](https://conso
 {{ include.checkbox(true) }}**Enable SMS verification code (open up `requestSmsCode` and `verifySmsCode`)**
 - Enabled: The app is able to incorporate features related to SMS, including verification when there are users performing sensitive operations, logging in at unusual locations, making payments, etc.
 - Disabled: Requests for sending and verifying verification codes will be rejected. Note that this won't affect verification for user accounts.
-
-### Setting up Default Signatures
-
-A signature helps your users identify the sender of the messages they received. Before you start sending your first message, you need to go to your app's [Dashboard > Messaging > SMS > Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf) and set up a default signature (the first signature you created automatically becomes the default one):
-
-![The "New signature" button under "Signatures".](images/sms_create_signature.png)
-
-After creating a signature, you will be able to call LeanCloud APIs to send text messages. You might have noticed that there is a "template" appearing in the sample code, but since it is not required by all types of text messages, we will [discuss it later](#templates).
 
 ## Using SMS for Verification
 
@@ -475,8 +459,6 @@ The method verifies if the code entered is correct.
 Except for verification messages, to send text messages, you need to create a template beforehand.
 Once a template is created, when calling LeanCloud's API to send messages, you only need to plug in the variables used in these templates rather than to pass in the entire text message as a string.
 
-{{ sms.signature("### Signatures") }}
-
 ### Creating Templates
 
 To create a template, go to your app's dashboard and navigate to [Messaging > SMS > Settings](https://console.leancloud.app/messaging.html?appid={{appid}}#/message/sms/conf).
@@ -489,13 +471,12 @@ Assuming that you have created a template named `Order_Notice` with the followin
 Your package for the order {{ docs.mustache("{order_id}") }} will be delivered by the end of today.
 {% endcall %}
 
-Also assuming that you already have a signature named `sign_BuyBuyBuy` with its content being "BuyBuyBuy". Now you're good to use the following method to send a text message with the template:
+Now you can send a text message with this template:
 
 ```objc
 AVShortMessageRequestOptions *options = [[AVShortMessageRequestOptions alloc] init];
 
 options.templateName = @"Order_Notice";
-options.signatureName = @"sign_BuyBuyBuy";
 options.templateVariables = @{ @"order_id": @"7623432424540" }; // Plug the actual value into the template
 
 [AVSMS requestShortMessageForPhoneNumber:@"+19490008888"
@@ -516,7 +497,6 @@ let variables: LCDictionary = [
 _ = LCSMSClient.requestShortMessage(
     mobilePhoneNumber: "+19490008888",
     templateName: "Order_Notice",
-    signatureName: "sign_BuyBuyBuy",
     variables: variables)
 { (result) in
     switch result {
@@ -530,7 +510,6 @@ _ = LCSMSClient.requestShortMessage(
 ```java
 AVSMSOption option = new AVSMSOption();
 option.setTemplateName("Order_Notice");
-option.setSignatureName("sign_BuyBuyBuy");
 Map<String, Object> parameters = new HashMap<String, Object>();
 parameters.put("order_id", "7623432424540"); // Plug the actual value into the template
 option.setEnvMap(parameters);
@@ -555,7 +534,6 @@ AVSMS.requestSMSCodeInBackground("+19490008888", option).subscribe(new Observer<
 AV.Cloud.requestSmsCode({
 mobilePhoneNumber: '+19490008888',
 template: 'Order_Notice',
-sign:'sign_BuyBuyBuy',
 order_id: '7623432424540'}).then(function(){
       // Request completed
     }, function(err){
@@ -567,7 +545,7 @@ var env = new Dictionary<string,object>()
 {
     {"order_id","7623432424540"} // Plug the actual value into the template
 };
-AVCloud.RequestSMSCodeAsync("+19490008888","Order_Notice",env,"sign_BuyBuyBuy").ContinueWith(t =>
+AVCloud.RequestSMSCodeAsync("+19490008888", "Order_Notice", env, null).ContinueWith(t =>
 {
     var result = t.Result;
     // result being True means the request is completed
@@ -576,7 +554,6 @@ AVCloud.RequestSMSCodeAsync("+19490008888","Order_Notice",env,"sign_BuyBuyBuy").
 ```php
 $options = [
   "template" => "Order_Notice",
-  "name" => "sign_BuyBuyBuy",
   "order_id" => "7623432424540", // Plug the actual value into the template
 ];
 SMS::requestSmsCode("+19490008888", $options);
@@ -587,13 +564,12 @@ options = {
   "order_id": "7623432424540" # Plug the actual value into the template
 }
 cloud.request_sms_code("+19490008888",
-  template="Order_Notice", sign="sign_BuyBuyBuy", params=options)
+  template="Order_Notice", params=options)
 ```
 ```dart
 try {
   await LCSMSClient.requestSMSCode('+19490008888',
     template: 'Order_Notice',
-    signature: 'sign_BuyBuyBuy',
     // Plug the actual value into the template
     variables: {'order_id': '7623432424540'}); 
 } on LCException catch (e) {
@@ -622,7 +598,7 @@ Welcome to {{ docs.mustache("{name}") }}! Your verification code is {{ docs.must
 - `name`: The name of the app
 - `code`: Verification code
 - `ttl`: The number of minutes the verification code is valid for (defaults to 10 and can be up to 30)
-- `sign`: Signature
+- `sign`: Signature (preserved for compatibility with legacy applications)
 - `template`: Template name
 
 ## Preventing Abuse with CAPTCHA
@@ -936,7 +912,6 @@ If the input is correct, continue to send SMS verification code with the `valida
 ```objc
 AVShortMessageRequestOptions *options = [[AVShortMessageRequestOptions alloc] init];
 options.templateName = @"New_Series";
-options.signatureName = @"sign_BuyBuyBuy";
 options.validationToken = <#validationToken#>;
 
 [AVSMS requestShortMessageForPhoneNumber:@"+19490008888"
@@ -953,7 +928,6 @@ options.validationToken = <#validationToken#>;
 _ = LCSMSClient.requestShortMessage(
     mobilePhoneNumber: "+19490008888",
     templateName: "New_Series",
-    signatureName: "sign_BuyBuyBuy",
     captchaVerificationToken: "captcha_verification_token")
 { (result) in
     switch result {
@@ -967,7 +941,6 @@ _ = LCSMSClient.requestShortMessage(
 ```java
 AVSMSOption option = new AVSMSOption();
 option.setTemplateName("Order_Notice");
-option.setSignatureName("sign_BuyBuyBuy");
 option.setCaptchaValidateToken("validateToken");
 AVSMS.requestSMSCodeInBackground("+19490008888", option).subscribe(new Observer<AVNull>() {
     @Override
@@ -989,11 +962,9 @@ AVSMS.requestSMSCodeInBackground("+19490008888", option).subscribe(new Observer<
 ```javascript
 // mobilePhoneNumber: Phone number
 // template: Template name
-// sign: Signature
 AV.Cloud.requestSmsCode({
     mobilePhoneNumber: '+19490008888',
-    template: 'New_Series',
-    sign:'sign_BuyBuyBuy'
+    template: 'New_Series'
 }，{
     validateToken:'The validate_token obtained earlier'
 }).then(function(){
@@ -1005,8 +976,7 @@ AV.Cloud.requestSmsCode({
 ```cs
 // +19490008888: Phone number
 // New_Series: Template name
-// sign_BuyBuyBuy: Signature
-AVCloud.RequestSMSCodeAsync("+19490008888","New_Series",null,"sign_BuyBuyBuy","The validate_token obtained earlier").ContinueWith(t =>
+AVCloud.RequestSMSCodeAsync("+19490008888","New_Series",null,null,"The validate_token obtained earlier").ContinueWith(t =>
 {
     var result = t.Result;
     // result being True means the request is completed
@@ -1019,13 +989,12 @@ AVCloud.RequestSMSCodeAsync("+19490008888","New_Series",null,"sign_BuyBuyBuy","T
 from leancloud import cloud
 options = { "validate_token": validate_token }
 cloud.request_sms_code("+19490008888",
-  template="New_Series", sign="sign_BuyBuyBuy", params=options)
+  template="New_Series", params=options)
 ```
 ```dart
 try {
   await LCSMSClient.requestSMSCode('+19490008888',
       template: 'Order_Notice',
-      signature: 'sign_BuyBuyBuy',
       variables: {'validate_token': validate_token});
 } on LCException catch (e) {
   print(e.message);

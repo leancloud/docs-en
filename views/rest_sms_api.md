@@ -63,7 +63,6 @@ curl -X POST \
 | name              | Optional | application name |
 | op                | Optional | operation name, e.g. payment |
 | template          | Optional | template name, see [Templates section](#templates) below |
-| sign              | Optional | signature name, see [Templates section](#templates) below |
 | validate_token    | Optional | see [CAPTCHA section](#CAPTCHA) below | 
 | other_variable    | Optional | [template variable](#templates), `other_variable` is just an example variable name |
 
@@ -106,14 +105,14 @@ Besides the default verification short message, you can use templates to customi
 
 Refer to [the Templates section of Short Message Service (SMS) Guide](sms-guide.html#templates) for information about how to create a template.
 
-To use SMS templates, pass the `template` and `sign` parameters to `requestSmsCode`:
+To use SMS templates, pass the `template` parameter to `requestSmsCode`:
 
 ```sh
 curl -X POST \
   -H "X-LC-Id: {{appid}}" \
   -H "X-LC-Key: {{appkey}}" \
   -H "Content-Type: application/json" \
-  -d '{"mobilePhoneNumber": "+1xxxxxxxxxx", "template":"Order_Notice","sign":"sign_BuyBuyBuy","date":"31 Oct. 2014"}' \
+  -d '{"mobilePhoneNumber": "+1xxxxxxxxxx", "template":"Order_Notice", "date":"31 Oct. 2014"}' \
   https://{{host}}/1.1/requestSmsCode
 ```
 
