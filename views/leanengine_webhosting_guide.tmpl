@@ -20,28 +20,13 @@ This guide uses {{platformName}} as an example, but LeanEngine supports many oth
 
 ## Starting with the Example Project
 
-Clone the sample code {% if platformName === "Node.js" %}[`node-js-getting-started`](https://github.com/leancloud/node-js-getting-started){% endif %}{% if platformName === "Python" %}[`python-getting-started`](https://github.com/leancloud/python-getting-started){% endif %}{% if platformName === "PHP" %}[`slim-getting-started`](https://github.com/leancloud/slim-getting-started){% endif %}{% if platformName === "Java" %}[`java-war-getting-started`](https://github.com/leancloud/java-war-getting-started){% endif %} to local:
+Provided that you have [installed the command-line tool(leanengine_cli.html#installation), to create a new project from our example skelton, you just need one command:
 
-{% if platformName === "Node.js" %}
 ```sh
-git clone https://github.com/leancloud/node-js-getting-started.git
+lean init
 ```
-{% endif %}
-{% if platformName === "Python" %}
-```sh
-git clone https://github.com/leancloud/python-getting-started.git
-```
-{% endif %}
-{% if platformName === "PHP" %}
-```sh
-git clone https://github.com/leancloud/slim-getting-started.git
-```
-{% endif %}
-{% if platformName === "Java" %}
-```sh
-git clone https://github.com/leancloud/java-war-getting-started.git
-```
-{% endif %}
+
+Follow the prompts to enter the project information.
 
 {% if platformName === "Node.js" %}
 Then execute the following command in the project root directory to install dependencies:
