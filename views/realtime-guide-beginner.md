@@ -3872,7 +3872,7 @@ Since `Conversation` objects are stored on LeanStorage, you can make use of inde
 
 ## Retrieving Messages
 
-By default, message histories are stored on the cloud for **180** days. You may either pay to extend the period (contact us at ask@leancloud.rocks) or synchronize them to your own server with REST API.
+By default, message histories are stored on the cloud for **180** days. You may either pay to extend the period (contact us at leancloud-support@xd.com) or synchronize them to your own server with REST API.
 
 Our SDKs offer various of ways for you to retrieve message histories. iOS and Android SDKs also provide caching mechanism to help you reduce the number of queries you have to perform and display message histories to users even their devices are offline.
 
