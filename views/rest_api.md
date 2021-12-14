@@ -28,6 +28,10 @@ Postman can [import curl commands][import-curl] directly and automatically [gene
 [import-curl]: https://learning.getpostman.com/docs/postman/collections/data-formats/#importing-curl
 [generate-snippets]: https://learning.getpostman.com/docs/postman/sending-api-requests/generate-code-snippets/
 
+### Base URL 
+
+Base URL： {{first 8 digits of your App ID}}.api.lncldglobal.com.
+
 ### Objects
 
 <table>
