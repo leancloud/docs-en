@@ -30,7 +30,7 @@ Postman can [import curl commands][import-curl] directly and automatically [gene
 
 ### Base URL 
 
-Base URL： {{first 8 digits of your App ID}}.api.lncldglobal.com.
+Base URL: `{{first 8 digits of your App ID}}.api.lncldglobal.com`
 
 ### Objects
 
