@@ -5,11 +5,11 @@
 Client-side SDKs are for Web and mobile platforms (iOS, Android, etc.) and support backendless application architecture.
 
 - [JavaScript](sdk_setup-js.html)
-- [Objective-C](https://docs.leancloud.cn/en/sdk/storage/guide/setup-objc/)
+- [Objective-C](sdk_setup-objc.html)
 - [Swift](sdk_setup-swift.html)
-- [Android/Java](https://docs.leancloud.cn/en/sdk/storage/guide/setup-java/)
+- [Android/Java](sdk_setup-java.html)
 - [Flutter](sdk_setup-flutter.html)
-- [.Net](https://docs.leancloud.cn/en/sdk/storage/guide/setup-dotnet)
+- [.Net](sdk_setup-dotnet.html)
 
 ## Server-side SDKs
 
@@ -21,7 +21,7 @@ The template project already includes the project skeleton and the SDK initializ
 If you need to use these SDKs on your server, please refer to the following documentation to install and configure them.
 
 - [JavaScript SDK Installation Guide](sdk_setup-js.html#node-js)
-- [Java SDK Installation Guide](https://docs.leancloud.cn/en/sdk/storage/guide/setup-java/)
+- [Java SDK Installation Guide](sdk_setup-java.html)
 - [Python SDK Installation Guide](sdk_setup-python.html)
 - [PHP SDK Installation Guide](sdk_setup-php.html)
-- [.Net SDK Installation Guide](https://docs.leancloud.cn/en/sdk/storage/guide/setup-dotnet)
+- [.Net SDK Installation Guide](sdk_setup-dotnet.html)
